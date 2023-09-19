@@ -2,6 +2,9 @@
 .vs/
 .vsconfig
 
+# Jetbrains Rider user specific files
+.idea/
+
 # Compiled Object files
 *.slo
 *.lo
