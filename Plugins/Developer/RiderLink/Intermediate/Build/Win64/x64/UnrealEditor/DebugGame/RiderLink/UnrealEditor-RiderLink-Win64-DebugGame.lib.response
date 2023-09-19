@@ -1,0 +1,11 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-RiderLink-Win64-DebugGame.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"E:\Developer\Unreal Engine\Aura_UE_Version_5_2\Aura\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\DebugGame\RiderLink\Module.RiderLink.cpp.obj"
+"E:\Developer\Unreal Engine\Aura_UE_Version_5_2\Aura\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\DebugGame\RiderLink\Default.rc2.res"
+/OUT:"E:\Developer\Unreal Engine\Aura_UE_Version_5_2\Aura\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\DebugGame\RiderLink\UnrealEditor-RiderLink-Win64-DebugGame.lib"
