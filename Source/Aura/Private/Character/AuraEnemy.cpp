@@ -4,6 +4,8 @@
 
 // Headers - Aura
 #include "Aura.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
+#include "GAS/Attributes/AuraAttributeSet.h"
 
 #pragma region INITIALIZATION
 
@@ -16,6 +18,13 @@ AAuraEnemy::AAuraEnemy()
 	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 
 	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+
+	// GAS setup
+	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
+	
+	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>(TEXT("AttributeSet"));
 }
 
 #pragma endregion INITIALIZATION
@@ -26,6 +35,8 @@ AAuraEnemy::AAuraEnemy()
 void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 #pragma endregion OVERRIDES

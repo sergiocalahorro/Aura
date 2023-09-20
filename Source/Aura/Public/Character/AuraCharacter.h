@@ -29,6 +29,14 @@ public:
 #pragma endregion INITIALIZATION
 
 #pragma region OVERRIDES
+
+public:
+
+	/** Called when this Pawn is possessed. Only called on the server (or in standalone) */
+	virtual void PossessedBy(AController* NewController) override;
+
+	/** PlayerState Replication Notification Callback. Only called on clients */
+	virtual void OnRep_PlayerState() override;
 	
 protected:
 	
@@ -50,5 +58,14 @@ private:
 	TObjectPtr<USpringArmComponent> SpringArm;
 
 #pragma endregion COMPONENTS
+
+#pragma region GAS
+
+private:
+
+	/** Initialize ability actor info */
+	void InitAbilityActorInfo();
+
+#pragma endregion GAS
 	
 };

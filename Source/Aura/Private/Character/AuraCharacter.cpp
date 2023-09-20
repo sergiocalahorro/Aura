@@ -3,9 +3,13 @@
 #include "Character/AuraCharacter.h"
 
 // Headers - Unreal Engine
+#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Player/AuraPlayerController.h"
+#include "Player/AuraPlayerState.h"
+#include "UI/HUD/AuraHUD.h"
 
 #pragma region INITIALIZATION
 
@@ -42,6 +46,22 @@ AAuraCharacter::AAuraCharacter()
 
 #pragma endregion OVERRIDES
 
+/** Called when this Pawn is possessed. Only called on the server (or in standalone) */
+void AAuraCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitAbilityActorInfo();
+}
+
+/** PlayerState Replication Notification Callback. Only called on clients */
+void AAuraCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilityActorInfo();
+}
+
 /** Called when the game starts or when spawned */
 void AAuraCharacter::BeginPlay()
 {
@@ -49,3 +69,25 @@ void AAuraCharacter::BeginPlay()
 }
 
 #pragma endregion OVERRIDES
+
+#pragma region GAS
+
+/** Initialize ability actor info */
+void AAuraCharacter::InitAbilityActorInfo()
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
+
+	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	AttributeSet = AuraPlayerState->GetAttributeSet();
+
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
+	{
+		if (AAuraHUD* AuraHUD = Cast<AAuraHUD>(AuraPlayerController->GetHUD()))
+		{
+			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
+		}
+	}
+}
+
+#pragma endregion GAS

@@ -1,50 +1,34 @@
-// Copyright Sergio Calahorro
+﻿// Copyright Sergio Calahorro
 
 #pragma once
 
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
 
-#include "AuraBaseCharacter.generated.h"
+#include "AuraPlayerState.generated.h"
 
 // Forward declarations - Unreal Engine
-class UAbilitySystemComponent;
 class UAttributeSet;
+class UAbilitySystemComponent;
 
+/**
+ * 
+ */
 UCLASS(Abstract)
-class AURA_API AAuraBaseCharacter : public ACharacter, public IAbilitySystemInterface
+class AURA_API AAuraPlayerState : public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 #pragma region INITIALIZATION
-	
+
 public:
-	
-	/** Sets default values for this character's properties */
-	AAuraBaseCharacter();
+
+	/** Sets default values for this actor's properties */
+	AAuraPlayerState();
 
 #pragma endregion INITIALIZATION
-
-#pragma region OVERRIDES
-	
-protected:
-	
-	/** Called when the game starts or when spawned */
-	virtual void BeginPlay() override;
-
-#pragma endregion OVERRIDES
-
-#pragma region COMPONENTS
-
-protected:
-
-	/** Weapon mesh */
-	UPROPERTY(EditAnywhere, Category = "AA|Components")
-	TObjectPtr<USkeletalMeshComponent> Weapon;
-
-#pragma endregion COMPONENTS
 
 #pragma region GAS
 
