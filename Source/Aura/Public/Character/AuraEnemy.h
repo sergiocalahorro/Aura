@@ -2,12 +2,17 @@
 
 #pragma once
 
+// Headers - Unreal Engine
 #include "CoreMinimal.h"
+
+// Headers - Aura
 #include "AuraBaseCharacter.h"
+#include "Interaction/HighlightableInterface.h"
+
 #include "AuraEnemy.generated.h"
 
 UCLASS(Abstract)
-class AURA_API AAuraEnemy : public AAuraBaseCharacter
+class AURA_API AAuraEnemy : public AAuraBaseCharacter, public IHighlightableInterface
 {
 	GENERATED_BODY()
 
@@ -28,5 +33,17 @@ protected:
 	virtual void BeginPlay() override;
 
 #pragma endregion OVERRIDES
+
+#pragma region HIGHLIGHTABLE
+
+public:
+
+	/** Functionality performed when Actor should be highlighted (on hovered) */
+	virtual void HighlightActor() override;
+
+	/** Functionality performed when Actor should be un-highlighted (stopped being hovered) */
+	virtual void UnHighlightActor() override;
+
+#pragma endregion HIGHLIGHTABLE
 	
 };

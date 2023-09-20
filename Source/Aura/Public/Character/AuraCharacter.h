@@ -2,9 +2,17 @@
 
 #pragma once
 
+// Headers - Unreal Engine
 #include "CoreMinimal.h"
+
+// Headers - Aura
 #include "AuraBaseCharacter.h"
+
 #include "AuraCharacter.generated.h"
+
+// Forward declarations - Unreal Engine
+class USpringArmComponent;
+class UCameraComponent;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacter : public AAuraBaseCharacter
@@ -28,5 +36,19 @@ protected:
 	virtual void BeginPlay() override;
 
 #pragma endregion OVERRIDES
+
+#pragma region COMPONENTS
+
+private:
+
+	/** Camera */
+	UPROPERTY(EditAnywhere, Category = "AA|Components")
+	TObjectPtr<UCameraComponent> Camera;
+	
+	/** Spring Arm */
+	UPROPERTY(EditAnywhere, Category = "AA|Components")
+	TObjectPtr<USpringArmComponent> SpringArm;
+
+#pragma endregion COMPONENTS
 	
 };

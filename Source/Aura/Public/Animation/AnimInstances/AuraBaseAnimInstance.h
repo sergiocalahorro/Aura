@@ -50,8 +50,16 @@ protected:
 	TObjectPtr<UCharacterMovementComponent> CharacterMovement;
 
 	/** Character's ground speed */
-	UPROPERTY(BlueprintReadOnly, Category = "AA|Core")
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Core|Movement")
 	float GroundSpeed;
+
+	/** Whether character should enter running state */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Core|Movement")
+	bool bShouldMove;
+
+	/** Character's speed to enter idle state */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Core|Movement", meta = (ClampMin = 1.f, UIMin = 1.f, Delta = 1.f))
+	float IdleSpeed = 3.f;
 
 #pragma endregion CORE
 	
