@@ -16,6 +16,7 @@ public class Aura : ModuleRules
 			"InputCore",
 			"EnhancedInput", 
 			"UMG",
+			"Niagara",
 			"GameplayAbilities"
 		});
 
