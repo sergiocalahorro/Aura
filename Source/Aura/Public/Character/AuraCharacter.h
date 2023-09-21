@@ -61,10 +61,10 @@ private:
 
 #pragma region GAS
 
-private:
+protected:
 
 	/** Initialize ability actor info */
-	void InitAbilityActorInfo();
+	virtual void InitAbilityActorInfo() override;
 
 #pragma endregion GAS
 	

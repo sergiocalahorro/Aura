@@ -45,5 +45,14 @@ public:
 	virtual void UnHighlightActor() override;
 
 #pragma endregion HIGHLIGHTABLE
+
+#pragma region GAS
+
+protected:
+
+	/** Initialize ability actor info */
+	virtual void InitAbilityActorInfo() override;
+
+#pragma endregion GAS
 	
 };

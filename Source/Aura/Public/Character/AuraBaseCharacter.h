@@ -57,6 +57,11 @@ public:
 	UAttributeSet* GetAttributeSet() const;
 
 protected:
+
+	/** Initialize ability actor info */
+	virtual void InitAbilityActorInfo() PURE_VIRTUAL(AAuraBaseCharacter::InitAbilityActorInfo);
+
+protected:
 	
 	/** Ability system component */
 	UPROPERTY()

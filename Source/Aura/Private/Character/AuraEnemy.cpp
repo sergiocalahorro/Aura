@@ -36,7 +36,7 @@ void AAuraEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitAbilityActorInfo();
 }
 
 #pragma endregion OVERRIDES
@@ -62,3 +62,14 @@ void AAuraEnemy::UnHighlightActor()
 }
 
 #pragma endregion HIGHLIGHTABLE
+
+#pragma region GAS
+
+/** Initialize ability actor info */
+void AAuraEnemy::InitAbilityActorInfo()
+{
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
+}
+
+#pragma endregion GAS

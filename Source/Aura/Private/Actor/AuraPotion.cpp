@@ -18,6 +18,8 @@ AAuraPotion::AAuraPotion()
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	Sphere->SetupAttachment(RootComponent);
+	
+	bDestroyOnEffectsApplication = true;
 }
 
 #pragma endregion INITIALIZATION
