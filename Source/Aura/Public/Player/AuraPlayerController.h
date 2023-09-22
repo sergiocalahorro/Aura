@@ -14,7 +14,7 @@ class UInputAction;
 struct FInputActionValue;
 
 // Forward declarations - Aura
-class IHighlightableInterface;
+class IInteractableInterface;
 
 /**
  * 
@@ -69,7 +69,7 @@ private:
 
 #pragma endregion INPUT
 
-#pragma region HIGHLIGHTABLE
+#pragma region INTERACTABLE
 
 private:
 	
@@ -79,11 +79,11 @@ private:
 private:
 
 	/** Last Actor that was highlighted */
-	IHighlightableInterface* LastHighlightedActor;
+	IInteractableInterface* LastHighlightedActor;
 
 	/** Current Actor that is highlighted */
-	IHighlightableInterface* CurrentHighlightedActor;
+	IInteractableInterface* CurrentHighlightedActor;
 
-#pragma endregion HIGHLIGHTABLE
+#pragma endregion INTERACTABLE
 	
 };

@@ -10,6 +10,7 @@
 UENUM()
 enum class EEffectRemovalPolicy : uint8
 {
+	RemoveDefault,
 	RemoveOnEndOverlap,
 	DoNotRemove
 };

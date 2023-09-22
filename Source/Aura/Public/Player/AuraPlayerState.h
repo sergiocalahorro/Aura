@@ -30,6 +30,36 @@ public:
 
 #pragma endregion INITIALIZATION
 
+#pragma region OVERRIDES
+
+public:
+
+	/** Returns the properties used for network replication, this needs to be overridden by all actor classes with native replicated properties */
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+#pragma endregion OVERRIDES
+
+#pragma region CORE
+
+public:
+
+	/** Get level */
+	int32 GetCurrentLevel() const;
+
+private:
+
+	/** Level's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_Level(int32 OldLevel);
+
+private:
+
+	/** Player's level */
+	UPROPERTY(VisibleDefaultsOnly, ReplicatedUsing = OnRep_Level, Category = "AA|Core")
+	int32 Level = 1;
+
+#pragma endregion CORE
+
 #pragma region GAS
 
 public:
@@ -43,7 +73,7 @@ public:
 protected:
 	
 	/** Ability system component */
-	UPROPERTY()
+	UPROPERTY(VisibleDefaultsOnly, Category = "AA|GAS")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	
 	/** Attribute set */

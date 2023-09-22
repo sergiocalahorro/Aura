@@ -7,7 +7,7 @@
 #include "EnhancedInputComponent.h"
 
 // Headers - Aura
-#include "Interaction/HighlightableInterface.h"
+#include "Interaction/InteractableInterface.h"
 
 #pragma region INITIALIZATION
 
@@ -82,7 +82,7 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 #pragma endregion INPUT
 
-#pragma region HIGHLIGHTABLE
+#pragma region INTERACTABLE
 
 /** Trace hit under cursor to highlight Actors */
 void AAuraPlayerController::CursorTrace(float DeltaTime)
@@ -96,7 +96,7 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 	}
 
 	LastHighlightedActor = CurrentHighlightedActor;
-	CurrentHighlightedActor = Cast<IHighlightableInterface>(CursorHit.GetActor());
+	CurrentHighlightedActor = Cast<IInteractableInterface>(CursorHit.GetActor());
 
 	if (LastHighlightedActor)
 	{
@@ -125,4 +125,4 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 	}
 }
 
-#pragma endregion HIGHLIGHTABLE
+#pragma endregion INTERACTABLE

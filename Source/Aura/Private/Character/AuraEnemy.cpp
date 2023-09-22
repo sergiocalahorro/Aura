@@ -41,7 +41,17 @@ void AAuraEnemy::BeginPlay()
 
 #pragma endregion OVERRIDES
 
-#pragma region HIGHLIGHTABLE
+#pragma region COMBAT
+
+/** Get level */
+int32 AAuraEnemy::GetCurrentLevel() const
+{
+	return Level;
+}
+
+#pragma endregion COMBAT
+
+#pragma region INTERACTABLE
 
 /** Functionality performed when Actor should be highlighted (on hovered) */
 void AAuraEnemy::HighlightActor()
@@ -61,7 +71,7 @@ void AAuraEnemy::UnHighlightActor()
 	Weapon->SetRenderCustomDepth(false);
 }
 
-#pragma endregion HIGHLIGHTABLE
+#pragma endregion INTERACTABLE
 
 #pragma region GAS
 

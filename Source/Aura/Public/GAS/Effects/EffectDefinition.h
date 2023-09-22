@@ -24,13 +24,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> EffectClass;
 
+	/** Effect's level */
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 1.f, UIMin = 1.f, ClampMax = 10.f, UIMax = 10.f, Delta = 1.f))
+	float EffectLevel = 1.f;
+
 	/** Policy used for applying the effect */
 	UPROPERTY(EditAnywhere)
-	EEffectApplicationPolicy EffectApplicationPolicy = EEffectApplicationPolicy::ApplyOnBeginOverlap;
+	EEffectApplicationPolicy EffectApplicationPolicy;
 
 	/** Policy used for removing the effect */
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "EffectApplicationPolicy != EEffectApplicationPolicy::DoNotApply", EditConditionHides))
-	EEffectRemovalPolicy EffectRemovalPolicy = EEffectRemovalPolicy::DoNotRemove;
+	EEffectRemovalPolicy EffectRemovalPolicy;
 
 	/** Effect's stacks to remove (if the value is set to -1, then all stacks will be removed) */
 	UPROPERTY(EditAnywhere, meta = (ClampMin = -1, UIMin = -1, ClampMax = 1, UIMax = 1, EditCondition = "EffectApplicationPolicy != EEffectApplicationPolicy::DoNotApply", EditConditionHides))

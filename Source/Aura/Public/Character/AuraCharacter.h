@@ -59,6 +59,15 @@ private:
 
 #pragma endregion COMPONENTS
 
+#pragma region COMBAT
+
+public:
+
+	/** Get level */
+	virtual int32 GetCurrentLevel() const override; 
+
+#pragma endregion COMBAT
+
 #pragma region GAS
 
 protected:

@@ -10,6 +10,7 @@
 UENUM()
 enum class EEffectApplicationPolicy : uint8
 {
+	ApplyDefault,
 	ApplyOnBeginOverlap,
 	ApplyOnEndOverlap,
 	DoNotApply

@@ -55,19 +55,89 @@ public:
 
 #pragma region ATTRIBUTES
 
+#pragma region ATTRIBUTES_PRIMARY
+
 public:
 
-	/** Health's Replication Notify Callback */
+	/** Strength's Replication Notify Callback */
 	UFUNCTION()
-	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
+	void OnRep_Strength(const FGameplayAttributeData& OldStrength) const;
+
+	/** Intelligence's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_Intelligence(const FGameplayAttributeData& OldIntelligence) const;
+
+	/** Resilience's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_Resilience(const FGameplayAttributeData& OldResilience) const;
+
+	/** Vigor's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_Vigor(const FGameplayAttributeData& OldVigor) const;
+
+public:
+
+	/** Strength Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Strength, Category = "AA|Attributes|Primary")
+	FGameplayAttributeData Strength;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Strength)
+
+	/** Intelligence Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Intelligence, Category = "AA|Attributes|Primary")
+	FGameplayAttributeData Intelligence;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Intelligence)
+
+	/** Resilience Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Resilience, Category = "AA|Attributes|Primary")
+	FGameplayAttributeData Resilience;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Resilience)
+
+	/** Vigor Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Vigor, Category = "AA|Attributes|Primary")
+	FGameplayAttributeData Vigor;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Vigor)
+
+#pragma endregion ATTRIBUTES_PRIMARY
+
+#pragma region ATTRIBUTES_SECONDARY
+
+public:
+
+	/** Armor's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
+
+	/** ArmorPenetration's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_ArmorPenetration(const FGameplayAttributeData& OldArmorPenetration) const;
+
+	/** BlockChance's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_BlockChance(const FGameplayAttributeData& OldBlockChance) const;
+
+	/** CriticalHitChance's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_CriticalHitChance(const FGameplayAttributeData& OldCriticalHitChance) const;
+
+	/** CriticalHitDamage's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_CriticalHitDamage(const FGameplayAttributeData& OldCriticalHitDamage) const;
+
+	/** CriticalHitResistance's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_CriticalHitResistance(const FGameplayAttributeData& OldCriticalHitResistance) const;
+
+	/** HealthRegeneration's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_HealthRegeneration(const FGameplayAttributeData& OldHealthRegeneration) const;
+
+	/** ManaRegeneration's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_ManaRegeneration(const FGameplayAttributeData& OldManaRegeneration) const;
 
 	/** MaxHealth's Replication Notify Callback */
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
-
-	/** Mana's Replication Notify Callback */
-	UFUNCTION()
-	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
 
 	/** MaxMana's Replication Notify Callback */
 	UFUNCTION()
@@ -75,25 +145,83 @@ public:
 
 public:
 
-	/** Health Attribute */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "AA|Vital|Health")
-	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Health)
+	/** Armor Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData Armor;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Armor)
 
+	/** ArmorPenetration Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ArmorPenetration, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData ArmorPenetration;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ArmorPenetration)
+
+	/** BlockChance Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_BlockChance, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData BlockChance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, BlockChance)
+
+	/** CriticalHitChance Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitChance, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData CriticalHitChance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CriticalHitChance)
+
+	/** CriticalHitDamage Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitDamage, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData CriticalHitDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CriticalHitDamage)
+
+	/** CriticalHitResistance Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_CriticalHitResistance, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData CriticalHitResistance;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, CriticalHitResistance)
+
+	/** HealthRegeneration Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_HealthRegeneration, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData HealthRegeneration;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, HealthRegeneration)
+
+	/** ManaRegeneration Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ManaRegeneration, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData ManaRegeneration;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ManaRegeneration)
+	
 	/** MaxHealth Attribute */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "AA|Vital|Health")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "AA|Attributes|Secondary")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxHealth)
 
+	/** MaxMana Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "AA|Attributes|Secondary")
+	FGameplayAttributeData MaxMana;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana)
+
+#pragma endregion ATTRIBUTES_SECONDARY
+
+#pragma region ATTRIBUTES_VITAL
+
+public:
+
+	/** Health's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
+	
+	/** Mana's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
+
+public:
+
+	/** Health Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "AA|Attributes|Vital")
+	FGameplayAttributeData Health;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Health)
+
 	/** Mana Attribute */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "AA|Vital|Mana")
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "AA|Attributes|Vital")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, Mana)
 
-	/** MaxMana Attribute */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "AA|Vital|Mana")
-	FGameplayAttributeData MaxMana;
-	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, MaxMana)
+#pragma endregion ATTRIBUTES_VITAL
 
 #pragma endregion ATTRIBUTES
 

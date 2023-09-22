@@ -3,7 +3,11 @@
 #include "Character/AuraBaseCharacter.h"
 
 // Headers - Unreal Engine
+#include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+
+// Headers - Aura
+#include "GAS/Effects/EffectDefinition.h"
 
 #pragma region INITIALIZATION
 
@@ -45,6 +49,32 @@ UAbilitySystemComponent* AAuraBaseCharacter::GetAbilitySystemComponent() const
 UAttributeSet* AAuraBaseCharacter::GetAttributeSet() const
 {
 	return AttributeSet;
+}
+
+/** Apply given effect to itself */
+FActiveGameplayEffectHandle AAuraBaseCharacter::ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const
+{
+	check(AbilitySystemComponent);
+	
+	const FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+	const FGameplayEffectSpecHandle EffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, Level, EffectContextHandle);
+	const FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+
+	return ActiveEffectHandle;
+}
+
+/** Apply given effect definitions to itself */
+void AAuraBaseCharacter::ApplyEffectDefinitionsToSelf(const TArray<FEffectDefinition>& Effects) const
+{
+	for (const FEffectDefinition& EffectDefinition : Effects)
+	{
+		if (EffectDefinition.EffectApplicationPolicy != EEffectApplicationPolicy::ApplyDefault)
+		{
+			continue;
+		}
+
+		ApplyEffectToSelf(EffectDefinition.EffectClass, EffectDefinition.EffectLevel);
+	}
 }
 
 #pragma endregion GAS

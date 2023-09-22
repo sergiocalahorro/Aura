@@ -73,6 +73,17 @@ void AAuraCharacter::BeginPlay()
 
 #pragma endregion OVERRIDES
 
+#pragma region COMBAT
+
+/** Get level */
+int32 AAuraCharacter::GetCurrentLevel() const
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	return AuraPlayerState->GetCurrentLevel();
+}
+
+#pragma endregion COMBAT
+
 #pragma region GAS
 
 /** Initialize ability actor info */
@@ -91,6 +102,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 			AuraHUD->InitOverlay(AuraPlayerController, AuraPlayerState, AbilitySystemComponent, AttributeSet);
 		}
 	}
+
+	ApplyEffectDefinitionsToSelf(DefaultEffects);
 }
 
 #pragma endregion GAS

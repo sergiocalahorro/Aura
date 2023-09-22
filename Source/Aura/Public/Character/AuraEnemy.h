@@ -7,12 +7,12 @@
 
 // Headers - Aura
 #include "AuraBaseCharacter.h"
-#include "Interaction/HighlightableInterface.h"
+#include "Interaction/InteractableInterface.h"
 
 #include "AuraEnemy.generated.h"
 
 UCLASS(Abstract)
-class AURA_API AAuraEnemy : public AAuraBaseCharacter, public IHighlightableInterface
+class AURA_API AAuraEnemy : public AAuraBaseCharacter, public IInteractableInterface
 {
 	GENERATED_BODY()
 
@@ -34,7 +34,26 @@ protected:
 
 #pragma endregion OVERRIDES
 
-#pragma region HIGHLIGHTABLE
+#pragma region CORE
+
+private:
+	
+	/** Enemy level */
+	UPROPERTY(EditAnywhere, Category = "AA|Core")
+	int32 Level = 1;
+
+#pragma endregion CORE
+
+#pragma region COMBAT
+
+public:
+
+	/** Get level */
+	virtual int32 GetCurrentLevel() const override; 
+
+#pragma endregion COMBAT
+
+#pragma region INTERACTABLE
 
 public:
 
@@ -44,7 +63,7 @@ public:
 	/** Functionality performed when Actor should be un-highlighted (stopped being hovered) */
 	virtual void UnHighlightActor() override;
 
-#pragma endregion HIGHLIGHTABLE
+#pragma endregion INTERACTABLE
 
 #pragma region GAS
 

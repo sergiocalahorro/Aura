@@ -57,7 +57,7 @@ protected:
 	
 protected:
 
-	/** Actor Level used when applying effects */
+	/** Actor Level used when applying effects (this value overrides the levels set individually on the effects) */
 	UPROPERTY(EditAnywhere, Category = "AA|Effect", meta = (ClampMin = 1.f, UIMin = 1.f, ClampMax = 10.f, UIMax = 10.f, Delta = 1.f))
 	float ActorLevel = 1.f;
 

@@ -7,14 +7,22 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 
+// Headers - Aura
+#include "Interaction/CombatInterface.h"
+
 #include "AuraBaseCharacter.generated.h"
 
 // Forward declarations - Unreal Engine
 class UAbilitySystemComponent;
 class UAttributeSet;
+class UGameplayEffect;
+
+// Forward declarations - Aura
+struct FEffectDefinition;
+struct FActiveGameplayEffectHandle;
 
 UCLASS(Abstract)
-class AURA_API AAuraBaseCharacter : public ACharacter, public IAbilitySystemInterface
+class AURA_API AAuraBaseCharacter : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -60,8 +68,20 @@ protected:
 
 	/** Initialize ability actor info */
 	virtual void InitAbilityActorInfo() PURE_VIRTUAL(AAuraBaseCharacter::InitAbilityActorInfo);
+	
+	/** Apply given effect to itself */
+	FActiveGameplayEffectHandle ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const;
+
+	/** Apply given effect definitions to itself */
+	void ApplyEffectDefinitionsToSelf(const TArray<FEffectDefinition>& Effects) const;
 
 protected:
+
+	/** Default effects to apply when ability system is initialized
+	 *  NOTE: When setting effects to initialize attributes, make sure Primary attributes are set BEFORE Secondary ones,
+	 *		  as they depend on them */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|GAS|Default")
+	TArray<FEffectDefinition> DefaultEffects;
 	
 	/** Ability system component */
 	UPROPERTY()

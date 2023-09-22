@@ -2,6 +2,9 @@
 
 #include "Player/AuraPlayerState.h"
 
+// Headers - Unreal Engine
+#include "Net/UnrealNetwork.h"
+
 // Headers - Aura
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
@@ -22,6 +25,34 @@ AAuraPlayerState::AAuraPlayerState()
 }
 
 #pragma endregion INITIALIZATION
+
+#pragma region OVERRIDES
+
+/** Returns the properties used for network replication, this needs to be overridden by all actor classes with native replicated properties */
+void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAuraPlayerState, Level);
+}
+
+#pragma endregion OVERRIDES
+
+#pragma region CORE
+
+/** Get level */
+int32 AAuraPlayerState::GetCurrentLevel() const
+{
+	return Level;
+}
+
+/** Level's Replication Notify Callback */
+void AAuraPlayerState::OnRep_Level(int32 OldLevel)
+{
+	
+}
+
+#pragma endregion CORE
 
 #pragma region GAS
 
