@@ -8,6 +8,8 @@
 
 #include "AuraAbilitySystemComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagsSignature, const FGameplayTagContainer&);
+
 UCLASS()
 class AURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
 {
@@ -23,6 +25,11 @@ public:
 #pragma endregion CORE
 
 #pragma region EFFECTS
+
+public:
+
+	/** Delegate called when an effect is applied, to broadcast its asset tags */
+	FEffectAssetTagsSignature EffectAssetTagsDelegate;
 	
 protected:
 

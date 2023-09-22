@@ -17,7 +17,9 @@ void UAuraAbilitySystemComponent::AbilityActorInfoSet()
 /** Callback called when a Gameplay Effect is applied */
 void UAuraAbilitySystemComponent::EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 8.f, FColor::Blue, FString("Effect applied!"));
+	FGameplayTagContainer TagContainer;
+	EffectSpec.GetAllAssetTags(TagContainer);
+	EffectAssetTagsDelegate.Broadcast(TagContainer);
 }
 
 #pragma endregion EFFECTS
