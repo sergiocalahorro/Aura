@@ -56,7 +56,8 @@ FActiveGameplayEffectHandle AAuraBaseCharacter::ApplyEffectToSelf(const TSubclas
 {
 	check(AbilitySystemComponent);
 	
-	const FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+	FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(this);
 	const FGameplayEffectSpecHandle EffectSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, Level, EffectContextHandle);
 	const FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
 
@@ -68,12 +69,10 @@ void AAuraBaseCharacter::ApplyEffectDefinitionsToSelf(const TArray<FEffectDefini
 {
 	for (const FEffectDefinition& EffectDefinition : Effects)
 	{
-		if (EffectDefinition.EffectApplicationPolicy != EEffectApplicationPolicy::ApplyDefault)
+		if (EffectDefinition.EffectApplicationPolicy == EEffectApplicationPolicy::ApplyDefault)
 		{
-			continue;
+			ApplyEffectToSelf(EffectDefinition.EffectClass, EffectDefinition.EffectLevel);
 		}
-
-		ApplyEffectToSelf(EffectDefinition.EffectClass, EffectDefinition.EffectLevel);
 	}
 }
 

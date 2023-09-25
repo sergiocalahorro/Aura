@@ -15,8 +15,7 @@
 /** Sets default values for this object's properties */
 UAuraAttributeSet::UAuraAttributeSet()
 {
-	InitHealth(50.f);
-	InitMana(25.f);
+	
 }
 	
 #pragma endregion INITIALIZATION
