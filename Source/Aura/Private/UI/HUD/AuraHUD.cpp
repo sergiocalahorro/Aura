@@ -9,6 +9,7 @@
 #include "UI/Widget/AuraUserWidget.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "UI/WidgetController/WidgetControllerParams.h"
+#include "UI/WidgetController/AttributeMenuWidgetController.h"
 
 #pragma region OVERLAY
 
@@ -42,3 +43,20 @@ UOverlayWidgetController* AAuraHUD::GetOverlayWidgetController(const FWidgetCont
 }
 
 #pragma endregion OVERLAY
+
+#pragma region ATTRIBUTE_MENU
+
+/** Get Attribute Menu Widget Controller */
+UAttributeMenuWidgetController* AAuraHUD::GetAttributeMenuWidgetController(const FWidgetControllerParams& WidgetControllerParams)
+{
+	if (!AttributeMenuWidgetController)
+	{
+		AttributeMenuWidgetController = NewObject<UAttributeMenuWidgetController>(this, AttributeMenuWidgetControllerClass);
+		AttributeMenuWidgetController->SetWidgetControllerParams(WidgetControllerParams);
+		AttributeMenuWidgetController->BindCallbacksToDelegates();
+	}
+
+	return AttributeMenuWidgetController;
+}
+
+#pragma endregion ATTRIBUTE_MENU

@@ -10,12 +10,33 @@
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
+// Headers - Aura
+#include "AuraGameplayTags.h"
+
 #pragma region INITIALIZATION
 
 /** Sets default values for this object's properties */
 UAuraAttributeSet::UAuraAttributeSet()
 {
+	const FAuraGameplayTags& GameplayTags = FAuraGameplayTags::Get();
+
+	// Primary Attributes
+	TaggedAttributes.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Primary_Resilience, GetResilienceAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Primary_Vigor, GetVigorAttribute);
 	
+	// Secondary Attributes
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_BlockChance, GetBlockChanceAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
+	TaggedAttributes.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
 }
 	
 #pragma endregion INITIALIZATION

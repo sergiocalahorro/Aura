@@ -15,6 +15,7 @@ class UAbilitySystemComponent;
 // Forward declarations - Aura
 class UAuraUserWidget;
 class UOverlayWidgetController;
+class UAttributeMenuWidgetController;
 struct FWidgetControllerParams;
 
 /**
@@ -29,10 +30,10 @@ class AURA_API AAuraHUD : public AHUD
 
 public:
 
-	/** Initialize overlay */
+	/** Initialize Overlay */
 	void InitOverlay(APlayerController* InPlayerController, APlayerState* InPlayerState, UAbilitySystemComponent* InAbilitySystemComponent, UAttributeSet* InAttributeSet);
 
-	/** Get overlay widget controller */
+	/** Get Overlay Widget Controller */
 	UOverlayWidgetController* GetOverlayWidgetController(const FWidgetControllerParams& WidgetControllerParams);
 
 private:
@@ -54,5 +55,24 @@ private:
 	TObjectPtr<UOverlayWidgetController> OverlayWidgetController;
 
 #pragma endregion OVERLAY
+
+#pragma region ATTRIBUTE_MENU
+
+public:
+	
+	/** Get Attribute Menu Widget Controller */
+	UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const FWidgetControllerParams& WidgetControllerParams);
+
+private:
+
+	/** Attribute Menu Controller class */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|AttributeMenu")
+	TSubclassOf<UAttributeMenuWidgetController> AttributeMenuWidgetControllerClass;
+	
+	/** Attribute Menu Widget Controller */
+	UPROPERTY()
+	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
+
+#pragma endregion ATTRIBUTE_MENU
 	
 };

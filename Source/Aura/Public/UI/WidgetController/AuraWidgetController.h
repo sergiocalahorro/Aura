@@ -8,10 +8,12 @@
 
 #include "AuraWidgetController.generated.h"
 
-struct FWidgetControllerParams;
 // Forward declarations - Unreal Engine
 class UAttributeSet;
 class UAbilitySystemComponent;
+
+// Forward declarations - Aura
+struct FWidgetControllerParams;
 
 /**
  * 
@@ -30,6 +32,7 @@ public:
 	void SetWidgetControllerParams(const FWidgetControllerParams& WidgetControllerParams);
 
 	/** Broadcast initial values */
+	UFUNCTION(BlueprintCallable)
 	virtual void BroadcastInitialValues() PURE_VIRTUAL(UAuraWidgetController::BroadcastInitialValues);
 
 	/** Bind callbacks to delegates */

@@ -21,6 +21,9 @@ struct FGameplayEffectModCallbackData;
 		GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 		GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+template <class T>
+using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
+
 /**
  * 
  */
@@ -54,6 +57,11 @@ public:
 #pragma endregion OVERRIDES
 
 #pragma region ATTRIBUTES
+
+public:
+
+	/** Map that links Gameplay Tags to pointers to Attributes' getters */
+	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TaggedAttributes;
 
 #pragma region ATTRIBUTES_PRIMARY
 
