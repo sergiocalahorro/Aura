@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 
 // Headers - Aura
+#include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Effects/EffectDefinition.h"
 
 #pragma region INITIALIZATION
@@ -74,6 +75,18 @@ void AAuraBaseCharacter::ApplyEffectDefinitionsToSelf(const TArray<FEffectDefini
 			ApplyEffectToSelf(EffectDefinition.EffectClass, EffectDefinition.EffectLevel);
 		}
 	}
+}
+
+/** Grant abilities to the character */
+void AAuraBaseCharacter::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities)
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	AuraASC->AddAbilities(Abilities);
 }
 
 #pragma endregion GAS

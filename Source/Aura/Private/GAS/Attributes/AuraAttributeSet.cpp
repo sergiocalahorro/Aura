@@ -11,7 +11,7 @@
 #include "Net/UnrealNetwork.h"
 
 // Headers - Aura
-#include "AuraGameplayTags.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 #pragma region INITIALIZATION
 

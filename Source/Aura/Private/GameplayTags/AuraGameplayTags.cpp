@@ -1,14 +1,27 @@
 ﻿// Copyright Sergio Calahorro
 
-#include "AuraGameplayTags.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 // Headers - Unreal Engine
 #include "GameplayTagsManager.h"
+
+#pragma region CORE
 
 FAuraGameplayTags FAuraGameplayTags::GameplayTags;
 
 /** Initialize native gameplay tags */
 void FAuraGameplayTags::InitializeNativeGameplayTags()
+{
+	InitializeNativeAttributesGameplayTags();
+	InitializeNativeInputsGameplayTags();
+}
+
+#pragma endregion CORE
+
+#pragma region ATTRIBUTES
+
+/** Initialize native gameplay tags for attributes */
+void FAuraGameplayTags::InitializeNativeAttributesGameplayTags()
 {
 	// Primary Attributes
 	GameplayTags.Attributes_Primary_Strength = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Primary.Strength"), FString("Increases physical damage"));
@@ -28,3 +41,23 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attributes_Secondary_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxHealth"), FString("Maximum amount of Health obtainable"));
 	GameplayTags.Attributes_Secondary_MaxMana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxMana"), FString("Maximum amount of Mana obtainable"));
 }
+
+#pragma endregion ATTRIBUTES
+
+#pragma region INPUT
+
+/** Initialize native gameplay tags for inputs */
+void FAuraGameplayTags::InitializeNativeInputsGameplayTags()
+{
+	// Mouse input
+	GameplayTags.InputTag_LMB = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("InputTag.LMB"), FString("Input Tag for Left Mouse Button"));
+	GameplayTags.InputTag_RMB = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("InputTag.RMB"), FString("Input Tag for Right Mouse Button"));
+
+	// Keyboard input
+	GameplayTags.InputTag_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("InputTag.1"), FString("Input Tag for 1 key"));
+	GameplayTags.InputTag_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("InputTag.2"), FString("Input Tag for 2 key"));
+	GameplayTags.InputTag_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("InputTag.3"), FString("Input Tag for 3 key"));
+	GameplayTags.InputTag_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("InputTag.4"), FString("Input Tag for 4 key"));
+}
+
+#pragma endregion INPUT

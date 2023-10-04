@@ -5,8 +5,11 @@
 // Headers - Unreal Engine
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 // Headers - Aura
+#include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
+#include "Input/AuraInputComponent.h"
 #include "Interaction/InteractableInterface.h"
 
 #pragma region INITIALIZATION
@@ -55,8 +58,9 @@ void AAuraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
-	EnhancedInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
+	AuraInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	AuraInputComponent->BindAbilityActions(InputConfig, this, &AAuraPlayerController::AbilityInputTagPressed, &AAuraPlayerController::AbilityInputTagReleased, &AAuraPlayerController::AbilityInputTagHeld);
 }
 
 #pragma endregion OVERRIDES
@@ -78,6 +82,34 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
+}
+
+/** Callback for Input Pressed */
+void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	
+}
+
+/** Callback for Input Released */
+void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (!GetAuraAbilitySystemComponent())
+	{
+		return;
+	}
+	
+	GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+}
+
+/** Callback for Input Held */
+void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
+{
+	if (!GetAuraAbilitySystemComponent())
+	{
+		return;
+	}
+	
+	GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
 }
 
 #pragma endregion INPUT
@@ -126,3 +158,18 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 }
 
 #pragma endregion INTERACTABLE
+
+#pragma region GAS
+
+/** Get Ability system component */
+UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponent()
+{
+	if (!AuraAbilitySystemComponent)
+	{
+		AuraAbilitySystemComponent = CastChecked<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+	}
+	
+	return AuraAbilitySystemComponent;
+}
+
+#pragma endregion GAS

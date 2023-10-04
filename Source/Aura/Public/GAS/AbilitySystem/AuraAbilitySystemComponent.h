@@ -39,4 +39,19 @@ protected:
 
 #pragma endregion EFFECTS
 
+#pragma region ABILITIES
+
+public:
+
+	/** Add given list of abilities */
+	void AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
+
+	/** Activate ability by input tag when released */
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+
+	/** Activate ability by input tag when held */
+	void AbilityInputTagHeld(const FGameplayTag& InputTag);
+
+#pragma endregion ABILITIES
+
 };

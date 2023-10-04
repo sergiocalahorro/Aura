@@ -1,9 +1,9 @@
 ﻿// Copyright Sergio Calahorro
 
-#include "AuraAssetManager.h"
+#include "AssetManager/AuraAssetManager.h"
 
 // Headers - Aura
-#include "AuraGameplayTags.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 #pragma region INITIALIZATION
 

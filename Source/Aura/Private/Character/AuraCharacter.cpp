@@ -55,6 +55,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
+	AddCharacterAbilities(StartupAbilities);
 }
 
 /** PlayerState Replication Notification Callback. Only called on clients */

@@ -18,7 +18,7 @@ FAuraAttributeInfo UAttributesInfo::FindAttributeInfoForTag(const FGameplayTag& 
 
 	if (bLogNotFound)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UAttributeInfo::FindAttributeInfoForTag - Can't find Info for AttributeTag [%s] on AttributeInfo [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
+		UE_LOG(LogTemp, Error, TEXT("UAttributeInfo::FindAttributeInfoForTag - Can't find Info for AttributeTag [%s] on AttributesInfo [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
 	}
 
 	return FAuraAttributeInfo();

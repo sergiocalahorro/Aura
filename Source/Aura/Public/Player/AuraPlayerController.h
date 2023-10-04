@@ -12,9 +12,12 @@
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+struct FGameplayTag;
 
 // Forward declarations - Aura
 class IInteractableInterface;
+class UAuraInputConfig;
+class UAuraAbilitySystemComponent;
 
 /**
  * 
@@ -57,6 +60,15 @@ private:
 	/** Move player */
 	void Move(const FInputActionValue& InputActionValue);
 
+	/** Callback for Input Pressed */
+	void AbilityInputTagPressed(FGameplayTag InputTag);
+
+	/** Callback for Input Released */
+	void AbilityInputTagReleased(FGameplayTag InputTag);
+
+	/** Callback for Input Held */
+	void AbilityInputTagHeld(FGameplayTag InputTag);
+
 private:
 
 	/** Input Mapping Context */
@@ -66,6 +78,10 @@ private:
 	/** Input Action for Movement */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
 	TObjectPtr<UInputAction> MoveInputAction;
+
+	/** Input Config */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
+	TObjectPtr<UAuraInputConfig> InputConfig;
 
 #pragma endregion INPUT
 
@@ -85,5 +101,20 @@ private:
 	IInteractableInterface* CurrentHighlightedActor;
 
 #pragma endregion INTERACTABLE
+
+#pragma region GAS
+
+public:
+
+	/** Get Ability system component */
+	UAuraAbilitySystemComponent* GetAuraAbilitySystemComponent();
+
+private:
+
+	/** Ability system component */
+	UPROPERTY()
+	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
+
+#pragma endregion GAS
 	
 };

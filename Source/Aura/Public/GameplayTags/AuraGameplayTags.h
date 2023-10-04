@@ -11,7 +11,9 @@
  */
 struct FAuraGameplayTags
 {
-	
+
+#pragma region CORE
+
 public:
 
 	/** Get instance */
@@ -28,7 +30,14 @@ private:
 	/** Gameplay tags' instance */
     static FAuraGameplayTags GameplayTags;
 
+#pragma endregion CORE
+
 #pragma region ATTRIBUTES
+
+private:
+
+	/** Initialize native gameplay tags for attributes */
+	static void InitializeNativeAttributesGameplayTags();
 
 #pragma region ATTRIBUTES_PRIMARY
 
@@ -85,4 +94,33 @@ public:
 #pragma endregion ATTRIBUTES_SECONDARY
 
 #pragma endregion ATTRIBUTES
+
+#pragma region INPUT
+
+private:
+	
+	/** Initialize native gameplay tags for inputs */
+	static void InitializeNativeInputsGameplayTags();
+
+public:
+
+	/** Input LMB */
+	FGameplayTag InputTag_LMB;
+	
+	/** Input RMB */
+	FGameplayTag InputTag_RMB;
+
+	/** Input 1 key */
+	FGameplayTag InputTag_1;
+
+	/** Input 2 key */
+	FGameplayTag InputTag_2;
+
+	/** Input 3 key */
+	FGameplayTag InputTag_3;
+
+	/** Input 4 key */
+	FGameplayTag InputTag_4;
+
+#pragma endregion INPUT
 };
