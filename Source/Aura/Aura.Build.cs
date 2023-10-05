@@ -23,7 +23,8 @@ public class Aura : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"GameplayTasks",
-			"GameplayTags"
+			"GameplayTags",
+			"NavigationSystem"
 		});
 
 		// Uncomment if you are using Slate UI

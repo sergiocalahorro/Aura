@@ -6,8 +6,12 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Components/SplineComponent.h"
+#include "NavigationSystem.h"
 
 // Headers - Aura
+#include "NavigationPath.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/InteractableInterface.h"
@@ -18,11 +22,21 @@
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
+
+	Spline = CreateDefaultSubobject<USplineComponent>(TEXT("Spline"));
 }
 
 #pragma endregion INITIALIZATION
 
 #pragma region OVERRIDES
+
+/** Called on the client to do local pawn setup after possession, before calling ServerAcknowledgePossession */
+void AAuraPlayerController::AcknowledgePossession(APawn* PossessedPawn)
+{
+	Super::AcknowledgePossession(PossessedPawn);
+
+	ControlledPawn = PossessedPawn;
+}
 
 /** Processes player input (immediately after PlayerInput gets ticked) and calls UpdateRotation() */
 void AAuraPlayerController::PlayerTick(float DeltaTime)
@@ -30,6 +44,7 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 	Super::PlayerTick(DeltaTime);
 
 	CursorTrace(DeltaTime);
+	AutoRun();
 }
 
 /** Called when the game starts or when spawned */
@@ -76,43 +91,139 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	if (APawn* ControlledPawn = GetPawn<APawn>())
-	{
-		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
-	}
+	
+	ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+	ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 }
 
 /** Callback for Input Pressed */
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		bTargeting = CurrentHighlightedActor ? true : false;
+		bAutoRunning = false;
+	}
 }
 
 /** Callback for Input Released */
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (!GetAuraAbilitySystemComponent())
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		return;
+		if (bTargeting)
+		{
+			if (GetAuraAbilitySystemComponent())
+			{
+				GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+			}
+		}
+		else
+		{
+			StartAutoRun();
+		}
 	}
-	
-	GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+	else
+	{
+		if (GetAuraAbilitySystemComponent())
+		{
+			GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+		}
+	}
 }
 
 /** Callback for Input Held */
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (!GetAuraAbilitySystemComponent())
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		if (bTargeting)
+		{
+			if (GetAuraAbilitySystemComponent())
+			{
+				GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+			}
+		}
+		else
+		{
+			FollowMouseCursor();
+		}
+	}
+	else
+	{
+		if (GetAuraAbilitySystemComponent())
+		{
+			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
+	}
+}
+
+#pragma endregion INPUT
+
+#pragma region MOVEMENT
+
+/** Generate path to the location under the mouse cursor, after a short press occured */
+void AAuraPlayerController::StartAutoRun()
+{
+	if (FollowTime <= ShortPressThreshold)
+	{
+		if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+		{
+			Spline->ClearSplinePoints();
+			for (const FVector& PathPoint : NavPath->PathPoints)
+			{
+				Spline->AddSplinePoint(PathPoint, ESplineCoordinateSpace::World);
+				DrawDebugSphere(GetWorld(), PathPoint, 8.f, 8, FColor::Green, false, 5.f);
+			}
+
+			if (!NavPath->PathPoints.IsEmpty())
+			{
+				CachedDestination = NavPath->PathPoints.Last();
+			}
+			
+			bAutoRunning = true;
+		}
+	}
+
+	FollowTime = 0.f;
+	bTargeting = false;
+}
+
+/** Move pawn automatically following a path to the location under the mouse cursor, after a short press occured */
+void AAuraPlayerController::AutoRun()
+{
+	if (!bAutoRunning)
 	{
 		return;
 	}
 	
-	GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+	const FVector DestinationPoint = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+	const FVector DestinationDirection = Spline->FindDirectionClosestToWorldLocation(DestinationPoint, ESplineCoordinateSpace::World);
+	ControlledPawn->AddMovementInput(DestinationDirection);
+
+	const float DistanceToDestination = (DestinationPoint - CachedDestination).Length();
+	if (DistanceToDestination < AutoRunAcceptanceRadius)
+	{
+		bAutoRunning = false;
+	}
 }
 
-#pragma endregion INPUT
+/** Follow mouse cursor to move pawn */
+void AAuraPlayerController::FollowMouseCursor()
+{
+	FollowTime += GetWorld()->GetDeltaSeconds();
+			
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ECC_Visibility, false, Hit))
+	{
+		CachedDestination = Hit.ImpactPoint;
+	}
+	
+	const FVector MovementDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+	ControlledPawn->AddMovementInput(MovementDirection);
+}
+
+#pragma endregion MOVEMENT
 
 #pragma region INTERACTABLE
 
@@ -166,7 +277,7 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponen
 {
 	if (!AuraAbilitySystemComponent)
 	{
-		AuraAbilitySystemComponent = CastChecked<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
+		AuraAbilitySystemComponent = CastChecked<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ControlledPawn));
 	}
 	
 	return AuraAbilitySystemComponent;
