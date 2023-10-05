@@ -71,9 +71,6 @@ private:
 
 private:
 
-	/** Move player */
-	void Move(const FInputActionValue& InputActionValue);
-
 	/** Callback for Input Pressed */
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 
@@ -88,10 +85,6 @@ private:
 	/** Input Mapping Context */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
 	TObjectPtr<UInputMappingContext> AuraMappingContext;
-
-	/** Input Action for Movement */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
-	TObjectPtr<UInputAction> MoveInputAction;
 
 	/** Input Config */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
@@ -154,6 +147,9 @@ private:
 
 	/** Current Actor that is highlighted */
 	IInteractableInterface* CurrentHighlightedActor;
+	
+	/** Hit result containing information about the trace performed under the cursor */
+	FHitResult CursorHit;
 
 #pragma endregion INTERACTABLE
 

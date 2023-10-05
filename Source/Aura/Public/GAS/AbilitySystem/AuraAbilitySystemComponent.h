@@ -34,8 +34,8 @@ public:
 protected:
 
 	/** Callback called when a Gameplay Effect is applied */
-	UFUNCTION()
-	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle);
+	UFUNCTION(Client, Reliable)
+	void ClientEffectApplied(UAbilitySystemComponent* AbilitySystemComponent, const FGameplayEffectSpec& EffectSpec, FActiveGameplayEffectHandle EffectHandle);
 
 #pragma endregion EFFECTS
 

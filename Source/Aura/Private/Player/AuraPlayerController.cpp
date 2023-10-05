@@ -74,27 +74,12 @@ void AAuraPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
-	AuraInputComponent->BindAction(MoveInputAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &AAuraPlayerController::AbilityInputTagPressed, &AAuraPlayerController::AbilityInputTagReleased, &AAuraPlayerController::AbilityInputTagHeld);
 }
 
 #pragma endregion OVERRIDES
 
 #pragma region INPUT
-
-/** Move player */
-void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
-{
-	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
-
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	
-	ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-	ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
-}
 
 /** Callback for Input Pressed */
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
@@ -173,7 +158,6 @@ void AAuraPlayerController::StartAutoRun()
 			for (const FVector& PathPoint : NavPath->PathPoints)
 			{
 				Spline->AddSplinePoint(PathPoint, ESplineCoordinateSpace::World);
-				DrawDebugSphere(GetWorld(), PathPoint, 8.f, 8, FColor::Green, false, 5.f);
 			}
 
 			if (!NavPath->PathPoints.IsEmpty())
@@ -212,11 +196,9 @@ void AAuraPlayerController::AutoRun()
 void AAuraPlayerController::FollowMouseCursor()
 {
 	FollowTime += GetWorld()->GetDeltaSeconds();
-			
-	FHitResult Hit;
-	if (GetHitResultUnderCursor(ECC_Visibility, false, Hit))
+	if (CursorHit.bBlockingHit)
 	{
-		CachedDestination = Hit.ImpactPoint;
+		CachedDestination = CursorHit.ImpactPoint;
 	}
 	
 	const FVector MovementDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
@@ -230,9 +212,7 @@ void AAuraPlayerController::FollowMouseCursor()
 /** Trace hit under cursor to highlight Actors */
 void AAuraPlayerController::CursorTrace(float DeltaTime)
 {
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
-
 	if (!CursorHit.bBlockingHit)
 	{
 		return;
@@ -241,28 +221,15 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 	LastHighlightedActor = CurrentHighlightedActor;
 	CurrentHighlightedActor = Cast<IInteractableInterface>(CursorHit.GetActor());
 
-	if (LastHighlightedActor)
+	if (LastHighlightedActor != CurrentHighlightedActor)
 	{
-		if (CurrentHighlightedActor)
+		if (LastHighlightedActor)
 		{
-			if (LastHighlightedActor != CurrentHighlightedActor)
-			{
-				// As the last highlighted Actor is different to the current one, un-highlight it and highlight the new one 
-				LastHighlightedActor->UnHighlightActor();
-				CurrentHighlightedActor->HighlightActor();
-			}
-		}
-		else
-		{
-			// As there isn't a highlighted Actor, un-highlight the last one 
 			LastHighlightedActor->UnHighlightActor();
 		}
-	}
-	else
-	{
+
 		if (CurrentHighlightedActor)
 		{
-			// As there isn't a highlighted Actor yet, highlight the current one 
 			CurrentHighlightedActor->HighlightActor();
 		}
 	}
