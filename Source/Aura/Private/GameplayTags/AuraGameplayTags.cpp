@@ -14,6 +14,8 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
 	InitializeNativeAttributesGameplayTags();
 	InitializeNativeInputsGameplayTags();
+	InitializeNativeEventsGameplayTags();
+	InitializeNativeMessagesGameplayTags();
 }
 
 #pragma endregion CORE
@@ -40,6 +42,10 @@ void FAuraGameplayTags::InitializeNativeAttributesGameplayTags()
 	GameplayTags.Attributes_Secondary_ManaRegeneration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.ManaRegeneration"), FString("Amount of Mana regenerated every 1 second"));
 	GameplayTags.Attributes_Secondary_MaxHealth = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxHealth"), FString("Maximum amount of Health obtainable"));
 	GameplayTags.Attributes_Secondary_MaxMana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Secondary.MaxMana"), FString("Maximum amount of Mana obtainable"));
+
+	// Primary Attributes
+	GameplayTags.Attributes_Vital_Health = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Vital.Health"), FString("Amount of damage a character can take before death"));
+	GameplayTags.Attributes_Vital_Mana = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Attributes.Vital.Mana"), FString("A resource used to cast spells"));
 }
 
 #pragma endregion ATTRIBUTES
@@ -61,3 +67,26 @@ void FAuraGameplayTags::InitializeNativeInputsGameplayTags()
 }
 
 #pragma endregion INPUT
+
+#pragma region EVENTS
+
+/** Initialize native gameplay tags for events */
+void FAuraGameplayTags::InitializeNativeEventsGameplayTags()
+{
+	GameplayTags.Event_Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.FireBolt"), FString("Event sent on the montage used for casting a Fire Bolt"));
+}
+
+#pragma endregion EVENTS
+
+#pragma region MESSAGES
+
+/** Initialize native gameplay tags for events */
+void FAuraGameplayTags::InitializeNativeMessagesGameplayTags()
+{
+	GameplayTags.Message_HealthPotion = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Message.HealthPotion"), FString("Message bound to picking up a Health Potion"));
+	GameplayTags.Message_ManaPotion = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Message.ManaPotion"), FString("Message bound to picking up a Mana Potion"));
+	GameplayTags.Message_HealthCrystal = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Message.HealthCrystal"), FString("Message bound to picking up a Health Crystal"));
+	GameplayTags.Message_ManaCrystal = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Message.ManaCrystal"), FString("Message bound to picking up a Mana Crystal"));
+}
+
+#pragma endregion MESSAGES

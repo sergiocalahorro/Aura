@@ -2,6 +2,9 @@
 
 #include "AssetManager/AuraAssetManager.h"
 
+// Headers - Unreal Engine
+#include "AbilitySystemGlobals.h"
+
 // Headers - Aura
 #include "GameplayTags/AuraGameplayTags.h"
 
@@ -24,7 +27,7 @@ UAuraAssetManager& UAuraAssetManager::Get()
 void UAuraAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
-	
+	UAbilitySystemGlobals::Get().InitGlobalData();
 	FAuraGameplayTags::InitializeNativeGameplayTags();
 }
 

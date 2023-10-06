@@ -93,6 +93,18 @@ public:
 
 #pragma endregion ATTRIBUTES_SECONDARY
 
+#pragma region ATTRIBUTES_VITAL
+
+public:
+
+	/** Health Attribute */
+	FGameplayTag Attributes_Vital_Health;
+
+	/** Mana Attribute */
+	FGameplayTag Attributes_Vital_Mana;
+
+#pragma endregion ATTRIBUTES_VITAL
+
 #pragma endregion ATTRIBUTES
 
 #pragma region INPUT
@@ -123,4 +135,46 @@ public:
 	FGameplayTag InputTag_4;
 
 #pragma endregion INPUT
+
+#pragma region EVENTS
+
+private:
+	
+	/** Initialize native gameplay tags for events */
+	static void InitializeNativeEventsGameplayTags();
+
+#pragma region EVENTS_MONTAGE
+
+public:
+
+	/** Event sent on the montage used for casting a Fire Bolt */
+	FGameplayTag Event_Montage_FireBolt;
+
+#pragma endregion EVENTS_MONTAGE
+
+#pragma endregion EVENTS
+
+#pragma region MESSAGES
+
+private:
+	
+	/** Initialize native gameplay tags for messages */
+	static void InitializeNativeMessagesGameplayTags();
+
+public:
+
+	/** Message bound to picking up a Health Potion */
+	FGameplayTag Message_HealthPotion;
+
+	/** Message bound to picking up a Mana Potion */
+	FGameplayTag Message_ManaPotion;
+
+	/** Message bound to picking up a Health Crystal */
+	FGameplayTag Message_HealthCrystal;
+
+	/** Message bound to picking up a Mana Crystal */
+	FGameplayTag Message_ManaCrystal;
+
+#pragma endregion MESSAGES
+
 };
