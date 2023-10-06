@@ -45,15 +45,24 @@ protected:
 
 #pragma endregion OVERRIDES
 
-#pragma region COMPONENTS
+#pragma region COMBAT
+
+public:
+
+	/** Get socket's location that will be used in combat */
+	virtual FVector GetCombatSocketLocation() const override;
 
 protected:
 
 	/** Weapon mesh */
-	UPROPERTY(EditAnywhere, Category = "AA|Components")
+	UPROPERTY(EditAnywhere, Category = "AA|Combat")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
-#pragma endregion COMPONENTS
+	/** Weapon tip's socket name */
+	UPROPERTY(EditAnywhere, Category = "AA|Combat")
+	FName WeaponTipSocketName;
+
+#pragma endregion COMBAT
 
 #pragma region GAS
 

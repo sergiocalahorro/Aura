@@ -26,4 +26,7 @@ public:
 
 	/** Get level */
 	virtual int32 GetCurrentLevel() const;
+
+	/** Get socket's location that will be used in combat */
+	virtual FVector GetCombatSocketLocation() const;
 };

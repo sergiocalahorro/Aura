@@ -16,7 +16,7 @@ class UNiagaraComponent;
 // Forward declarations - Aura
 class UProjectileData;
 
-UCLASS()
+UCLASS(Abstract)
 class AURA_API AAuraProjectile : public AActor
 {
 	GENERATED_BODY()

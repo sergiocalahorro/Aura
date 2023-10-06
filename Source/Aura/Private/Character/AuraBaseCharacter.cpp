@@ -38,6 +38,16 @@ void AAuraBaseCharacter::BeginPlay()
 
 #pragma endregion OVERRIDES
 
+#pragma region COMBAT
+
+/** Get socket's location that will be used in combat */
+FVector AAuraBaseCharacter::GetCombatSocketLocation() const
+{
+	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
+#pragma endregion COMBAT
+
 #pragma region GAS
 
 /** Returns the ability system component to use for this actor. It may live on another actor, such as a Pawn using the PlayerState's component */
