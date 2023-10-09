@@ -74,12 +74,40 @@ void AAuraPlayerController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	UAuraInputComponent* AuraInputComponent = CastChecked<UAuraInputComponent>(InputComponent);
+	AuraInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Started, this, &AAuraPlayerController::ShiftPressed);
+	AuraInputComponent->BindAction(ShiftAction, ETriggerEvent::Completed, this, &AAuraPlayerController::ShiftReleased);
 	AuraInputComponent->BindAbilityActions(InputConfig, this, &AAuraPlayerController::AbilityInputTagPressed, &AAuraPlayerController::AbilityInputTagReleased, &AAuraPlayerController::AbilityInputTagHeld);
 }
 
 #pragma endregion OVERRIDES
 
 #pragma region INPUT
+
+/** Called for moving the player */
+void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
+{
+	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
+	const FRotator YawControlRotation(0.f, GetControlRotation().Yaw, 0.f);
+
+	const FVector ForwardDirection = FRotationMatrix(YawControlRotation).GetUnitAxis(EAxis::X);
+	const FVector RightDirection = FRotationMatrix(YawControlRotation).GetUnitAxis(EAxis::Y);
+
+	ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+	ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+}
+
+/** Called when the Shift key is pressed */
+void AAuraPlayerController::ShiftPressed()
+{
+	bShiftKeyPressed = true;
+}
+
+/** Called when the Shift key is released */
+void AAuraPlayerController::ShiftReleased()
+{
+	bShiftKeyPressed = false;
+}
 
 /** Callback for Input Pressed */
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
@@ -94,25 +122,16 @@ void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 /** Callback for Input Released */
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
+	if (GetAuraAbilitySystemComponent())
+	{
+		GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+	}
+	
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (bTargeting)
-		{
-			if (GetAuraAbilitySystemComponent())
-			{
-				GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
-			}
-		}
-		else
+		if (!bTargeting && !bShiftKeyPressed)
 		{
 			StartAutoRun();
-		}
-	}
-	else
-	{
-		if (GetAuraAbilitySystemComponent())
-		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
 		}
 	}
 }
@@ -122,7 +141,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (bTargeting)
+		if (bTargeting || bShiftKeyPressed)
 		{
 			if (GetAuraAbilitySystemComponent())
 			{

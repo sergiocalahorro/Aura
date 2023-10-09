@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "MotionWarpingComponent.h"
 
 // Headers - Aura
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
@@ -34,6 +35,8 @@ AAuraCharacter::AAuraCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 	Camera->bUsePawnControlRotation = false;
+
+	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
@@ -81,6 +84,12 @@ int32 AAuraCharacter::GetCurrentLevel() const
 {
 	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
 	return AuraPlayerState->GetCurrentLevel();
+}
+
+/** Set target to face */
+void AAuraCharacter::SetFacingTarget(const FVector& FacingTargetLocation)
+{
+	MotionWarpingComponent->AddOrUpdateWarpTargetFromLocation("FacingTarget", FacingTargetLocation);
 }
 
 #pragma endregion COMBAT

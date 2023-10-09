@@ -70,6 +70,15 @@ private:
 #pragma region INPUT
 
 private:
+	
+	/** Called for moving the player */
+	void Move(const FInputActionValue& InputActionValue);
+
+	/** Called when the Shift key is pressed */
+	void ShiftPressed();
+
+	/** Called when the Shift key is released */
+	void ShiftReleased();
 
 	/** Callback for Input Pressed */
 	void AbilityInputTagPressed(FGameplayTag InputTag);
@@ -86,9 +95,20 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
 	TObjectPtr<UInputMappingContext> AuraMappingContext;
 
+	/** Input Action Move */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
+	TObjectPtr<UInputAction> MoveAction;
+
+	/** Input Action Shift */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
+	TObjectPtr<UInputAction> ShiftAction;
+
 	/** Input Config */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Input")
 	TObjectPtr<UAuraInputConfig> InputConfig;
+
+	/** Whether Shift key is pressed */
+	bool bShiftKeyPressed;
 
 #pragma endregion INPUT
 

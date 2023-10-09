@@ -18,7 +18,8 @@ public class Aura : ModuleRules
 			"UMG",
 			"Niagara",
 			"GameplayTasks",
-			"GameplayAbilities"
+			"GameplayAbilities",
+			"MotionWarping"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]

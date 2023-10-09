@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 
 // Headers - Aura
+#include "Aura.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Effects/EffectDefinition.h"
 
@@ -17,9 +18,14 @@ AAuraBaseCharacter::AAuraBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	// Setup collisions
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-
+	GetCapsuleComponent()->SetGenerateOverlapEvents(false);
+	
+	GetMesh()->SetGenerateOverlapEvents(true);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Projectile, ECR_Overlap);
+	
 	// Setup weapon
 	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), FName("WeaponHandSocket"));

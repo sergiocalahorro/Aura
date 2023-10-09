@@ -6,9 +6,15 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 
 // Headers - Aura
+#include "Aura.h"
 #include "Actor/Projectile/ProjectileData.h"
+#include "Components/AudioComponent.h"
 
 #pragma region INITIALIZATION
 
@@ -16,9 +22,11 @@
 AAuraProjectile::AAuraProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	RootComponent = Sphere;
+	Sphere->SetCollisionObjectType(ECC_Projectile);
 	Sphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Sphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	Sphere->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
@@ -55,6 +63,20 @@ void AAuraProjectile::OnConstruction(const FTransform& Transform)
 void AAuraProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetLifeSpan(ProjectileData->LifeSpan);
+	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(ProjectileData->LoopingSound, GetRootComponent());
+}
+
+/** Called when this actor is explicitly being destroyed during gameplay or in the editor, not called during level streaming or gameplay ending */
+void AAuraProjectile::Destroyed()
+{
+	if (!bHit && !HasAuthority())
+	{
+		ProjectileHit();
+	}
+
+	Super::Destroyed();
 }
 
 #pragma endregion OVERRIDES
@@ -64,7 +86,21 @@ void AAuraProjectile::BeginPlay()
 /** BeginOverlap Callback */
 void AAuraProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	ProjectileHit();
 	
+	if (HasAuthority())
+	{
+		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
+		{
+			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+		}
+		
+		Destroy();
+	}
+	else
+	{
+		bHit = true;
+	}
 }
 
 /** Initialize projectile's values */
@@ -81,6 +117,18 @@ void AAuraProjectile::InitializeProjectile() const
 		ProjectileMovementComponent->Bounciness = ProjectileData->Bounciness;
 
 		ProjectileVFX->SetAsset(ProjectileData->ProjectileVFX);
+	}
+}
+
+/** Functionality performed when projectile hits something */
+void AAuraProjectile::ProjectileHit() const
+{
+	UGameplayStatics::PlaySoundAtLocation(this, ProjectileData->ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ProjectileData->ImpactEffect, GetActorLocation());
+
+	if (LoopingSoundComponent)
+	{
+		LoopingSoundComponent->Stop();
 	}
 }
 

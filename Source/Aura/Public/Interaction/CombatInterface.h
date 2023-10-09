@@ -29,4 +29,7 @@ public:
 
 	/** Get socket's location that will be used in combat */
 	virtual FVector GetCombatSocketLocation() const;
+
+	/** Set target location to face */
+	virtual void SetFacingTarget(const FVector& FacingTargetLocation);
 };

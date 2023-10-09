@@ -14,6 +14,7 @@ class UAbilityTask_WaitGameplayEvent;
 
 // Forward declarations - Aura
 class AAuraProjectile;
+class ICombatInterface;
 class UAbilityTask_TargetDataUnderMouse;
 
 /**
@@ -54,6 +55,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")
 	TSubclassOf<AAuraProjectile> ProjectileClass;
 
+	/** Class for the damage effect to apply */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
+
 	/** Montage played to cast projectile */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")
 	TObjectPtr<UAnimMontage> CastProjectileMontage;
@@ -79,6 +84,13 @@ private:
 	/** Ability task used for retrieving target data under mouse */
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_TargetDataUnderMouse> TargetDataUnderMouseTask;
+
+	/** Projectile's caster */
+	ICombatInterface* ProjectileCaster;
+
+	/** Location the projectile should be aimed at */
+	UPROPERTY()
+	FVector ProjectileTargetLocation;
 
 #pragma endregion ABILITY
 	

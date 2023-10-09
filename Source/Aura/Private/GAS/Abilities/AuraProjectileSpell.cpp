@@ -5,6 +5,8 @@
 // Headers - Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 
 // Headers - Aura
 #include "Actor/Projectile/AuraProjectile.h"
@@ -18,6 +20,8 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	ProjectileCaster = CastChecked<ICombatInterface>(ActorInfo->AvatarActor.Get());
+	
 	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CastProjectileMontage);
 	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraProjectileSpell::K2_EndAbility);
 	PlayMontageTask->OnBlendOut.AddUniqueDynamic(this, &UAuraProjectileSpell::K2_EndAbility);
@@ -64,12 +68,18 @@ void UAuraProjectileSpell::SpawnProjectile(FGameplayEventData Payload)
 	
 	check(ProjectileClass);
 	
-	const ICombatInterface* ProjectileCaster = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo());
-	
-	// ToDo: Set projectile's rotation and give it a GameplayEffectSpec for causing damage
 	FTransform SpawnTransform;
-	SpawnTransform.SetLocation(ProjectileCaster->GetCombatSocketLocation());
+	const FVector SpawnLocation = ProjectileCaster->GetCombatSocketLocation();
+	const FRotator SpawnRotation = (ProjectileTargetLocation - SpawnLocation).Rotation();
+	SpawnTransform.SetLocation(SpawnLocation);
+	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
+
 	AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass,  SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
+	const FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+
+	Projectile->DamageEffectSpecHandle = EffectSpecHandle;
 	Projectile->FinishSpawning(SpawnTransform);
 
 	if (IsValid(WaitEventTask))
@@ -81,7 +91,11 @@ void UAuraProjectileSpell::SpawnProjectile(FGameplayEventData Payload)
 /** Functionality performed once target data under mouse is received */
 void UAuraProjectileSpell::TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	DrawDebugSphere(GetWorld(), TargetDataHandle.Get(0)->GetHitResult()->Location, 16.f, 16, FColor::Blue, false, 3.f);
+	if (TargetDataHandle.Num() > 0)
+	{
+		ProjectileTargetLocation = TargetDataHandle.Get(0)->GetHitResult()->Location;
+		ProjectileCaster->SetFacingTarget(ProjectileTargetLocation);
+	}
 }
 
 #pragma endregion PROJECTILE

@@ -5,6 +5,7 @@
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayEffectTypes.h"
 
 #include "AuraProjectile.generated.h"
 
@@ -45,6 +46,9 @@ protected:
 	/** Called when the game starts or when spawned */
 	virtual void BeginPlay() override;
 
+	/** Called when this actor is explicitly being destroyed during gameplay or in the editor, not called during level streaming or gameplay ending */
+	virtual void Destroyed() override;
+
 #pragma endregion OVERRIDES
 
 #pragma region PROJECTILE
@@ -59,6 +63,15 @@ private:
 
 	/** Initialize projectile's values */
 	void InitializeProjectile() const;
+
+	/** Functionality performed when projectile hits something */
+	void ProjectileHit() const;
+
+public:
+
+	/** Damage effect's spec handle */
+	UPROPERTY()
+	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
 private:
 
@@ -77,6 +90,13 @@ private:
 	/** Projectile's data */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")
 	TObjectPtr<UProjectileData> ProjectileData;
+
+	/** Audio component for looping sound */
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> LoopingSoundComponent;
+
+	/** Whether the projectile has hit something */
+	bool bHit;
 
 #pragma endregion PROJECTILE
 	
