@@ -2,10 +2,14 @@
 
 #include "Character/AuraEnemy.h"
 
+// Headers - Unreal Engine
+#include "Components/WidgetComponent.h"
+
 // Headers - Aura
 #include "Aura.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
+#include "UI/Widget/AuraUserWidget.h"
 
 #pragma region INITIALIZATION
 
@@ -15,9 +19,13 @@ AAuraEnemy::AAuraEnemy()
 	PrimaryActorTick.bCanEverTick = false;
 
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+
+	// Health bar
+	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
+	HealthBarWidget->SetupAttachment(RootComponent);
 
 	// GAS setup
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
@@ -37,6 +45,7 @@ void AAuraEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	InitAbilityActorInfo();
+	SetupHealthBindings();
 }
 
 #pragma endregion OVERRIDES
@@ -82,6 +91,33 @@ void AAuraEnemy::InitAbilityActorInfo()
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	ApplyEffectDefinitionsToSelf(DefaultEffects);
+}
+
+/** Setup health bar's widget controller and delegates for broadcasting health values */
+void AAuraEnemy::SetupHealthBindings()
+{
+	if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBarWidget->GetUserWidgetObject()))
+	{
+		AuraUserWidget->SetWidgetController(this);
+	}
+
+	const UAuraAttributeSet* AuraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnHealthChanged.Broadcast(Data.NewValue);
+		}
+	);
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetMaxHealthAttribute()).AddLambda(
+		[this](const FOnAttributeChangeData& Data)
+		{
+			OnMaxHealthChanged.Broadcast(Data.NewValue);
+		}
+	);
+
+	OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
+	OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());
 }
 
 #pragma endregion GAS
