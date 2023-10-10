@@ -7,6 +7,7 @@
 
 // Headers - Aura
 #include "AuraBaseCharacter.h"
+#include "Data/CharacterClass.h"
 #include "Interaction/InteractableInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
@@ -51,6 +52,10 @@ private:
 #pragma region CORE
 
 private:
+	
+	/** Enemy's character class */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Core")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 	
 	/** Enemy level */
 	UPROPERTY(EditAnywhere, Category = "AA|Core")

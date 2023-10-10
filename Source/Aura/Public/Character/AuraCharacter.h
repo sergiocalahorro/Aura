@@ -83,6 +83,20 @@ protected:
 	/** Initialize ability actor info */
 	virtual void InitAbilityActorInfo() override;
 
+private:
+
+	/** Effect used for initializing Primary Attributes' values */
+	UPROPERTY(EditAnywhere, Category = "AA|GAS|Default")
+	TSubclassOf<UGameplayEffect> PrimaryAttributes;
+
+	/** Effect used for initializing Secondary Attributes' values */
+	UPROPERTY(EditAnywhere, Category = "AA|GAS|Default")
+	TSubclassOf<UGameplayEffect> SecondaryAttributes;
+
+	/** Effect used for initializing Vital Attributes' values */
+	UPROPERTY(EditAnywhere, Category = "AA|GAS|Default")
+	TSubclassOf<UGameplayEffect> VitalAttributes;
+
 #pragma endregion GAS
 	
 };

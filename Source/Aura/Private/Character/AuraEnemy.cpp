@@ -8,6 +8,7 @@
 // Headers - Aura
 #include "Aura.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
 #include "UI/Widget/AuraUserWidget.h"
 
@@ -90,7 +91,7 @@ void AAuraEnemy::InitAbilityActorInfo()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
-	ApplyEffectDefinitionsToSelf(DefaultEffects);
+	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 }
 
 /** Setup health bar's widget controller and delegates for broadcasting health values */

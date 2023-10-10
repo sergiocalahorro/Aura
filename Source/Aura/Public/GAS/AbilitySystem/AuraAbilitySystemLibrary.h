@@ -6,7 +6,13 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
+// Headers - Aura
+#include "Character/Data/CharacterClass.h"
+
 #include "AuraAbilitySystemLibrary.generated.h"
+
+// Forward declarations - Unreal Engine
+class UAbilitySystemComponent;
 
 // Forward declarations - Aura
 class UOverlayWidgetController;
@@ -20,13 +26,26 @@ class AURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 
+#pragma region WIDGET
+	
 public:
 
 	/** Get Overlay Widget Controller */
-	UFUNCTION(BlueprintPure, Category = "AA|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "AA|Widget|Controller")
 	static UOverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
 	/** Get Attribute Menu Widget Controller */
-	UFUNCTION(BlueprintPure, Category = "AA|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "AA|Widget|Controller")
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const UObject* WorldContextObject);
+
+#pragma endregion WIDGET
+
+#pragma region CHARACTER
+
+	/** Initialize character with its default attributes' values per level */
+	UFUNCTION(BlueprintCallable, Category = "AA|Character|Defaults") 
+	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* AbilitySystemComponent);
+
+#pragma endregion CHARACTER
+
 };

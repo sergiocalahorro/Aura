@@ -84,6 +84,11 @@ FActiveGameplayEffectHandle AAuraBaseCharacter::ApplyEffectToSelf(const TSubclas
 /** Apply given effect definitions to itself */
 void AAuraBaseCharacter::ApplyEffectDefinitionsToSelf(const TArray<FEffectDefinition>& Effects) const
 {
+	if (Effects.IsEmpty())
+	{
+		return;
+	}
+	
 	for (const FEffectDefinition& EffectDefinition : Effects)
 	{
 		if (EffectDefinition.EffectApplicationPolicy == EEffectApplicationPolicy::ApplyDefault)

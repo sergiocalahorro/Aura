@@ -80,7 +80,7 @@ protected:
 	virtual void InitAbilityActorInfo() PURE_VIRTUAL(AAuraBaseCharacter::InitAbilityActorInfo);
 	
 	/** Apply given effect to itself */
-	FActiveGameplayEffectHandle ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level) const;
+	FActiveGameplayEffectHandle ApplyEffectToSelf(const TSubclassOf<UGameplayEffect>& EffectClass, float Level = 1.f) const;
 
 	/** Apply given effect definitions to itself */
 	void ApplyEffectDefinitionsToSelf(const TArray<FEffectDefinition>& Effects) const;
@@ -90,9 +90,7 @@ protected:
 
 protected:
 
-	/** Default effects to apply when ability system is initialized
-	 *  NOTE: When setting effects to initialize attributes, make sure Primary attributes are set BEFORE Secondary ones,
-	 *		  as they depend on them */
+	/** Default effects to apply when ability system is initialized */
 	UPROPERTY(EditAnywhere, Category = "AA|GAS|Default")
 	TArray<FEffectDefinition> DefaultEffects;
 
