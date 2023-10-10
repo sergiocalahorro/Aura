@@ -52,15 +52,26 @@ public:
 	/** Get socket's location that will be used in combat */
 	virtual FVector GetCombatSocketLocation() const override;
 
+	/** Get HitReact's montage */
+	virtual UAnimMontage* GetHitReactMontage() const override;
+
 protected:
 
 	/** Weapon mesh */
-	UPROPERTY(EditAnywhere, Category = "AA|Combat")
+	UPROPERTY(EditAnywhere, Category = "AA|Combat|Weapon")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	/** Weapon tip's socket name */
-	UPROPERTY(EditAnywhere, Category = "AA|Combat")
+	UPROPERTY(EditAnywhere, Category = "AA|Combat|Weapon")
 	FName WeaponTipSocketName;
+		
+	/** HitReact's montage to play */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|HitReact")
+	TObjectPtr<UAnimMontage> HitReactMontage;
+
+	/** Whether the enemy is hit reacting */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Combat|HitReact", meta = (AllowPrivateAccess = true))
+	bool bHitReacting;
 
 #pragma endregion COMBAT
 

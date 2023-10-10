@@ -19,3 +19,9 @@ void ICombatInterface::SetFacingTarget(const FVector& FacingTargetLocation)
 {
 	
 }
+
+/** Get HitReact's montage */
+UAnimMontage* ICombatInterface::GetHitReactMontage() const
+{
+	return nullptr;
+}

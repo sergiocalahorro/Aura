@@ -52,6 +52,12 @@ FVector AAuraBaseCharacter::GetCombatSocketLocation() const
 	return Weapon->GetSocketLocation(WeaponTipSocketName);
 }
 
+/** Get HitReact's montage */
+UAnimMontage* AAuraBaseCharacter::GetHitReactMontage() const
+{
+	return HitReactMontage;
+}
+
 #pragma endregion COMBAT
 
 #pragma region GAS

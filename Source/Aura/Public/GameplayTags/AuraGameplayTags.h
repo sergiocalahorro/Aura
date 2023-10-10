@@ -136,6 +136,51 @@ public:
 
 #pragma endregion INPUT
 
+#pragma region ABILITIES
+
+public:
+
+	/** Initialize native gameplay tags for abilities */
+	static void InitializeNativeAbilitiesGameplayTags();
+
+public:
+
+	/** Fire Bolt ability */
+	FGameplayTag Abilities_FireBolt;
+
+	/** Hit React ability */
+	FGameplayTag Abilities_HitReact;
+
+#pragma region ABILITIES
+
+#pragma region EFFECTS
+
+public:
+
+	/** Initialize native gameplay tags for effects */
+	static void InitializeNativeEffectsGameplayTags();
+
+public:
+
+	/** Hit React effect */
+	FGameplayTag Effects_HitReact;
+
+#pragma region EFFECTS
+
+#pragma region DAMAGE
+
+public:
+
+	/** Initialize native gameplay tags for damage */
+	static void InitializeNativeDamageGameplayTags();
+
+public:
+
+	/** Damage */
+	FGameplayTag Damage;
+
+#pragma region DAMAGE
+
 #pragma region EVENTS
 
 private:

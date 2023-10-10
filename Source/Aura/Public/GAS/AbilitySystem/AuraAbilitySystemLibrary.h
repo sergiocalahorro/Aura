@@ -46,6 +46,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AA|Character|Defaults") 
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* AbilitySystemComponent);
 
+	/** Initialize character with its default abilities */
+	UFUNCTION(BlueprintCallable, Category = "AA|Character|Defaults") 
+	static void GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent);
+
 #pragma endregion CHARACTER
 
 };

@@ -66,6 +66,8 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 	const AAuraBaseGameMode* AuraGameMode = CastChecked<AAuraBaseGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
 
 	UCharacterClassInfo* CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	check(CharacterClassInfo);
+	
 	const FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 
 	const AActor* AvatarActor = AbilitySystemComponent->GetAvatarActor();
@@ -84,6 +86,22 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 	VitalAttributesContextHandle.AddSourceObject(AvatarActor);
 	const FGameplayEffectSpecHandle VitalAttributesSpecHandle = AbilitySystemComponent->MakeOutgoingSpec(CharacterClassInfo->VitalAttributes, Level, VitalAttributesContextHandle);
 	AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*VitalAttributesSpecHandle.Data.Get());
+}
+
+/** Initialize character with its default abilities */
+void UAuraAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent)
+{
+	check(AbilitySystemComponent);
+	
+	const AAuraBaseGameMode* AuraGameMode = CastChecked<AAuraBaseGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+
+	UCharacterClassInfo* CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	check(CharacterClassInfo);
+
+	for (const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterClassInfo->Abilities)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1.f));
+	}
 }
 
 #pragma endregion CHARACTER

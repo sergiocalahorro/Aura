@@ -4,9 +4,11 @@
 
 // Headers - Unreal Engine
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Headers - Aura
 #include "Aura.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
@@ -46,7 +48,7 @@ void AAuraEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	InitAbilityActorInfo();
-	SetupHealthBindings();
+	SetupEnemy();
 }
 
 #pragma endregion OVERRIDES
@@ -59,6 +61,13 @@ int32 AAuraEnemy::GetCurrentLevel() const
 	return Level;
 }
 
+/** Callback called whenever HitReact's tag is changed */
+void AAuraEnemy::HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCount)
+{
+	bHitReacting = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+}
+
 #pragma endregion COMBAT
 
 #pragma region INTERACTABLE
@@ -66,8 +75,6 @@ int32 AAuraEnemy::GetCurrentLevel() const
 /** Functionality performed when Actor should be highlighted (on hovered) */
 void AAuraEnemy::HighlightActor()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AAuraEnemy::HighlightActor - %s"), *GetNameSafe(this));
-
 	GetMesh()->SetRenderCustomDepth(true);
 	Weapon->SetRenderCustomDepth(true);
 }
@@ -75,8 +82,6 @@ void AAuraEnemy::HighlightActor()
 /** Functionality performed when Actor should be un-highlighted (stopped being hovered) */
 void AAuraEnemy::UnHighlightActor()
 {
-	UE_LOG(LogTemp, Warning, TEXT("AAuraEnemy::UnHighlightActor - %s"), *GetNameSafe(this));
-
 	GetMesh()->SetRenderCustomDepth(false);
 	Weapon->SetRenderCustomDepth(false);
 }
@@ -92,16 +97,22 @@ void AAuraEnemy::InitAbilityActorInfo()
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
 
 	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
+	UAuraAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent);
 }
 
-/** Setup health bar's widget controller and delegates for broadcasting health values */
-void AAuraEnemy::SetupHealthBindings()
+/** Setup health logic and listening for changes on tags */
+void AAuraEnemy::SetupEnemy()
 {
+	// Listen for changes on HitReact tag
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Effects_HitReact).AddUObject(this, &AAuraEnemy::HitReactTagChanged);
+
+	// Set health bar widget's controller
 	if (UAuraUserWidget* AuraUserWidget = Cast<UAuraUserWidget>(HealthBarWidget->GetUserWidgetObject()))
 	{
 		AuraUserWidget->SetWidgetController(this);
 	}
 
+	// Set callbacks for changes on Health and MaxHealth Attributes
 	const UAuraAttributeSet* AuraAttributeSet = CastChecked<UAuraAttributeSet>(AttributeSet);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AuraAttributeSet->GetHealthAttribute()).AddLambda(
 		[this](const FOnAttributeChangeData& Data)
@@ -117,8 +128,12 @@ void AAuraEnemy::SetupHealthBindings()
 		}
 	);
 
+	// Broadcast initial Health and MaxHealth Attributes' values
 	OnHealthChanged.Broadcast(AuraAttributeSet->GetHealth());
 	OnMaxHealthChanged.Broadcast(AuraAttributeSet->GetMaxHealth());
+
+	// Set default values
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
 #pragma endregion GAS

@@ -12,6 +12,7 @@
 #include "Actor/Projectile/AuraProjectile.h"
 #include "GAS/AbilityTasks/AbilityTask_TargetDataUnderMouse.h"
 #include "Interaction/CombatInterface.h"
+#include "GameplayTags/AuraGameplayTags.h"
 
 #pragma region OVERRIDES
 
@@ -76,8 +77,11 @@ void UAuraProjectileSpell::SpawnProjectile(FGameplayEventData Payload)
 
 	AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass,  SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
+	const int32 Level = GetAbilityLevel();
 	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-	const FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+	const FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, Level, SourceASC->MakeEffectContext());
+	const float ScaledDamage = Damage.GetValueAtLevel(Level);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, FAuraGameplayTags::Get().Damage, ScaledDamage);
 
 	Projectile->DamageEffectSpecHandle = EffectSpecHandle;
 	Projectile->FinishSpawning(SpawnTransform);

@@ -14,6 +14,9 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
 	InitializeNativeAttributesGameplayTags();
 	InitializeNativeInputsGameplayTags();
+	InitializeNativeAbilitiesGameplayTags();
+	InitializeNativeEffectsGameplayTags();
+	InitializeNativeDamageGameplayTags();
 	InitializeNativeEventsGameplayTags();
 	InitializeNativeMessagesGameplayTags();
 }
@@ -67,6 +70,37 @@ void FAuraGameplayTags::InitializeNativeInputsGameplayTags()
 }
 
 #pragma endregion INPUT
+
+#pragma region ABILITIES
+
+/** Initialize native gameplay tags for abilities */
+void FAuraGameplayTags::InitializeNativeAbilitiesGameplayTags()
+{
+	GameplayTags.Abilities_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.FireBolt"), FString("Fire Bolt ability"));
+	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.HitReact"), FString("Hit React ability"));
+}
+
+#pragma endregion ABILITIES
+
+#pragma region EFFECTS
+
+/** Initialize native gameplay tags for effects */
+void FAuraGameplayTags::InitializeNativeEffectsGameplayTags()
+{
+	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Effects.HitReact"), FString("Tag granted when Hit Reacting"));
+}
+
+#pragma endregion EFFECTS
+
+#pragma region DAMAGE
+
+/** Initialize native gameplay tags for damage */
+void FAuraGameplayTags::InitializeNativeDamageGameplayTags()
+{
+	GameplayTags.Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Damage"), FString("Damage"));
+}
+
+#pragma endregion DAMAGE
 
 #pragma region EVENTS
 

@@ -49,26 +49,31 @@ private:
 
 #pragma endregion COMPONENTS
 
-#pragma region CORE
-
-private:
-	
-	/** Enemy's character class */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Core")
-	ECharacterClass CharacterClass = ECharacterClass::Warrior;
-	
-	/** Enemy level */
-	UPROPERTY(EditAnywhere, Category = "AA|Core")
-	int32 Level = 1;
-
-#pragma endregion CORE
-
 #pragma region COMBAT
 
 public:
 
 	/** Get level */
-	virtual int32 GetCurrentLevel() const override; 
+	virtual int32 GetCurrentLevel() const override;
+
+private:
+	
+	/** Callback called whenever HitReact's tag is changed */
+	void HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCount);
+
+private:
+	
+	/** Enemy's character class */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+	
+	/** Enemy level */
+	UPROPERTY(EditAnywhere, Category = "AA|Combat")
+	int32 Level = 1;
+
+	/** Base value for walking speed */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat")
+	float BaseWalkSpeed = 250.f;
 
 #pragma endregion COMBAT
 
@@ -86,6 +91,16 @@ public:
 
 #pragma region GAS
 
+protected:
+
+	/** Initialize ability actor info */
+	virtual void InitAbilityActorInfo() override;
+
+private:
+
+	/** Setup health logic and listening for changes on tags */
+	void SetupEnemy();
+
 public:
 
 	/** Delegate called whenever Health attribute is changed */
@@ -95,16 +110,6 @@ public:
 	/** Delegate called whenever MaxHealth attribute is changed */
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
-
-protected:
-
-	/** Initialize ability actor info */
-	virtual void InitAbilityActorInfo() override;
-
-private:
-
-	/** Setup health bar's widget controller and delegates for broadcasting health values */
-	void SetupHealthBindings();
 
 #pragma endregion GAS
 	

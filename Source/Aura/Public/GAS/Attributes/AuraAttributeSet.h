@@ -231,6 +231,17 @@ public:
 
 #pragma endregion ATTRIBUTES_VITAL
 
+#pragma region ATTRIBUTES_META
+
+public:
+
+	/** IncomingDamage Attribute */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Attributes|Meta")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage)
+
+#pragma endregion ATTRIBUTES_META
+
 #pragma endregion ATTRIBUTES
 
 #pragma region EFFECTS

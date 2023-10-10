@@ -14,6 +14,7 @@
 
 // Forward declarations - Unreal Engine
 class UGameplayEffect;
+class UGameplayAbility;
 
 /**
  * 
@@ -41,4 +42,8 @@ public:
 	/** Default values for Vital Attributes */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
+
+	/** Default Abilities */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Defaults")
+	TArray<TSubclassOf<UGameplayAbility>> Abilities;
 };

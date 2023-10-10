@@ -32,4 +32,7 @@ public:
 
 	/** Set target location to face */
 	virtual void SetFacingTarget(const FVector& FacingTargetLocation);
+
+	/** Get HitReact's montage */
+	virtual UAnimMontage* GetHitReactMontage() const;
 };
