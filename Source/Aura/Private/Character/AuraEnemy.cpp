@@ -61,6 +61,13 @@ int32 AAuraEnemy::GetCurrentLevel() const
 	return Level;
 }
 
+/** Functionality performed on death */
+void AAuraEnemy::Death()
+{
+	SetLifeSpan(LifeSpan);
+	Super::Death();
+}
+
 /** Callback called whenever HitReact's tag is changed */
 void AAuraEnemy::HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCount)
 {

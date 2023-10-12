@@ -35,4 +35,7 @@ public:
 
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const;
+
+	/** Functionality performed on death */
+	virtual void Death() = 0;
 };

@@ -55,6 +55,20 @@ public:
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const override;
 
+	/** Functionality performed on death */
+	virtual void Death() override;
+
+	/** Handle death */
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastHandleDeath();
+
+	/** Dissolve effect */
+	void Dissolve();
+
+	/** Start timeline to apply dissolve effect */
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartDissolveTimeline(const TArray<UMaterialInstanceDynamic*>& DynamicMaterialInstances);
+
 protected:
 
 	/** Weapon mesh */
@@ -72,6 +86,14 @@ protected:
 	/** Whether the enemy is hit reacting */
 	UPROPERTY(BlueprintReadOnly, Category = "AA|Combat|HitReact", meta = (AllowPrivateAccess = true))
 	bool bHitReacting;
+
+	/** Dissolve's material instance */
+	UPROPERTY(EditAnywhere, Category = "AA|Combat|Death")
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+
+	/** Weapon's dissolve's material instance */
+	UPROPERTY(EditAnywhere, Category = "AA|Combat|Death")
+	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
 #pragma endregion COMBAT
 

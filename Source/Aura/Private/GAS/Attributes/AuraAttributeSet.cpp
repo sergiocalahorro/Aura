@@ -12,6 +12,7 @@
 
 // Headers - Aura
 #include "GameplayTags/AuraGameplayTags.h"
+#include "Interaction/CombatInterface.h"
 
 #pragma region INITIALIZATION
 
@@ -112,7 +113,14 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 
 			const bool bOutOfHealth = NewHealth <= 0.f;
-			if (!bOutOfHealth)
+			if (bOutOfHealth)
+			{
+				if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor))
+				{
+					CombatInterface->Death();
+				}
+			}
+			else
 			{
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);

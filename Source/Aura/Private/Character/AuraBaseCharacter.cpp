@@ -58,6 +58,51 @@ UAnimMontage* AAuraBaseCharacter::GetHitReactMontage() const
 	return HitReactMontage;
 }
 
+/** Functionality performed on death */
+void AAuraBaseCharacter::Death()
+{
+	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	MulticastHandleDeath();
+}
+
+/** Handle death */
+void AAuraBaseCharacter::MulticastHandleDeath_Implementation()
+{
+	Weapon->SetSimulatePhysics(true);
+	Weapon->SetEnableGravity(true);
+	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetEnableGravity(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Dissolve();
+}
+
+/** Dissolve effect */
+void AAuraBaseCharacter::Dissolve()
+{
+	TArray<UMaterialInstanceDynamic*> DynamicMaterialInstances;
+	
+	if (IsValid(DissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
+		DynamicMaterialInstances.AddUnique(DynamicDissolveMaterialInstance);
+	}
+
+	if (IsValid(WeaponDissolveMaterialInstance))
+	{
+		UMaterialInstanceDynamic* DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(WeaponDissolveMaterialInstance, this);
+		Weapon->SetMaterial(0, DynamicDissolveMaterialInstance);
+		DynamicMaterialInstances.AddUnique(DynamicDissolveMaterialInstance);
+	}
+
+	StartDissolveTimeline(DynamicMaterialInstances);
+}
+
 #pragma endregion COMBAT
 
 #pragma region GAS

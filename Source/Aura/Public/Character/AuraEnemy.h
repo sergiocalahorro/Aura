@@ -55,7 +55,10 @@ public:
 
 	/** Get level */
 	virtual int32 GetCurrentLevel() const override;
-
+	
+	/** Functionality performed on death */
+	virtual void Death() override;
+	
 private:
 	
 	/** Callback called whenever HitReact's tag is changed */
@@ -74,6 +77,10 @@ private:
 	/** Base value for walking speed */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat")
 	float BaseWalkSpeed = 250.f;
+
+	/** Time in order to destroy the enemy after it's dead */
+	UPROPERTY(EditAnywhere, Category = "AA|Combat")
+	float LifeSpan = 5.f;
 
 #pragma endregion COMBAT
 
