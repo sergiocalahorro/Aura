@@ -8,9 +8,9 @@
 
 #include "EC_Damage.generated.h"
 
-class ICombatInterface;
 // Forward declarations - Aura
 class UCharacterClassInfo;
+class ICombatInterface;
 
 /**
  * 

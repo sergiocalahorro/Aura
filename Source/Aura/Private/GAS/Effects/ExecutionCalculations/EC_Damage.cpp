@@ -96,13 +96,13 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	// Retrieve Damage's base value
 	float Damage = EffectSpec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
 
-	// Check Target's BlockChance and halve incoming Damage's value if it's a block
+	// Check Target's BlockChance and calculate incoming Damage's value if it's a block
 	HandleBlock(ExecutionParams, EvaluateParams, Damage);
 	
 	// Check Target's Armor and Source's ArmorPenetration and calculate incoming Damage's value
 	HandleArmor(CharacterClassInfo, SourceAvatarCombat, TargetAvatarCombat, ExecutionParams, EvaluateParams, Damage);
 
-	// Check Target's CriticalHitChance and Source's CriticalHitResistance and double incoming Damage's value if it's a critical hit
+	// Check Target's CriticalHitChance and Source's CriticalHitResistance and calculate incoming Damage's value if it's a critical hit
 	HandleCriticalHit(CharacterClassInfo, TargetAvatarCombat, ExecutionParams, EvaluateParams, Damage);
 
 	// Modify IncomingDamage attribute with the calculated final Damage value
