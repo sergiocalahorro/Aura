@@ -8,13 +8,15 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Components/SplineComponent.h"
 #include "NavigationSystem.h"
+#include "NavigationPath.h"
+#include "GameFramework/Character.h"
 
 // Headers - Aura
-#include "NavigationPath.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/InteractableInterface.h"
+#include "UI/Widget/DamageTextWidgetComponent.h"
 
 #pragma region INITIALIZATION
 
@@ -255,6 +257,25 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 }
 
 #pragma endregion INTERACTABLE
+
+#pragma region COMBAT
+
+/** Show damage number above target */
+void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter)
+{
+	if (!IsValid(TargetCharacter) || !DamageTextWidgetClass)
+	{
+		return;
+	}
+
+	UDamageTextWidgetComponent* DamageTextWidget = NewObject<UDamageTextWidgetComponent>(TargetCharacter, DamageTextWidgetClass);
+	DamageTextWidget->RegisterComponent();
+	DamageTextWidget->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	DamageTextWidget->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	DamageTextWidget->SetDamageText(DamageAmount);
+}
+
+#pragma endregion COMBAT
 
 #pragma region GAS
 

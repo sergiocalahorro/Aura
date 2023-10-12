@@ -19,6 +19,7 @@ struct FGameplayTag;
 class IInteractableInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
+class UDamageTextWidgetComponent;
 
 /**
  * 
@@ -172,6 +173,22 @@ private:
 	FHitResult CursorHit;
 
 #pragma endregion INTERACTABLE
+
+#pragma region COMBAT
+
+public:
+
+	/** Show damage number above target */
+	UFUNCTION(Client, Reliable)
+	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+
+private:
+
+	/** Damage text's widget class to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat")
+	TSubclassOf<UDamageTextWidgetComponent> DamageTextWidgetClass;
+
+#pragma endregion COMBAT
 
 #pragma region GAS
 

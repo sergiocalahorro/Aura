@@ -46,4 +46,8 @@ public:
 	/** Default Abilities */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Defaults")
 	TArray<TSubclassOf<UGameplayAbility>> Abilities;
+
+	/** Table that holds damage calculation's coefficients */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Defaults|Damage")
+	TObjectPtr<UCurveTable> DamageCalculationCoefficients;
 };

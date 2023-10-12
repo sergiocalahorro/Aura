@@ -63,9 +63,7 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 {
 	check(AbilitySystemComponent);
 	
-	const AAuraBaseGameMode* AuraGameMode = CastChecked<AAuraBaseGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
-
-	UCharacterClassInfo* CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	check(CharacterClassInfo);
 	
 	const FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
@@ -93,15 +91,20 @@ void UAuraAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldContext
 {
 	check(AbilitySystemComponent);
 	
-	const AAuraBaseGameMode* AuraGameMode = CastChecked<AAuraBaseGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
-
-	UCharacterClassInfo* CharacterClassInfo = AuraGameMode->CharacterClassInfo;
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	check(CharacterClassInfo);
 
 	for (const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterClassInfo->Abilities)
 	{
 		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1.f));
 	}
+}
+
+/** Get DataAsset containing information for character class */
+UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	const AAuraBaseGameMode* AuraGameMode = Cast<AAuraBaseGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	return AuraGameMode ? AuraGameMode->CharacterClassInfo : nullptr;
 }
 
 #pragma endregion CHARACTER

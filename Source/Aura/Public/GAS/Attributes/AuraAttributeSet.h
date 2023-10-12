@@ -233,6 +233,14 @@ public:
 
 #pragma region ATTRIBUTES_META
 
+private:
+
+	/** Handle incoming damage */
+	void HandleIncomingDamage(const FEffectProperties& EffectProperties);
+
+	/** Show floating damage text above target */
+	void ShowFloatingDamageText(const FEffectProperties& EffectProperties, const float Damage) const;
+
 public:
 
 	/** IncomingDamage Attribute */

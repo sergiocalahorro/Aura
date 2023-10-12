@@ -6,9 +6,6 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
-// Headers - Aura
-#include "Character/Data/CharacterClass.h"
-
 #include "AuraAbilitySystemLibrary.generated.h"
 
 // Forward declarations - Unreal Engine
@@ -17,6 +14,7 @@ class UAbilitySystemComponent;
 // Forward declarations - Aura
 class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
+class UCharacterClassInfo;
 
 /**
  * 
@@ -50,6 +48,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AA|Character|Defaults") 
 	static void GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent);
 
+	/** Get DataAsset containing information for character class */
+	UFUNCTION(BlueprintCallable, Category = "AA|Character|Defaults") 
+	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+	
 #pragma endregion CHARACTER
 
 };

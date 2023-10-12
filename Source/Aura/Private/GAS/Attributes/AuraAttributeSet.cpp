@@ -13,6 +13,8 @@
 // Headers - Aura
 #include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/AuraPlayerController.h"
 
 #pragma region INITIALIZATION
 
@@ -105,28 +107,7 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	}
 	else if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
-		const float IncomingDamageValue = GetIncomingDamage();
-		SetIncomingDamage(0.f);
-		if (IncomingDamageValue > 0.f)
-		{
-			const float NewHealth = GetHealth() - IncomingDamageValue;
-			SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-
-			const bool bOutOfHealth = NewHealth <= 0.f;
-			if (bOutOfHealth)
-			{
-				if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor))
-				{
-					CombatInterface->Death();
-				}
-			}
-			else
-			{
-				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
-				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-			}
-		}
+		HandleIncomingDamage(EffectProperties);
 	}
 }
 
@@ -241,6 +222,53 @@ void UAuraAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 }
 
 #pragma endregion ATTRIBUTES_VITAL
+
+#pragma region ATTRIBUTES_META
+
+/** Handle incoming damage */
+void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProperties)
+{
+	const float IncomingDamageAmount = GetIncomingDamage();
+	SetIncomingDamage(0.f);
+	if (IncomingDamageAmount > 0.f)
+	{
+		const float NewHealth = GetHealth() - IncomingDamageAmount;
+		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
+		
+		const bool bOutOfHealth = NewHealth <= 0.f;
+		if (bOutOfHealth)
+		{
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor))
+			{
+				CombatInterface->Death();
+			}
+		}
+		else
+		{
+			FGameplayTagContainer TagContainer;
+			TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
+			EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+		}
+
+		ShowFloatingDamageText(EffectProperties, IncomingDamageAmount);
+	}
+}
+
+/** Show floating damage text above target */
+void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectProperties, const float Damage) const
+{
+	if (EffectProperties.SourceCharacter == EffectProperties.TargetCharacter)
+	{
+		return;	
+	}
+
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(EffectProperties.SourceController))
+	{
+		AuraPlayerController->ShowDamageNumber(Damage, EffectProperties.TargetCharacter);
+	}
+}
+
+#pragma endregion ATTRIBUTES_META
 
 #pragma endregion ATTRIBUTES
 
