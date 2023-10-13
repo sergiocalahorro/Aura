@@ -17,5 +17,5 @@ public:
 
 	/** Set damage's text on widget */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetDamageText(float Damage);
+	void SetDamageText(float Damage, bool bInIsBlockedHit, bool bInIsCriticalHit);
 };

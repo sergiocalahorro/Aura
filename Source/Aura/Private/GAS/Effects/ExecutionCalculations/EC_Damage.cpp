@@ -7,6 +7,7 @@
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
+#include "GAS/Utils/AuraAbilityTypes.h"
 #include "Interaction/CombatInterface.h"
 
 struct AuraDamageStatics
@@ -92,18 +93,22 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	FAggregatorEvaluateParameters EvaluateParams;
 	EvaluateParams.SourceTags = SourceTags;
 	EvaluateParams.TargetTags = TargetTags;
+
+	FGameplayEffectContextHandle EffectContextHandle = EffectSpec.GetContext();
 	
 	// Retrieve Damage's base value
 	float Damage = EffectSpec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
 
 	// Check Target's BlockChance and calculate incoming Damage's value if it's a block
-	HandleBlock(ExecutionParams, EvaluateParams, Damage);
-	
+	const bool bIsBlockedHit = HandleBlock(ExecutionParams, EvaluateParams, Damage);
+	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bIsBlockedHit);
+
 	// Check Target's Armor and Source's ArmorPenetration and calculate incoming Damage's value
 	HandleArmor(CharacterClassInfo, SourceAvatarCombat, TargetAvatarCombat, ExecutionParams, EvaluateParams, Damage);
 
 	// Check Target's CriticalHitChance and Source's CriticalHitResistance and calculate incoming Damage's value if it's a critical hit
-	HandleCriticalHit(CharacterClassInfo, TargetAvatarCombat, ExecutionParams, EvaluateParams, Damage);
+	const bool bIsCriticalHit = HandleCriticalHit(CharacterClassInfo, TargetAvatarCombat, ExecutionParams, EvaluateParams, Damage);
+	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bIsCriticalHit);
 
 	// Modify IncomingDamage attribute with the calculated final Damage value
 	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
@@ -115,7 +120,7 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 #pragma region DAMAGE
 
 /** Check Target's BlockChance in order to calculate Damage taken if there's a successful block */
-void UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
+bool UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
 {
 	// Capture BlockChance on Target in order to determine if there was a successful block
 	float TargetBlockChance = 0.f;
@@ -125,6 +130,8 @@ void UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& Exe
 	// Halve Damage's value if it's a block
 	const bool bBlocked = FMath::RandRange(1.f, 100.f) < TargetBlockChance;
 	Damage = bBlocked ? Damage / 2.f : Damage;
+
+	return bBlocked;
 }
 
 /** Check Target's Armor and Source's ArmorPenetration in order to calculate Damage taken */
@@ -156,7 +163,7 @@ void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, cons
 }
 
 /** Check Target's CriticalHitChance and Source's CriticalHitResistance in order to calculate Damage taken */
-void UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, const ICombatInterface* TargetAvatarCombat, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
+bool UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, const ICombatInterface* TargetAvatarCombat, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
 {
 	// Capture CriticalHitChance on Source in order to determine if there was a critical hit
 	float SourceCriticalHitChance = 0.f;
@@ -183,6 +190,8 @@ void UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo
 	// Double Damage's value and add to its value the Source's CriticalHitDamage if it's a critical hit
 	const bool bCriticalHit = FMath::RandRange(1.f, 100.f) < EffectiveCriticalHitChance;
 	Damage = bCriticalHit ? (Damage * 2.f) + SourceCriticalHitDamage : Damage;
+
+	return bCriticalHit;
 }
 
 #pragma endregion DAMAGE

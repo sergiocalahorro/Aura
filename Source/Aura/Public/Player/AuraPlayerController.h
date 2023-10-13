@@ -180,7 +180,7 @@ public:
 
 	/** Show damage number above target */
 	UFUNCTION(Client, Reliable)
-	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter);
+	void DisplayDamage(ACharacter* TargetCharacter, float DamageAmount, bool bInIsBlockedHit, bool bInIsCriticalHit);
 
 private:
 

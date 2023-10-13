@@ -239,7 +239,7 @@ private:
 	void HandleIncomingDamage(const FEffectProperties& EffectProperties);
 
 	/** Show floating damage text above target */
-	void ShowFloatingDamageText(const FEffectProperties& EffectProperties, const float Damage) const;
+	void ShowFloatingDamageText(const FEffectProperties& EffectProperties, float Damage) const;
 
 public:
 

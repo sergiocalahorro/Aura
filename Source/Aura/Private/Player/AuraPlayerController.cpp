@@ -261,7 +261,7 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 #pragma region COMBAT
 
 /** Show damage number above target */
-void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, ACharacter* TargetCharacter)
+void AAuraPlayerController::DisplayDamage_Implementation(ACharacter* TargetCharacter, float DamageAmount, bool bInIsBlockedHit, bool bInIsCriticalHit)
 {
 	if (!IsValid(TargetCharacter) || !DamageTextWidgetClass)
 	{
@@ -272,7 +272,7 @@ void AAuraPlayerController::ShowDamageNumber_Implementation(float DamageAmount, 
 	DamageTextWidget->RegisterComponent();
 	DamageTextWidget->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 	DamageTextWidget->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-	DamageTextWidget->SetDamageText(DamageAmount);
+	DamageTextWidget->SetDamageText(DamageAmount, bInIsBlockedHit, bInIsCriticalHit);
 }
 
 #pragma endregion COMBAT

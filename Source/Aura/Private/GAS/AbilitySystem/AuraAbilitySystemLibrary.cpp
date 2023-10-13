@@ -10,6 +10,7 @@
 #include "Character/Data/CharacterClassDefaultInfo.h"
 #include "Character/Data/CharacterClassInfo.h"
 #include "GameMode/AuraBaseGameMode.h"
+#include "GAS/Utils/AuraAbilityTypes.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 #include "UI/WidgetController/WidgetControllerParams.h"
@@ -108,3 +109,47 @@ UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 }
 
 #pragma endregion CHARACTER
+
+#pragma region EFFECT
+
+/** Return whether damage effect is blocked */
+bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EffectContext->IsBlockedHit();
+	}
+
+	return false;
+}
+
+/** Return whether damage effect is critical hit */
+bool UAuraAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FAuraGameplayEffectContext* EffectContext = static_cast<const FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return EffectContext->IsCriticalHit();
+	}
+
+	return false;
+}
+
+/** Set whether damage effect is blocked */
+void UAuraAbilitySystemLibrary::SetIsBlockedHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsBlockedHit)
+{
+	if (FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EffectContext->SetIsBlockedHit(bInIsBlockedHit);
+	}
+}
+
+/** Set whether damage effect is critical hit */
+void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit)
+{
+	if (FAuraGameplayEffectContext* EffectContext = static_cast<FAuraGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		EffectContext->SetIsCriticalHit(bInIsCriticalHit);
+	}
+}
+
+#pragma endregion EFFECT

@@ -12,6 +12,7 @@
 
 // Headers - Aura
 #include "GameplayTags/AuraGameplayTags.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerController.h"
@@ -255,16 +256,19 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 }
 
 /** Show floating damage text above target */
-void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectProperties, const float Damage) const
+void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectProperties, float Damage) const
 {
 	if (EffectProperties.SourceCharacter == EffectProperties.TargetCharacter)
 	{
 		return;	
 	}
 
+	const bool bIsBlockedHit = UAuraAbilitySystemLibrary::IsBlockedHit(EffectProperties.EffectContextHandle);
+	const bool bIsCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(EffectProperties.EffectContextHandle);
+
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(EffectProperties.SourceController))
 	{
-		AuraPlayerController->ShowDamageNumber(Damage, EffectProperties.TargetCharacter);
+		AuraPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
 	}
 }
 
