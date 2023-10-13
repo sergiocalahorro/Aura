@@ -102,9 +102,12 @@ void AAuraEnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
-
-	UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
-	UAuraAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent);
+	
+	if (HasAuthority())
+	{
+		UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
+		UAuraAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent);
+	}
 }
 
 /** Setup health logic and listening for changes on tags */

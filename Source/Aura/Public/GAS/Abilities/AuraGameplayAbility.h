@@ -25,14 +25,5 @@ public:
 	FGameplayTag StartupInputTag;
 
 #pragma endregion INPUT
-
-#pragma region DAMAGE
-
-protected:
-
-	/** Damage for this ability */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage")
-	FScalableFloat Damage;
-
-#pragma endregion DAMAGE
+	
 };

@@ -43,6 +43,9 @@ public:
 
 private:
 
+	/** Calculate final damage by checking the Resistance to the incoming Damage Type */
+	void CalculateDamageByResistanceToDamageType(const FGameplayTag& ResistanceDamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float DamageTypeValue, float& Damage) const;
+
 	/** Check Target's BlockChance in order to calculate Damage taken if there's a successful block */
 	bool HandleBlock(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const;
 

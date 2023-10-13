@@ -93,6 +93,24 @@ public:
 
 #pragma endregion ATTRIBUTES_SECONDARY
 
+#pragma region ATTRIBUTES_RESISTANCE
+
+public:
+
+	/** Fire Resistance Attribute */
+	FGameplayTag Attributes_Resistance_Fire;
+
+	/** Lightning Resistance Attribute */
+	FGameplayTag Attributes_Resistance_Lightning;
+
+	/** Arcane Resistance Attribute */
+	FGameplayTag Attributes_Resistance_Arcane;
+
+	/** Physical Resistance Attribute */
+	FGameplayTag Attributes_Resistance_Physical;
+
+#pragma endregion ATTRIBUTES_RESISTANCE
+
 #pragma region ATTRIBUTES_VITAL
 
 public:
@@ -178,6 +196,21 @@ public:
 
 	/** Damage */
 	FGameplayTag Damage;
+
+	/** Fire Damage Type */
+	FGameplayTag Damage_Fire;
+
+	/** Lightning Damage Type */
+	FGameplayTag Damage_Lightning;
+
+	/** Arcane Damage Type */
+	FGameplayTag Damage_Arcane;
+
+	/** Physical Damage Type */
+	FGameplayTag Damage_Physical;
+
+	/** Array that contains all Damage Types linked to Damage Type Resistances */
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
 #pragma region DAMAGE
 

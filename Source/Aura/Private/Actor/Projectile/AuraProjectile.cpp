@@ -10,11 +10,11 @@
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "Components/AudioComponent.h"
 
 // Headers - Aura
 #include "Aura.h"
 #include "Actor/Projectile/ProjectileData.h"
-#include "Components/AudioComponent.h"
 
 #pragma region INITIALIZATION
 
@@ -86,6 +86,18 @@ void AAuraProjectile::Destroyed()
 /** BeginOverlap Callback */
 void AAuraProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (DamageEffectSpecHandle.Data.IsValid())
+	{
+		if (DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
+		{
+			return;
+		}
+	}
+	else
+	{
+		return;
+	}
+
 	ProjectileHit();
 	
 	if (HasAuthority())
@@ -123,6 +135,11 @@ void AAuraProjectile::InitializeProjectile() const
 /** Functionality performed when projectile hits something */
 void AAuraProjectile::ProjectileHit() const
 {
+	if (bHit)
+	{
+		return;
+	}
+	
 	UGameplayStatics::PlaySoundAtLocation(this, ProjectileData->ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ProjectileData->ImpactEffect, GetActorLocation());
 

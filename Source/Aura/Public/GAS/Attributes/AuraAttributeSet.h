@@ -205,6 +205,50 @@ public:
 
 #pragma endregion ATTRIBUTES_SECONDARY
 
+#pragma region ATTRIBUTES_RESISTANCE
+
+public:
+
+	/** ResistanceFire's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_ResistanceFire(const FGameplayAttributeData& OldResistanceFire) const;
+
+	/** ResistanceLightning's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_ResistanceLightning(const FGameplayAttributeData& OldResistanceLightning) const;
+
+	/** ResistanceArcane's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_ResistanceArcane(const FGameplayAttributeData& OldResistanceArcane) const;
+
+	/** ResistancePhysical's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_ResistancePhysical(const FGameplayAttributeData& OldResistancePhysical) const;
+
+public:
+
+	/** ResistanceFire Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ResistanceFire, Category = "AA|Attributes|Resistance")
+	FGameplayAttributeData ResistanceFire;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistanceFire)
+
+	/** ResistanceLightning Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ResistanceLightning, Category = "AA|Attributes|Resistance")
+	FGameplayAttributeData ResistanceLightning;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistanceLightning)
+
+	/** ResistanceArcane Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ResistanceArcane, Category = "AA|Attributes|Resistance")
+	FGameplayAttributeData ResistanceArcane;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistanceArcane)
+
+	/** ResistancePhysical Attribute */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_ResistancePhysical, Category = "AA|Attributes|Resistance")
+	FGameplayAttributeData ResistancePhysical;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, ResistancePhysical)
+
+#pragma endregion ATTRIBUTES_RESISTANCE
+
 #pragma region ATTRIBUTES_VITAL
 
 public:

@@ -263,7 +263,7 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 /** Show damage number above target */
 void AAuraPlayerController::DisplayDamage_Implementation(ACharacter* TargetCharacter, float DamageAmount, bool bInIsBlockedHit, bool bInIsCriticalHit)
 {
-	if (!IsValid(TargetCharacter) || !DamageTextWidgetClass)
+	if (!IsValid(TargetCharacter) || !DamageTextWidgetClass || !IsLocalController())
 	{
 		return;
 	}

@@ -4,7 +4,9 @@
 
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
-#include "AuraGameplayAbility.h"
+
+// Headers - Aura
+#include "AuraDamageGameplayAbility.h"
 
 #include "AuraProjectileSpell.generated.h"
 
@@ -21,7 +23,7 @@ class UAbilityTask_TargetDataUnderMouse;
  * 
  */
 UCLASS(Abstract)
-class AURA_API UAuraProjectileSpell : public UAuraGameplayAbility
+class AURA_API UAuraProjectileSpell : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -54,10 +56,6 @@ private:
 	/** Projectile to spawn's class */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")
 	TSubclassOf<AAuraProjectile> ProjectileClass;
-
-	/** Class for the damage effect to apply */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
 	/** Montage played to cast projectile */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")

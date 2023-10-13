@@ -14,7 +14,8 @@
 /** Sets default values for this object's properties */
 UHitReact::UHitReact()
 {
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerExecution;
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	bRetriggerInstancedAbility = true;
 }
 	
 #pragma endregion INITIALIZATION

@@ -32,6 +32,21 @@ public:
 	/** Declare CriticalHitDamage Attribute's capture definition */
 	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalHitDamage);
 
+	/** Declare ResistanceFire Attribute's capture definition */
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ResistanceFire);
+
+	/** Declare ResistanceLightning Attribute's capture definition */
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ResistanceLightning);
+
+	/** Declare ResistanceArcane Attribute's capture definition */
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ResistanceArcane);
+
+	/** Declare ResistancePhysical Attribute's capture definition */
+	DECLARE_ATTRIBUTE_CAPTUREDEF(ResistancePhysical);
+
+	/** Map Damage Type resistances to Attribute capture definitions */
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
+
 	/** Sets default values for this struct's properties */
 	AuraDamageStatics()
 	{
@@ -44,6 +59,23 @@ public:
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, Armor, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, BlockChance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, CriticalHitResistance, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ResistanceFire, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ResistanceLightning, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ResistanceArcane, Target, false);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ResistancePhysical, Target, false);
+
+		// Map capture definitions to corresponding tags
+		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, ArmorDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ArmorPenetration, ArmorPenetrationDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_BlockChance, BlockChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitChance, CriticalHitChanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitDamage, CriticalHitDamageDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance, CriticalHitResistanceDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, ResistanceFireDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, ResistanceLightningDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane, ResistanceArcaneDef);
+		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, ResistancePhysicalDef);
 	}
 };
 
@@ -59,12 +91,23 @@ static const AuraDamageStatics& DamageStatics()
 /** Sets default values for this object's properties */
 UEC_Damage::UEC_Damage()
 {
+	// Armor
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorPenetrationDef);
+
+	// Block hit
 	RelevantAttributesToCapture.Add(DamageStatics().BlockChanceDef);
+
+	// Critical hit
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitChanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitResistanceDef);
 	RelevantAttributesToCapture.Add(DamageStatics().CriticalHitDamageDef);
+
+	// Resistances to Damage Types
+	RelevantAttributesToCapture.Add(DamageStatics().ResistanceFireDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ResistanceLightningDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ResistanceArcaneDef);
+	RelevantAttributesToCapture.Add(DamageStatics().ResistancePhysicalDef);
 }
 
 #pragma endregion INITIALIZATION
@@ -96,28 +139,52 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 
 	FGameplayEffectContextHandle EffectContextHandle = EffectSpec.GetContext();
 	
-	// Retrieve Damage's base value
-	float Damage = EffectSpec.GetSetByCallerMagnitude(FAuraGameplayTags::Get().Damage);
+	// Calculate damage value
+	float FinalDamage = 0.f;
+	for (auto DamageTypeToResistance : FAuraGameplayTags::Get().DamageTypesToResistances)
+	{
+		const FGameplayTag DamageTypeTag = DamageTypeToResistance.Key;
+		const FGameplayTag ResistanceDamageTypeTag = DamageTypeToResistance.Value;
+		checkf(AuraDamageStatics().TagsToCaptureDefs.Contains(ResistanceDamageTypeTag), TEXT("EC_Damage::Execute - TagsToCaptureDefs doesn't contain Tag: [%s]"), *ResistanceDamageTypeTag.ToString());
+
+		// ToDo: Add a DamageType GameplayTag (or GameplayTagContainer, in case an attack could use multiple Damage Types) to the EffectContext
+		// That way, the DamageType from the EffectContext could be accessed and used for finding its matching Resistance in the DamageTypesToResistances map,
+		// instead of unnecessarily looping through all the existing Damage Types
+		
+		const float DamageTypeValue = EffectSpec.GetSetByCallerMagnitude(DamageTypeTag);
+		CalculateDamageByResistanceToDamageType(ResistanceDamageTypeTag, ExecutionParams, EvaluateParams, DamageTypeValue, FinalDamage);
+	}
 
 	// Check Target's BlockChance and calculate incoming Damage's value if it's a block
-	const bool bIsBlockedHit = HandleBlock(ExecutionParams, EvaluateParams, Damage);
+	const bool bIsBlockedHit = HandleBlock(ExecutionParams, EvaluateParams, FinalDamage);
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bIsBlockedHit);
 
 	// Check Target's Armor and Source's ArmorPenetration and calculate incoming Damage's value
-	HandleArmor(CharacterClassInfo, SourceAvatarCombat, TargetAvatarCombat, ExecutionParams, EvaluateParams, Damage);
+	HandleArmor(CharacterClassInfo, SourceAvatarCombat, TargetAvatarCombat, ExecutionParams, EvaluateParams, FinalDamage);
 
 	// Check Target's CriticalHitChance and Source's CriticalHitResistance and calculate incoming Damage's value if it's a critical hit
-	const bool bIsCriticalHit = HandleCriticalHit(CharacterClassInfo, TargetAvatarCombat, ExecutionParams, EvaluateParams, Damage);
+	const bool bIsCriticalHit = HandleCriticalHit(CharacterClassInfo, TargetAvatarCombat, ExecutionParams, EvaluateParams, FinalDamage);
 	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bIsCriticalHit);
 
 	// Modify IncomingDamage attribute with the calculated final Damage value
-	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
+	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, FinalDamage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
 }
 
 #pragma endregion OVERRIDES
 
 #pragma region DAMAGE
+
+/** Calculate final damage by checking the Resistance to the incoming Damage Type */
+void UEC_Damage::CalculateDamageByResistanceToDamageType(const FGameplayTag& ResistanceDamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float DamageTypeValue, float& Damage) const
+{
+	float ResistanceDamageTypeValue = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AuraDamageStatics().TagsToCaptureDefs[ResistanceDamageTypeTag], EvaluateParams, ResistanceDamageTypeValue);
+	ResistanceDamageTypeValue = FMath::Clamp(ResistanceDamageTypeValue, 0.f, 100.f);
+
+	DamageTypeValue *= (100.f - ResistanceDamageTypeValue) / 100.f;
+	Damage += DamageTypeValue;
+}
 
 /** Check Target's BlockChance in order to calculate Damage taken if there's a successful block */
 bool UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
