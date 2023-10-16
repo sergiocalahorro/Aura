@@ -15,6 +15,10 @@
 
 // Forward declarations - Unreal Engine
 class UWidgetComponent;
+class UBehaviorTree;
+
+// Forward declarations - Aura
+class AAuraAIController;
 
 UCLASS(Abstract)
 class AURA_API AAuraEnemy : public AAuraBaseCharacter, public IInteractableInterface
@@ -31,6 +35,11 @@ public:
 #pragma endregion INITIALIZATION
 
 #pragma region OVERRIDES
+
+public:
+
+	/** Called when this Pawn is possessed. Only called on the server (or in standalone) */
+	virtual void PossessedBy(AController* NewController) override;
 	
 protected:
 	
@@ -48,6 +57,20 @@ private:
 	TObjectPtr<UWidgetComponent> HealthBarWidget;
 
 #pragma endregion COMPONENTS
+
+#pragma region AI
+
+protected:
+
+	/** Behavior Tree */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|AI")
+	TObjectPtr<UBehaviorTree> BehaviorTree;
+
+	/** AI Controller */
+	UPROPERTY()
+	TObjectPtr<AAuraAIController> AuraAIController;
+
+#pragma endregion AI
 
 #pragma region COMBAT
 

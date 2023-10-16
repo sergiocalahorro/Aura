@@ -8,6 +8,9 @@
 
 // Headers - Aura
 #include "Aura.h"
+#include "AI/AuraAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
@@ -41,6 +44,21 @@ AAuraEnemy::AAuraEnemy()
 #pragma endregion INITIALIZATION
 
 #pragma endregion OVERRIDES
+
+/** Called when this Pawn is possessed. Only called on the server (or in standalone) */
+void AAuraEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
+	AuraAIController = CastChecked<AAuraAIController>(NewController);
+	// AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	AuraAIController->RunBehaviorTree(BehaviorTree);
+}
 
 /** Called when the game starts or when spawned */
 void AAuraEnemy::BeginPlay()
