@@ -7,6 +7,7 @@
 #include "AbilitySystemComponent.h"
 
 // Headers - Aura
+#include "Character/AuraEnemy.h"
 #include "GAS/Effects/EffectDefinition.h"
 
 #pragma region INITIALIZATION
@@ -38,6 +39,11 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* Target, const FEffectDefiniti
 {
 	check(EffectInfo.EffectClass);
 
+	if (!bShouldAffectEnemies && Cast<AAuraEnemy>(Target))
+	{
+		return;
+	}
+
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(Target);
 	if (!TargetASC)
 	{
@@ -61,6 +67,11 @@ void AAuraEffectActor::ApplyEffectToTarget(AActor* Target, const FEffectDefiniti
 /** BeginOverlap Callback */
 void AAuraEffectActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!bShouldAffectEnemies && Cast<AAuraEnemy>(OtherActor))
+	{
+		return;
+	}
+	
 	for (FEffectDefinition& EffectInfo : Effects)
 	{
 		// Apply effect
@@ -79,6 +90,11 @@ void AAuraEffectActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, 
 /** EndOverlap Callback */
 void AAuraEffectActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (!bShouldAffectEnemies && Cast<AAuraEnemy>(OtherActor))
+	{
+		return;
+	}
+	
 	UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 	if (!IsValid(TargetASC))
 	{
@@ -112,11 +128,6 @@ void AAuraEffectActor::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	for (FActiveGameplayEffectHandle& ActiveEffectHandle : ActiveEffectHandlesToRemove)
 	{
 		ActiveEffectHandles.FindAndRemoveChecked(ActiveEffectHandle);
-	}
-	
-	if (bDestroyOnEffectsRemoval)
-	{
-		Destroy();
 	}
 }
 

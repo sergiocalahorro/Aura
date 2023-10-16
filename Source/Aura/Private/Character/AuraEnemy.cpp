@@ -9,7 +9,6 @@
 // Headers - Aura
 #include "Aura.h"
 #include "AI/AuraAIController.h"
-#include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
@@ -28,6 +27,13 @@ AAuraEnemy::AAuraEnemy()
 
 	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
 	Weapon->SetCustomDepthStencilValue(CUSTOM_DEPTH_RED);
+
+	// Movement
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationRoll = false;
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	// Health bar
 	HealthBarWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBarWidget"));
@@ -56,8 +62,8 @@ void AAuraEnemy::PossessedBy(AController* NewController)
 	}
 	
 	AuraAIController = CastChecked<AAuraAIController>(NewController);
-	// AuraAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	AuraAIController->RunBehaviorTree(BehaviorTree);
+	SetInitialBlackboardValues();
 }
 
 /** Called when the game starts or when spawned */
@@ -70,6 +76,17 @@ void AAuraEnemy::BeginPlay()
 }
 
 #pragma endregion OVERRIDES
+
+#pragma region AI
+
+/** Set initial values for Blackboard */
+void AAuraEnemy::SetInitialBlackboardValues() const
+{
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
+}
+
+#pragma endregion AI
 
 #pragma region COMBAT
 
@@ -91,6 +108,7 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCou
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
 #pragma endregion COMBAT

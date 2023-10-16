@@ -60,6 +60,11 @@ private:
 
 #pragma region AI
 
+private:
+
+	/** Set initial values for Blackboard */
+	void SetInitialBlackboardValues() const;
+
 protected:
 
 	/** Behavior Tree */

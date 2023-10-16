@@ -69,9 +69,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AA|Effect")
 	bool bDestroyOnEffectsApplication = false;
 
-	/** Whether Actor should be destroyed on effects' removal */
+	/** Whether Actor's effects should be affect enemies */
 	UPROPERTY(EditAnywhere, Category = "AA|Effect")
-	bool bDestroyOnEffectsRemoval = false;
+	bool bShouldAffectEnemies = false;
 
 	/** Active effects' handles mapped to the ASCs they are applied to */
 	UPROPERTY()
