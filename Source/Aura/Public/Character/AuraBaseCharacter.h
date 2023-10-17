@@ -9,6 +9,7 @@
 
 // Headers - Aura
 #include "Interaction/CombatInterface.h"
+#include "Interaction/TaggedMontage.h"
 
 #include "AuraBaseCharacter.generated.h"
 
@@ -60,17 +61,26 @@ protected:
 
 public:
 
+	/** Get Avatar that is the owner of the interface */
+	virtual AActor* GetAvatar_Implementation() override;
+
 	/** Get socket's location that will be used in combat */
-	virtual FVector GetCombatSocketLocation() const override;
+	virtual FVector GetCombatSocketLocation(const FGameplayTag& MontageTag) const override;
 
 	/** Set target location to face */
 	virtual void SetFacingTarget(const FVector& FacingTargetLocation) override;
+
+	/** Get attack montages */
+	TArray<FTaggedMontage> GetAttackMontages_Implementation() const;
 
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const override;
 
 	/** Functionality performed on death */
 	virtual void Death() override;
+
+	/** Whether is dead */
+	virtual bool IsDead_Implementation() const override;
 
 	/** Handle death */
 	UFUNCTION(NetMulticast, Reliable)
@@ -89,17 +99,25 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AA|Combat|Weapon")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
-	/** Weapon tip's socket name */
+	/** Attack sockets tagged */
 	UPROPERTY(EditAnywhere, Category = "AA|Combat|Weapon")
-	FName WeaponTipSocketName = FName("TipSocket");
+	TMap<FGameplayTag, FName> AttackSockets;
+
+	/** Attack montages */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Attacks")
+	TArray<FTaggedMontage> AttackMontages;
 		
 	/** HitReact's montage to play */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|HitReact")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 
-	/** Whether the enemy is hit reacting */
+	/** Whether character is hit reacting */
 	UPROPERTY(BlueprintReadOnly, Category = "AA|Combat|HitReact", meta = (AllowPrivateAccess = true))
 	bool bHitReacting;
+	
+	/** Whether character is dead */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Combat|Death", meta = (AllowPrivateAccess = true))
+	bool bIsDead;
 
 	/** Dissolve's material instance */
 	UPROPERTY(EditAnywhere, Category = "AA|Combat|Death")

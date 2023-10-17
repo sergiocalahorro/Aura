@@ -79,4 +79,16 @@ public:
 
 #pragma endregion EFFECT
 
+#pragma region UTILS
+
+	/** Get alive characters inside a sphere */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|Utils") 
+	static void GetAliveCharactersWithinRadius(const UObject* WorldContextObject, const FVector& Origin, float Radius, const TArray<AActor*>& ActorsToIgnore, TArray<AActor*>& OutAliveCharacters);
+
+	/** Check whether an Actor is friend of another Actor (share a tag) */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|Utils")
+	static bool AreActorsFriends(const AActor* FirstActor, const AActor* SecondActor);
+	
+#pragma endregion UTILS
+
 };

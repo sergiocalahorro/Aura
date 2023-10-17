@@ -9,6 +9,7 @@
 
 // Headers - Aura
 #include "Aura.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Effects/EffectDefinition.h"
 
@@ -49,16 +50,33 @@ void AAuraBaseCharacter::BeginPlay()
 
 #pragma region COMBAT
 
-/** Get socket's location that will be used in combat */
-FVector AAuraBaseCharacter::GetCombatSocketLocation() const
+/** Get Avatar that is the owner of the interface */
+AActor* AAuraBaseCharacter::GetAvatar_Implementation()
 {
-	return Weapon->GetSocketLocation(WeaponTipSocketName);
+	return this;
+}
+
+/** Get socket's location that will be used in combat */
+FVector AAuraBaseCharacter::GetCombatSocketLocation(const FGameplayTag& MontageTag) const
+{
+	if (IsValid(Weapon) && MontageTag.MatchesTagExact(FAuraGameplayTags::Get().Montage_Attack_Weapon))
+	{
+		return Weapon->GetSocketLocation(*AttackSockets.Find(MontageTag));
+	}
+
+	return GetMesh()->GetSocketLocation(*AttackSockets.Find(MontageTag));
 }
 
 /** Set target to face */
 void AAuraBaseCharacter::SetFacingTarget(const FVector& FacingTargetLocation)
 {
 	MotionWarpingComponent->AddOrUpdateWarpTargetFromLocation("FacingTarget", FacingTargetLocation);
+}
+
+/** Get attack montages */
+TArray<FTaggedMontage> AAuraBaseCharacter::GetAttackMontages_Implementation() const
+{
+	return AttackMontages;
 }
 
 /** Get HitReact's montage */
@@ -74,9 +92,17 @@ void AAuraBaseCharacter::Death()
 	MulticastHandleDeath();
 }
 
+/** Whether is dead */
+bool AAuraBaseCharacter::IsDead_Implementation() const
+{
+	return bIsDead;
+}
+
 /** Handle death */
 void AAuraBaseCharacter::MulticastHandleDeath_Implementation()
 {
+	bIsDead = true;
+
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);

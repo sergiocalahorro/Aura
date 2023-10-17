@@ -19,6 +19,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	InitializeNativeDamageGameplayTags();
 	InitializeNativeEventsGameplayTags();
 	InitializeNativeMessagesGameplayTags();
+	InitializeNativeMontagesGameplayTags();
 }
 
 #pragma endregion CORE
@@ -125,7 +126,6 @@ void FAuraGameplayTags::InitializeNativeDamageGameplayTags()
 void FAuraGameplayTags::InitializeNativeEventsGameplayTags()
 {
 	GameplayTags.Event_Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.FireBolt"), FString("Event sent on the montage used for casting a Fire Bolt"));
-	GameplayTags.Event_Montage_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Attack.Melee"), FString("Event sent on the montage used for performing a Melee Attack"));
 }
 
 #pragma endregion EVENTS
@@ -142,3 +142,15 @@ void FAuraGameplayTags::InitializeNativeMessagesGameplayTags()
 }
 
 #pragma endregion MESSAGES
+
+#pragma region MONTAGES
+
+/** Initialize native gameplay tags for montages */
+void FAuraGameplayTags::InitializeNativeMontagesGameplayTags()
+{
+	GameplayTags.Montage_Attack_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.Weapon"), FString("Attack with weapon's montage"));
+	GameplayTags.Montage_Attack_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.RightHand"), FString("Attack with right hand's montage"));
+	GameplayTags.Montage_Attack_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.LeftHand"), FString("Attack with left hand's montage"));
+}
+
+#pragma endregion MONTAGES

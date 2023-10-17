@@ -231,9 +231,6 @@ public:
 	/** Event sent on the montage used for casting a Fire Bolt */
 	FGameplayTag Event_Montage_FireBolt;
 
-	/** Event sent on the montage used to perform a Melee Attack */
-	FGameplayTag Event_Montage_Attack_Melee;
-
 #pragma endregion EVENTS_MONTAGE
 
 #pragma endregion EVENTS
@@ -260,5 +257,25 @@ public:
 	FGameplayTag Message_ManaCrystal;
 
 #pragma endregion MESSAGES
+
+#pragma region MONTAGES
+
+private:
+	
+	/** Initialize native gameplay tags for montages */
+	static void InitializeNativeMontagesGameplayTags();
+
+public:
+
+	/** Attack with weapon's montage */
+	FGameplayTag Montage_Attack_Weapon;
+
+	/** Attack with right hand's montage */
+	FGameplayTag Montage_Attack_RightHand;
+
+	/** Attack with left hand's montage */
+	FGameplayTag Montage_Attack_LeftHand;
+	
+#pragma endregion MONTAGES
 
 };

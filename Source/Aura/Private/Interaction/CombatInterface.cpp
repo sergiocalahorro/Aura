@@ -9,7 +9,7 @@ int32 ICombatInterface::GetCurrentLevel() const
 }
 
 /** Get socket's location that will be used in combat */
-FVector ICombatInterface::GetCombatSocketLocation() const
+FVector ICombatInterface::GetCombatSocketLocation(const FGameplayTag& MontageTag) const
 {
 	return FVector();
 }

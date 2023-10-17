@@ -10,6 +10,7 @@
 
 // Headers - Aura
 #include "Actor/Projectile/AuraProjectile.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilityTasks/AbilityTask_TargetDataUnderMouse.h"
 #include "Interaction/CombatInterface.h"
 
@@ -69,7 +70,7 @@ void UAuraProjectileSpell::SpawnProjectile(FGameplayEventData Payload)
 	check(ProjectileClass);
 	
 	FTransform SpawnTransform;
-	const FVector SpawnLocation = ProjectileCaster->GetCombatSocketLocation();
+	const FVector SpawnLocation = ProjectileCaster->GetCombatSocketLocation(FAuraGameplayTags::Get().Montage_Attack_Weapon);
 	const FRotator SpawnRotation = (ProjectileTargetLocation - SpawnLocation).Rotation();
 	SpawnTransform.SetLocation(SpawnLocation);
 	SpawnTransform.SetRotation(SpawnRotation.Quaternion());

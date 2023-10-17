@@ -7,7 +7,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 // Headers - Aura
-#include "GameplayTags/AuraGameplayTags.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
 
 #pragma region OVERRIDES
@@ -23,18 +23,26 @@ void UAuraMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		{
 			AttackingActor->SetFacingTarget(CombatTarget->GetActorLocation());
 		}
-	}
-	
-	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MeleeAttackMontage);
-	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
-	PlayMontageTask->OnBlendOut.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
-	PlayMontageTask->OnInterrupted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
-	PlayMontageTask->OnCancelled.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
-	PlayMontageTask->ReadyForActivation();
 
-	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, FAuraGameplayTags::Get().Event_Montage_Attack_Melee);
-	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraMeleeAttack::MeleeAttack);
-	WaitEventTask->ReadyForActivation();
+		TArray<FTaggedMontage> TaggedAttackMontages = ICombatInterface::Execute_GetAttackMontages(ActorInfo->AvatarActor.Get());
+		if (TaggedAttackMontages.IsEmpty())
+		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			return;
+		}
+		
+		TaggedAttackMontage = TaggedAttackMontages[FMath::RandRange(0, TaggedAttackMontages.Num() - 1)];
+
+		PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, TaggedAttackMontage.Montage);
+		PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
+		PlayMontageTask->OnInterrupted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
+		PlayMontageTask->OnCancelled.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
+		PlayMontageTask->ReadyForActivation();
+
+		WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TaggedAttackMontage.MontageTag);
+		WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraMeleeAttack::MeleeAttack);
+		WaitEventTask->ReadyForActivation();
+	}
 }
 
 /** Native function, called if an ability ends normally or abnormally. If bReplicate is set to true, try to replicate the ending to the client/server */
@@ -62,7 +70,18 @@ void UAuraMeleeAttack::MeleeAttack(FGameplayEventData Payload)
 {
 	if (const ICombatInterface* AttackingActor = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
-		DrawDebugSphere(GetWorld(), AttackingActor->GetCombatSocketLocation(), 45.f, 12, FColor::Red, false, 0.5f);
+		TArray<AActor*> ActorsToDamage;
+		TArray<AActor*> ActorsToIgnore;
+		ActorsToIgnore.Add(GetAvatarActorFromActorInfo());
+		UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(this, AttackingActor->GetCombatSocketLocation(TaggedAttackMontage.MontageTag), AttackRadius, ActorsToIgnore, ActorsToDamage);
+
+		for (AActor* DamagedActor : ActorsToDamage)
+		{
+			if (!UAuraAbilitySystemLibrary::AreActorsFriends(GetAvatarActorFromActorInfo(), DamagedActor))
+			{
+				ApplyDamage(DamagedActor);
+			}
+		}
 	}
 }
 

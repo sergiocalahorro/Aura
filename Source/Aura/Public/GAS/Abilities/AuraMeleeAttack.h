@@ -7,6 +7,7 @@
 
 // Headers - Aura
 #include "AuraDamageGameplayAbility.h"
+#include "Interaction/TaggedMontage.h"
 
 #include "AuraMeleeAttack.generated.h"
 
@@ -44,9 +45,12 @@ private:
 
 private:
 	
-	/** Montage played to perform melee attack */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|MeleeAttack")
-	TObjectPtr<UAnimMontage> MeleeAttackMontage;
+	/** Attack's radius */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|MeleeAttack", meta = (ClampMin = 0.f, UIMin = 0.f, Delta = 0.1f))
+	float AttackRadius = 45.f;
+
+	/** Attack's montage and tag */
+	FTaggedMontage TaggedAttackMontage;
 
 #pragma endregion MELEE_ATTACK
 

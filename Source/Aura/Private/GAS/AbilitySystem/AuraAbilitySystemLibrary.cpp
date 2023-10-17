@@ -4,9 +4,12 @@
 
 // Headers - Unreal Engine
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 #include "AbilitySystemComponent.h"
 
 // Headers - Aura
+#include "Character/AuraBaseCharacter.h"
 #include "Character/Data/CharacterClassDefaultInfo.h"
 #include "Character/Data/CharacterClassInfo.h"
 #include "GameMode/AuraBaseGameMode.h"
@@ -163,3 +166,37 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 }
 
 #pragma endregion EFFECT
+
+#pragma region UTILS
+
+/** Initialize character with its default abilities */
+void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(const UObject* WorldContextObject, const FVector& Origin, float Radius, const TArray<AActor*>& ActorsToIgnore, TArray<AActor*>& OutAliveCharacters)
+{	
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+	TArray<AActor*> OverlappedActors;
+	UKismetSystemLibrary::SphereOverlapActors(WorldContextObject, Origin, Radius, ObjectTypes, AActor::StaticClass(), ActorsToIgnore, OverlappedActors);
+	
+	for (AActor* OverlappedActor : OverlappedActors)
+	{
+		if (!IsValid(OverlappedActor))
+		{
+			continue;
+		}
+		
+		if (OverlappedActor->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(OverlappedActor))
+		{
+			OutAliveCharacters.AddUnique(OverlappedActor);
+		}
+	}
+}
+
+/** Check whether an Actor can damage another Actor based on their tags */
+bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const AActor* SecondActor)
+{
+	const bool bAreBothPlayers = FirstActor->ActorHasTag(FName("Player")) && SecondActor->ActorHasTag(FName("Player"));
+	const bool bAreBothEnemies = FirstActor->ActorHasTag(FName("Enemy")) && SecondActor->ActorHasTag(FName("Enemy"));
+	return bAreBothPlayers || bAreBothEnemies;
+}
+
+#pragma endregion UTILS

@@ -6,6 +6,9 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 
+// Headers - Aura
+#include "TaggedMontage.h"
+
 #include "CombatInterface.generated.h"
 
 // This class does not need to be modified.
@@ -23,12 +26,16 @@ class AURA_API ICombatInterface
 	GENERATED_BODY()
 
 public:
+	
+	/** Get Avatar that is the owner of the interface */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	AActor* GetAvatar();
 
 	/** Get level */
 	virtual int32 GetCurrentLevel() const;
-
+	
 	/** Get socket's location that will be used in combat */
-	virtual FVector GetCombatSocketLocation() const;
+	virtual FVector GetCombatSocketLocation(const FGameplayTag& MontageTag) const;
 
 	/** Set target location to face */
 	virtual void SetFacingTarget(const FVector& FacingTargetLocation);
@@ -41,9 +48,17 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	AActor* GetCombatTarget() const;
 
+	/** Get attack montages */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	TArray<FTaggedMontage> GetAttackMontages() const;
+
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const;
 
 	/** Functionality performed on death */
 	virtual void Death() = 0;
+
+	/** Whether is dead */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool IsDead() const;
 };

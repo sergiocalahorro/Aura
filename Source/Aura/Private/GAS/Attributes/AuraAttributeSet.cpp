@@ -305,9 +305,16 @@ void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectPr
 	const bool bIsBlockedHit = UAuraAbilitySystemLibrary::IsBlockedHit(EffectProperties.EffectContextHandle);
 	const bool bIsCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(EffectProperties.EffectContextHandle);
 
+	// ToDo: Create a Damage struct holding info such as the DamageAmount, its DamageType(s), whether it's a blocked/critical hit...
+
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(EffectProperties.SourceController))
 	{
-		// ToDo: Create a Damage struct holding info such as the DamageAmount, its DamageType(s), whether it's a blocked/critical hit...
+		AuraPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
+		return;
+	}
+
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(EffectProperties.TargetController))
+	{
 		AuraPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
 	}
 }

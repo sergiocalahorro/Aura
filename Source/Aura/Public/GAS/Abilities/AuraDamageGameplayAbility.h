@@ -22,6 +22,11 @@ class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility
 
 protected:
 
+	/** Apply damage to target Actor */
+	void ApplyDamage(AActor* TargetActor);
+
+protected:
+
 	/** Damage's effect class for this ability */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;

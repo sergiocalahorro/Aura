@@ -5,11 +5,11 @@
 // Headers - Unreal Engine
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 // Headers - Aura
 #include "Aura.h"
 #include "AI/AuraAIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
@@ -120,7 +120,13 @@ void AAuraEnemy::HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCou
 {
 	bHitReacting = NewCount > 0;
 	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
-	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
+	if (AuraAIController)
+	{
+		if (UBlackboardComponent* BlackboardComponent = AuraAIController->GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsBool(FName("HitReacting"), bHitReacting);
+		}
+	}
 }
 
 #pragma endregion COMBAT
