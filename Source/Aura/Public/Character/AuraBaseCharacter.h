@@ -17,6 +17,7 @@ class UAbilitySystemComponent;
 class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
+class UMotionWarpingComponent;
 
 // Forward declarations - Aura
 struct FEffectDefinition;
@@ -45,12 +46,25 @@ protected:
 
 #pragma endregion OVERRIDES
 
+#pragma region COMPONENTS
+
+protected:
+
+	/** Motion Warping Component */
+	UPROPERTY(EditAnywhere, Category = "AA|Components")
+	TObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
+
+#pragma endregion COMPONENTS
+
 #pragma region COMBAT
 
 public:
 
 	/** Get socket's location that will be used in combat */
 	virtual FVector GetCombatSocketLocation() const override;
+
+	/** Set target location to face */
+	virtual void SetFacingTarget(const FVector& FacingTargetLocation) override;
 
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const override;
@@ -77,7 +91,7 @@ protected:
 
 	/** Weapon tip's socket name */
 	UPROPERTY(EditAnywhere, Category = "AA|Combat|Weapon")
-	FName WeaponTipSocketName;
+	FName WeaponTipSocketName = FName("TipSocket");
 		
 	/** HitReact's montage to play */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|HitReact")

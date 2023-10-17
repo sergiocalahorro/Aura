@@ -5,6 +5,7 @@
 // Headers - Unreal Engine
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "MotionWarpingComponent.h"
 
 // Headers - Aura
 #include "Aura.h"
@@ -17,6 +18,8 @@
 AAuraBaseCharacter::AAuraBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
 
 	// Setup collisions
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -50,6 +53,12 @@ void AAuraBaseCharacter::BeginPlay()
 FVector AAuraBaseCharacter::GetCombatSocketLocation() const
 {
 	return Weapon->GetSocketLocation(WeaponTipSocketName);
+}
+
+/** Set target to face */
+void AAuraBaseCharacter::SetFacingTarget(const FVector& FacingTargetLocation)
+{
+	MotionWarpingComponent->AddOrUpdateWarpTargetFromLocation("FacingTarget", FacingTargetLocation);
 }
 
 /** Get HitReact's montage */

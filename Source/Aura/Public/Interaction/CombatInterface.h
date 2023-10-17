@@ -33,6 +33,14 @@ public:
 	/** Set target location to face */
 	virtual void SetFacingTarget(const FVector& FacingTargetLocation);
 
+	/** Set new combat target */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void SetCombatTarget(AActor* InCombatTarget);
+
+	/** Get current combat target */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	AActor* GetCombatTarget() const;
+
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const;
 

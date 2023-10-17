@@ -41,8 +41,6 @@ void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 /** Native function, called if an ability ends normally or abnormally. If bReplicate is set to true, try to replicate the ending to the client/server */
 void UAuraProjectileSpell::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
 	if (IsValid(PlayMontageTask))
 	{
 		PlayMontageTask->EndTask();
@@ -52,6 +50,8 @@ void UAuraProjectileSpell::EndAbility(const FGameplayAbilitySpecHandle Handle, c
 	{
 		TargetDataUnderMouseTask->EndTask();
 	}
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 #pragma endregion OVERRIDES

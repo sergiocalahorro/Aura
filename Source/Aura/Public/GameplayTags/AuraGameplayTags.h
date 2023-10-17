@@ -166,6 +166,9 @@ public:
 	/** Fire Bolt ability */
 	FGameplayTag Abilities_FireBolt;
 
+	/** Attack ability */
+	FGameplayTag Abilities_Attack;
+
 	/** Hit React ability */
 	FGameplayTag Abilities_HitReact;
 
@@ -227,6 +230,9 @@ public:
 
 	/** Event sent on the montage used for casting a Fire Bolt */
 	FGameplayTag Event_Montage_FireBolt;
+
+	/** Event sent on the montage used to perform a Melee Attack */
+	FGameplayTag Event_Montage_Attack_Melee;
 
 #pragma endregion EVENTS_MONTAGE
 

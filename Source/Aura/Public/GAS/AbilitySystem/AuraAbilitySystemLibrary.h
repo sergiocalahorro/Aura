@@ -49,7 +49,7 @@ public:
 
 	/** Initialize character with its default abilities */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults") 
-	static void GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent);
+	static void GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent, ECharacterClass CharacterClass);
 
 	/** Get DataAsset containing information for character class */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults") 

@@ -96,6 +96,18 @@ int32 AAuraEnemy::GetCurrentLevel() const
 	return Level;
 }
 
+/** Set new combat target */
+void AAuraEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+/** Get current combat target */
+AActor* AAuraEnemy::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
 /** Functionality performed on death */
 void AAuraEnemy::Death()
 {
@@ -142,7 +154,7 @@ void AAuraEnemy::InitAbilityActorInfo()
 	if (HasAuthority())
 	{
 		UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
-		UAuraAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent);
+		UAuraAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent, CharacterClass);
 	}
 }
 

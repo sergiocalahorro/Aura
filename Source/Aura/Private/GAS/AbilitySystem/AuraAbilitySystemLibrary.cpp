@@ -11,6 +11,7 @@
 #include "Character/Data/CharacterClassInfo.h"
 #include "GameMode/AuraBaseGameMode.h"
 #include "GAS/Utils/AuraAbilityTypes.h"
+#include "Interaction/CombatInterface.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
 #include "UI/WidgetController/WidgetControllerParams.h"
@@ -88,16 +89,25 @@ void UAuraAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 }
 
 /** Initialize character with its default abilities */
-void UAuraAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent)
+void UAuraAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent, ECharacterClass CharacterClass)
 {
 	check(AbilitySystemComponent);
 	
 	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	check(CharacterClassInfo);
 
-	for (const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterClassInfo->Abilities)
+	const ICombatInterface* AvatarActor = Cast<ICombatInterface>(AbilitySystemComponent->GetAvatarActor());
+	const int32 AbilityLevel = AvatarActor->GetCurrentLevel();
+
+	for (const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterClassInfo->CommonAbilities)
 	{
-		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityClass, 1.f));
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityClass, AbilityLevel));
+	}
+
+	const FCharacterClassDefaultInfo& DefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
+	for (const TSubclassOf<UGameplayAbility>& AbilityClass : DefaultInfo.StartupAbilities)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(AbilityClass, AbilityLevel));
 	}
 }
 

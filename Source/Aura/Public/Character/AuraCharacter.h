@@ -13,7 +13,6 @@
 // Forward declarations - Unreal Engine
 class USpringArmComponent;
 class UCameraComponent;
-class UMotionWarpingComponent;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacter : public AAuraBaseCharacter
@@ -58,10 +57,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "AA|Components")
 	TObjectPtr<USpringArmComponent> SpringArm;
 
-	/** Motion Warping Component */
-	UPROPERTY(EditAnywhere, Category = "AA|Components")
-	TObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
-
 #pragma endregion COMPONENTS
 
 #pragma region COMBAT
@@ -70,9 +65,6 @@ public:
 
 	/** Get level */
 	virtual int32 GetCurrentLevel() const override;
-
-	/** Set target location to face */
-	virtual void SetFacingTarget(const FVector& FacingTargetLocation) override;
 
 #pragma endregion COMBAT
 

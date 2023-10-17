@@ -83,6 +83,12 @@ public:
 
 	/** Get level */
 	virtual int32 GetCurrentLevel() const override;
+
+	/** Set new combat target */
+	void SetCombatTarget_Implementation(AActor* InCombatTarget);
+
+	/** Get current combat target */
+	AActor* GetCombatTarget_Implementation() const;
 	
 	/** Functionality performed on death */
 	virtual void Death() override;
@@ -109,6 +115,10 @@ private:
 	/** Time in order to destroy the enemy after it's dead */
 	UPROPERTY(EditAnywhere, Category = "AA|Combat")
 	float LifeSpan = 5.f;
+
+	/** Target to attack in combat */
+	UPROPERTY(BlueprintReadWrite, Category = "AA|Combat", meta = (AllowPrivateAccess = true))
+	TObjectPtr<AActor> CombatTarget;
 
 #pragma endregion COMBAT
 

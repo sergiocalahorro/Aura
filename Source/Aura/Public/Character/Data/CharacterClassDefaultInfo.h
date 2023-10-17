@@ -9,6 +9,7 @@
 
 // Forward declarations - Unreal Engine
 class UGameplayEffect;
+class UGameplayAbility;
 
 USTRUCT(BlueprintType)
 struct FCharacterClassDefaultInfo
@@ -20,4 +21,8 @@ public:
 	/** Default values for Primary Attributes */
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> PrimaryAttributes;
+
+	/** Startup abilities */
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 };

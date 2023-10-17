@@ -43,9 +43,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Defaults")
 	TSubclassOf<UGameplayEffect> VitalAttributes;
 
-	/** Default Abilities */
+	/** Default common Abilities */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Defaults")
-	TArray<TSubclassOf<UGameplayAbility>> Abilities;
+	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities;
 
 	/** Table that holds damage calculation's coefficients */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Defaults|Damage")

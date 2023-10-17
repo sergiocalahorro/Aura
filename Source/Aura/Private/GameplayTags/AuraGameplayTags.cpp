@@ -83,6 +83,7 @@ void FAuraGameplayTags::InitializeNativeInputsGameplayTags()
 void FAuraGameplayTags::InitializeNativeAbilitiesGameplayTags()
 {
 	GameplayTags.Abilities_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.FireBolt"), FString("Fire Bolt ability"));
+	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Attack"), FString("Attack ability"));
 	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.HitReact"), FString("Hit React ability"));
 }
 
@@ -124,6 +125,7 @@ void FAuraGameplayTags::InitializeNativeDamageGameplayTags()
 void FAuraGameplayTags::InitializeNativeEventsGameplayTags()
 {
 	GameplayTags.Event_Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.FireBolt"), FString("Event sent on the montage used for casting a Fire Bolt"));
+	GameplayTags.Event_Montage_Attack_Melee = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.Attack.Melee"), FString("Event sent on the montage used for performing a Melee Attack"));
 }
 
 #pragma endregion EVENTS

@@ -27,5 +27,12 @@ private:
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 #pragma endregion OVERRIDES
-	
+
+#pragma region TASK
+
+private:
+
+	/** Combat target key selector */
+	UPROPERTY(EditAnywhere)
+	FBlackboardKeySelector CombatTargetSelector;
 };

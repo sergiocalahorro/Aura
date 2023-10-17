@@ -3,18 +3,37 @@
 #include "AI/Tasks/BTTask_Attack.h"
 
 // Headers - Unreal Engine
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "AIController.h"
+#include "BlueprintGameplayTagLibrary.h"
+
+// Headers - Aura
+#include "BehaviorTree/BTFunctionLibrary.h"
+#include "GameplayTags/AuraGameplayTags.h"
+#include "Interaction/CombatInterface.h"
 
 #pragma region OVERRIDES
 
 /** Execute Task */
 EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	const APawn* ControlledPawn = OwnerComp.GetAIOwner()->GetPawn();
-	DrawDebugSphere(GetWorld(), ControlledPawn->GetActorLocation(), 40.f, 12, FColor::Red, false, 0.5f, 0);
-	FinishExecute(true);
+	APawn* ControlledPawn = OwnerComp.GetAIOwner()->GetPawn();
+	if (UAbilitySystemComponent* PawnASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ControlledPawn))
+	{
+		AActor* CombatTarget = UBTFunctionLibrary::GetBlackboardValueAsActor(this, CombatTargetSelector);
+		ICombatInterface::Execute_SetCombatTarget(ControlledPawn, CombatTarget);
+
+		const FGameplayTagContainer AttackTagContainer = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(FAuraGameplayTags::Get().Abilities_Attack);
+		PawnASC->TryActivateAbilitiesByTag(AttackTagContainer);
+
+		FinishExecute(true);
+		return EBTNodeResult::Type::Succeeded;
+	}
 	
-	return EBTNodeResult::Type::Succeeded;
+
+	FinishExecute(false);
+	return EBTNodeResult::Type::Failed;
 }
 
 /** Abort Task */
