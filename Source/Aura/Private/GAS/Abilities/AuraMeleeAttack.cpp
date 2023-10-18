@@ -7,6 +7,8 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 
 // Headers - Aura
+#include "BlueprintGameplayTagLibrary.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
 
@@ -68,19 +70,33 @@ void UAuraMeleeAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 /** Perform Melee Attack */
 void UAuraMeleeAttack::MeleeAttack(FGameplayEventData Payload)
 {
-	if (const ICombatInterface* AttackingActor = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	if (const ICombatInterface* CombatAvatarActor = Cast<ICombatInterface>(AvatarActor))
 	{
+		const FVector CombatSocketLocation = CombatAvatarActor->GetCombatSocketLocation(TaggedAttackMontage.SocketTag);
 		TArray<AActor*> ActorsToDamage;
 		TArray<AActor*> ActorsToIgnore;
-		ActorsToIgnore.Add(GetAvatarActorFromActorInfo());
-		UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(this, AttackingActor->GetCombatSocketLocation(TaggedAttackMontage.MontageTag), AttackRadius, ActorsToIgnore, ActorsToDamage);
+		ActorsToIgnore.Add(AvatarActor);
+		UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(this, CombatSocketLocation, AttackRadius, ActorsToIgnore, ActorsToDamage);
 
+		bool bHasHitTarget = false;
 		for (AActor* DamagedActor : ActorsToDamage)
 		{
-			if (!UAuraAbilitySystemLibrary::AreActorsFriends(GetAvatarActorFromActorInfo(), DamagedActor))
+			if (!UAuraAbilitySystemLibrary::AreActorsFriends(AvatarActor, DamagedActor))
 			{
+				bHasHitTarget = true;
 				ApplyDamage(DamagedActor);
 			}
+		}
+
+		if (bHasHitTarget)
+		{
+			FGameplayCueParameters GameplayCueParams;
+			GameplayCueParams.Location = CombatSocketLocation;
+			GameplayCueParams.EffectCauser = AvatarActor;
+			GameplayCueParams.SourceObject = ICombatInterface::Execute_GetCombatTarget(AvatarActor);
+			GameplayCueParams.AggregatedSourceTags = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(TaggedAttackMontage.MontageTag);
+			K2_ExecuteGameplayCueWithParams(FAuraGameplayTags::Get().GameplayCue_MeleeImpact, GameplayCueParams);
 		}
 	}
 }

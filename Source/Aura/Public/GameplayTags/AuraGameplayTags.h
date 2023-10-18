@@ -217,6 +217,49 @@ public:
 
 #pragma region DAMAGE
 
+#pragma region COMBAT_SOCKETS
+
+private:
+	
+	/** Initialize native gameplay tags for combat sockets */
+	static void InitializeNativeCombatSocketsGameplayTags();
+
+public:
+
+	/** Socket for attacks with weapon */
+	FGameplayTag CombatSocket_Weapon;
+
+	/** Socket for attacks with right hand */
+	FGameplayTag CombatSocket_RightHand;
+
+	/** Socket for attacks with left hand */
+	FGameplayTag CombatSocket_LeftHand;
+	
+#pragma endregion COMBAT_SOCKETS
+
+#pragma region MONTAGES
+
+private:
+	
+	/** Initialize native gameplay tags for montages */
+	static void InitializeNativeMontagesGameplayTags();
+
+public:
+
+	/** Montage for Attack 1 */
+	FGameplayTag Montage_Attack_1;
+
+	/** Montage for Attack 2 */
+	FGameplayTag Montage_Attack_2;
+
+	/** Montage for Attack 3 */
+	FGameplayTag Montage_Attack_3;
+
+	/** Montage for Attack 4 */
+	FGameplayTag Montage_Attack_4;
+	
+#pragma endregion MONTAGES
+
 #pragma region MESSAGES
 
 private:
@@ -240,24 +283,18 @@ public:
 
 #pragma endregion MESSAGES
 
-#pragma region MONTAGES
+#pragma region CUES
 
 private:
 	
-	/** Initialize native gameplay tags for montages */
-	static void InitializeNativeMontagesGameplayTags();
+	/** Initialize native gameplay tags for GameplayCues */
+	static void InitializeNativeCuesGameplayTags();
 
 public:
 
-	/** Attack with weapon's montage */
-	FGameplayTag Montage_Attack_Weapon;
+	/** GameplayCue for Melee Attacks' impacts */
+	FGameplayTag GameplayCue_MeleeImpact;
 
-	/** Attack with right hand's montage */
-	FGameplayTag Montage_Attack_RightHand;
-
-	/** Attack with left hand's montage */
-	FGameplayTag Montage_Attack_LeftHand;
-	
-#pragma endregion MONTAGES
+#pragma endregion CUES
 
 };

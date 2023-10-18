@@ -81,7 +81,7 @@ void UAuraRangedAttack::SpawnProjectile(FGameplayEventData Payload)
 	
 	FTransform SpawnTransform;
 	const ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo());
-	const FVector SpawnLocation = AttackingActor->GetCombatSocketLocation(FAuraGameplayTags::Get().Montage_Attack_Weapon);
+	const FVector SpawnLocation = AttackingActor->GetCombatSocketLocation(FAuraGameplayTags::Get().CombatSocket_Weapon);
 	const FRotator SpawnRotation = (ProjectileTargetLocation - SpawnLocation).Rotation();
 	SpawnTransform.SetLocation(SpawnLocation);
 	SpawnTransform.SetRotation(SpawnRotation.Quaternion());

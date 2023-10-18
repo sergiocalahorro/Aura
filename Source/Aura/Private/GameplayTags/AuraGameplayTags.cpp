@@ -17,8 +17,10 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	InitializeNativeAbilitiesGameplayTags();
 	InitializeNativeEffectsGameplayTags();
 	InitializeNativeDamageGameplayTags();
-	InitializeNativeMessagesGameplayTags();
+	InitializeNativeCombatSocketsGameplayTags();
 	InitializeNativeMontagesGameplayTags();
+	InitializeNativeMessagesGameplayTags();
+	InitializeNativeCuesGameplayTags();
 }
 
 #pragma endregion CORE
@@ -119,6 +121,31 @@ void FAuraGameplayTags::InitializeNativeDamageGameplayTags()
 
 #pragma endregion DAMAGE
 
+#pragma region COMBAT_SOCKETS
+
+/** Initialize native gameplay tags for combat sockets */
+void FAuraGameplayTags::InitializeNativeCombatSocketsGameplayTags()
+{
+	GameplayTags.CombatSocket_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.Weapon"), FString("Socket for attacks with weapon"));
+	GameplayTags.CombatSocket_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.RightHand"), FString("Socket for attacks with right hand"));
+	GameplayTags.CombatSocket_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("CombatSocket.LeftHand"), FString("Socket for attacks with left hand"));
+}
+
+#pragma endregion COMBAT_SOCKETS
+
+#pragma region MONTAGES
+
+/** Initialize native gameplay tags for montages */
+void FAuraGameplayTags::InitializeNativeMontagesGameplayTags()
+{
+	GameplayTags.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.1"), FString("Montage for Attack 1"));
+	GameplayTags.Montage_Attack_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.2"), FString("Montage for Attack 2"));
+	GameplayTags.Montage_Attack_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.3"), FString("Montage for Attack 3"));
+	GameplayTags.Montage_Attack_4 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.4"), FString("Montage for Attack 4"));
+}
+	
+#pragma endregion MONTAGES
+
 #pragma region MESSAGES
 
 /** Initialize native gameplay tags for events */
@@ -132,14 +159,12 @@ void FAuraGameplayTags::InitializeNativeMessagesGameplayTags()
 
 #pragma endregion MESSAGES
 
-#pragma region MONTAGES
+#pragma region CUES
 
-/** Initialize native gameplay tags for montages */
-void FAuraGameplayTags::InitializeNativeMontagesGameplayTags()
+/** Initialize native gameplay tags for GameplayCues */
+void FAuraGameplayTags::InitializeNativeCuesGameplayTags()
 {
-	GameplayTags.Montage_Attack_Weapon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.Weapon"), FString("Attack with weapon's montage"));
-	GameplayTags.Montage_Attack_RightHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.RightHand"), FString("Attack with right hand's montage"));
-	GameplayTags.Montage_Attack_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.LeftHand"), FString("Attack with left hand's montage"));
+	GameplayTags.GameplayCue_MeleeImpact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.MeleeImpact"), FString("GameplayCue for Melee Attacks' impacts"));
 }
 
-#pragma endregion MONTAGES
+#pragma endregion CUES

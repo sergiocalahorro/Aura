@@ -19,6 +19,7 @@ class UAttributeSet;
 class UGameplayEffect;
 class UGameplayAbility;
 class UMotionWarpingComponent;
+class UNiagaraSystem;
 
 // Forward declarations - Aura
 struct FEffectDefinition;
@@ -73,6 +74,9 @@ public:
 	/** Get attack montages */
 	TArray<FTaggedMontage> GetAttackMontages_Implementation() const;
 
+	/** Get attack montage with given tag */
+	FTaggedMontage GetAttackMontageWithTag_Implementation(const FGameplayTag& MontageTag) const;
+
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const override;
 
@@ -92,6 +96,9 @@ public:
 	/** Start timeline to apply dissolve effect */
 	UFUNCTION(BlueprintImplementableEvent)
 	void StartDissolveTimeline(const TArray<UMaterialInstanceDynamic*>& DynamicMaterialInstances);
+
+	/** Get blood particles' effect */
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() const override;
 
 protected:
 
@@ -120,13 +127,17 @@ protected:
 	bool bIsDead;
 
 	/** Dissolve's material instance */
-	UPROPERTY(EditAnywhere, Category = "AA|Combat|Death")
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Effects")
 	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
 
 	/** Weapon's dissolve's material instance */
-	UPROPERTY(EditAnywhere, Category = "AA|Combat|Death")
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Effects")
 	TObjectPtr<UMaterialInstance> WeaponDissolveMaterialInstance;
 
+	/** Blood effect */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Effects")
+	TObjectPtr<UNiagaraSystem> BloodEffect;
+	
 #pragma endregion COMBAT
 
 #pragma region GAS

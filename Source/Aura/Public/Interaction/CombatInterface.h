@@ -11,6 +11,9 @@
 
 #include "CombatInterface.generated.h"
 
+// Forward declarations - Unreal Engine
+class UNiagaraSystem;
+
 // This class does not need to be modified.
 UINTERFACE()
 class UCombatInterface : public UInterface
@@ -52,6 +55,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	TArray<FTaggedMontage> GetAttackMontages() const;
 
+	/** Get attack montage with given tag */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	FTaggedMontage GetAttackMontageWithTag(const FGameplayTag& MontageTag) const;
+
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const;
 
@@ -61,4 +68,8 @@ public:
 	/** Whether is dead */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool IsDead() const;
+
+	/** Get blood particles' effect */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UNiagaraSystem* GetBloodEffect() const;
 };

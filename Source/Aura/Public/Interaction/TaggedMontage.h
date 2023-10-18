@@ -22,4 +22,12 @@ public:
 	/** Anim Montage's Tag */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag MontageTag;
+
+	/** Socket Tag */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag SocketTag;
+
+	/** Impact sound */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TObjectPtr<USoundBase> ImpactSound;
 };

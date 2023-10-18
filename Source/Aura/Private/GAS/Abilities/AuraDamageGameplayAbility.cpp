@@ -35,7 +35,7 @@ FTaggedMontage UAuraDamageGameplayAbility::GetTaggedAttackMontageToUse(const FGa
 		{
 			if (AttackTag.MatchesTagExact(TaggedAttackMontage.MontageTag))
 			{
-				// In case AttackTag is valid, choose the TaggedAttackMontage associated with it
+				// In case AttackTag is valid, choose the TaggedAttackMontage associated with its SocketTag
 				return TaggedAttackMontage;
 			}
 		}

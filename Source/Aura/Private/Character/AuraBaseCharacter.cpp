@@ -59,7 +59,7 @@ AActor* AAuraBaseCharacter::GetAvatar_Implementation()
 /** Get socket's location that will be used in combat */
 FVector AAuraBaseCharacter::GetCombatSocketLocation(const FGameplayTag& MontageTag) const
 {
-	if (IsValid(Weapon) && MontageTag.MatchesTagExact(FAuraGameplayTags::Get().Montage_Attack_Weapon))
+	if (IsValid(Weapon) && MontageTag.MatchesTagExact(FAuraGameplayTags::Get().CombatSocket_Weapon))
 	{
 		return Weapon->GetSocketLocation(*AttackSockets.Find(MontageTag));
 	}
@@ -77,6 +77,20 @@ void AAuraBaseCharacter::SetFacingTarget(const FVector& FacingTargetLocation)
 TArray<FTaggedMontage> AAuraBaseCharacter::GetAttackMontages_Implementation() const
 {
 	return AttackMontages;
+}
+
+/** Get attack montage with given tag */
+FTaggedMontage AAuraBaseCharacter::GetAttackMontageWithTag_Implementation(const FGameplayTag& MontageTag) const
+{
+	for (const FTaggedMontage& AttackMontage : AttackMontages)
+	{
+		if (AttackMontage.MontageTag.MatchesTagExact(MontageTag))
+		{
+			return AttackMontage;
+		}
+	}
+
+	return FTaggedMontage();
 }
 
 /** Get HitReact's montage */
@@ -136,6 +150,12 @@ void AAuraBaseCharacter::Dissolve()
 	}
 
 	StartDissolveTimeline(DynamicMaterialInstances);
+}
+
+/** Get blood particles' effect */
+UNiagaraSystem* AAuraBaseCharacter::GetBloodEffect_Implementation() const
+{
+	return BloodEffect;
 }
 
 #pragma endregion COMBAT
