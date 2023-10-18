@@ -17,7 +17,6 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	InitializeNativeAbilitiesGameplayTags();
 	InitializeNativeEffectsGameplayTags();
 	InitializeNativeDamageGameplayTags();
-	InitializeNativeEventsGameplayTags();
 	InitializeNativeMessagesGameplayTags();
 	InitializeNativeMontagesGameplayTags();
 }
@@ -119,16 +118,6 @@ void FAuraGameplayTags::InitializeNativeDamageGameplayTags()
 }
 
 #pragma endregion DAMAGE
-
-#pragma region EVENTS
-
-/** Initialize native gameplay tags for events */
-void FAuraGameplayTags::InitializeNativeEventsGameplayTags()
-{
-	GameplayTags.Event_Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Event.Montage.FireBolt"), FString("Event sent on the montage used for casting a Fire Bolt"));
-}
-
-#pragma endregion EVENTS
 
 #pragma region MESSAGES
 

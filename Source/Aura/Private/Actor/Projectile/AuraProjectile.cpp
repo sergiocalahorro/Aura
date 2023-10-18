@@ -15,6 +15,7 @@
 // Headers - Aura
 #include "Aura.h"
 #include "Actor/Projectile/ProjectileData.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 
 #pragma region INITIALIZATION
 
@@ -86,14 +87,12 @@ void AAuraProjectile::Destroyed()
 /** BeginOverlap Callback */
 void AAuraProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (DamageEffectSpecHandle.Data.IsValid())
+	if (!DamageEffectSpecHandle.Data.IsValid() || DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
 	{
-		if (DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
-		{
-			return;
-		}
+		return;
 	}
-	else
+
+	if (UAuraAbilitySystemLibrary::AreActorsFriends(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
 	{
 		return;
 	}

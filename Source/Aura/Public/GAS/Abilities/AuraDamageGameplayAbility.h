@@ -7,13 +7,14 @@
 
 // Headers - Aura
 #include "AuraGameplayAbility.h"
+#include "Interaction/TaggedMontage.h"
 
 #include "AuraDamageGameplayAbility.generated.h"
 
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility
 {
 	GENERATED_BODY()
@@ -24,6 +25,9 @@ protected:
 
 	/** Apply damage to target Actor */
 	void ApplyDamage(AActor* TargetActor);
+
+	/** Get attack to use (montage and tag) */
+	virtual FTaggedMontage GetTaggedAttackMontageToUse(const FGameplayTag& AttackTag, const TArray<FTaggedMontage>& TaggedAttackMontages);
 
 protected:
 

@@ -217,24 +217,6 @@ public:
 
 #pragma region DAMAGE
 
-#pragma region EVENTS
-
-private:
-	
-	/** Initialize native gameplay tags for events */
-	static void InitializeNativeEventsGameplayTags();
-
-#pragma region EVENTS_MONTAGE
-
-public:
-
-	/** Event sent on the montage used for casting a Fire Bolt */
-	FGameplayTag Event_Montage_FireBolt;
-
-#pragma endregion EVENTS_MONTAGE
-
-#pragma endregion EVENTS
-
 #pragma region MESSAGES
 
 private:

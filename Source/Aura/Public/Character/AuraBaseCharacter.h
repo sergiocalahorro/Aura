@@ -96,7 +96,7 @@ public:
 protected:
 
 	/** Weapon mesh */
-	UPROPERTY(EditAnywhere, Category = "AA|Combat|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Combat|Weapon")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
 	/** Attack sockets tagged */

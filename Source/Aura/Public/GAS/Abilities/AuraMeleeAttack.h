@@ -18,7 +18,7 @@ class UAbilityTask_WaitGameplayEvent;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class AURA_API UAuraMeleeAttack : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()

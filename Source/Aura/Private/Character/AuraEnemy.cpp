@@ -9,6 +9,7 @@
 
 // Headers - Aura
 #include "Aura.h"
+#include "BrainComponent.h"
 #include "AI/AuraAIController.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
@@ -83,6 +84,7 @@ void AAuraEnemy::BeginPlay()
 void AAuraEnemy::SetInitialBlackboardValues() const
 {
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), false);
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"), CharacterClass != ECharacterClass::Warrior);
 }
 
@@ -111,6 +113,7 @@ AActor* AAuraEnemy::GetCombatTarget_Implementation() const
 /** Functionality performed on death */
 void AAuraEnemy::Death()
 {
+	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 	SetLifeSpan(LifeSpan);
 	Super::Death();
 }
