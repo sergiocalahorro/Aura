@@ -12,6 +12,7 @@
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Effects/EffectDefinition.h"
+#include "Kismet/GameplayStatics.h"
 
 #pragma region INITIALIZATION
 
@@ -74,23 +75,23 @@ void AAuraBaseCharacter::SetFacingTarget(const FVector& FacingTargetLocation)
 }
 
 /** Get attack montages */
-TArray<FTaggedMontage> AAuraBaseCharacter::GetAttackMontages_Implementation() const
+TArray<FAttackData> AAuraBaseCharacter::GetAllAttacks_Implementation() const
 {
 	return AttackMontages;
 }
 
 /** Get attack montage with given tag */
-FTaggedMontage AAuraBaseCharacter::GetAttackMontageWithTag_Implementation(const FGameplayTag& MontageTag) const
+FAttackData AAuraBaseCharacter::GetAttackWithTag_Implementation(const FGameplayTag& MontageTag) const
 {
-	for (const FTaggedMontage& AttackMontage : AttackMontages)
+	for (const FAttackData& AttackMontage : AttackMontages)
 	{
-		if (AttackMontage.MontageTag.MatchesTagExact(MontageTag))
+		if (AttackMontage.AttackMontageTag.MatchesTagExact(MontageTag))
 		{
 			return AttackMontage;
 		}
 	}
 
-	return FTaggedMontage();
+	return FAttackData();
 }
 
 /** Get HitReact's montage */
@@ -128,6 +129,8 @@ void AAuraBaseCharacter::MulticastHandleDeath_Implementation()
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Dissolve();
+
+	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
 }
 
 /** Dissolve effect */

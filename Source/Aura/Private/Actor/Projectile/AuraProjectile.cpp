@@ -132,7 +132,7 @@ void AAuraProjectile::InitializeProjectile() const
 }
 
 /** Functionality performed when projectile hits something */
-void AAuraProjectile::ProjectileHit() const
+void AAuraProjectile::ProjectileHit()
 {
 	if (bHit)
 	{
@@ -146,6 +146,8 @@ void AAuraProjectile::ProjectileHit() const
 	{
 		LoopingSoundComponent->Stop();
 	}
+
+	bHit = true;
 }
 
 #pragma endregion PROJECTILE

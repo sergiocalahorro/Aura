@@ -10,7 +10,6 @@
 
 // Headers - Aura
 #include "Actor/Projectile/AuraProjectile.h"
-#include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 #pragma region OVERRIDES
@@ -29,22 +28,22 @@ void UAuraRangedAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		}
 	}
 		
-	const TArray<FTaggedMontage> TaggedAttackMontages = ICombatInterface::Execute_GetAttackMontages(ActorInfo->AvatarActor.Get());
-	if (TaggedAttackMontages.IsEmpty())
+	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAllAttacks(ActorInfo->AvatarActor.Get());
+	if (Attacks.IsEmpty() && !SpawnProjectileEventTag.IsValid())
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 	
-	const FTaggedMontage TaggedAttackMontage = GetTaggedAttackMontageToUse(SpawnProjectileEventTag, TaggedAttackMontages);
+	CurrentAttackData = GetAttackToUse(SpawnProjectileEventTag, Attacks);
 
-	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, TaggedAttackMontage.Montage);
+	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
 	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraRangedAttack::K2_EndAbility);
 	PlayMontageTask->OnInterrupted.AddUniqueDynamic(this, &UAuraRangedAttack::K2_EndAbility);
 	PlayMontageTask->OnCancelled.AddUniqueDynamic(this, &UAuraRangedAttack::K2_EndAbility);
 	PlayMontageTask->ReadyForActivation();
 
-	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TaggedAttackMontage.MontageTag);
+	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag);
 	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraRangedAttack::SpawnProjectile);
 	WaitEventTask->ReadyForActivation();
 }
@@ -77,16 +76,16 @@ void UAuraRangedAttack::SpawnProjectile(FGameplayEventData Payload)
 		return;
 	}
 	
-	check(ProjectileClass);
+	check(CurrentAttackData.ProjectileClass);
 	
 	FTransform SpawnTransform;
 	const ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo());
-	const FVector SpawnLocation = AttackingActor->GetCombatSocketLocation(FAuraGameplayTags::Get().CombatSocket_Weapon);
+	const FVector SpawnLocation = AttackingActor->GetCombatSocketLocation(CurrentAttackData.CombatSocketTag);
 	const FRotator SpawnRotation = (ProjectileTargetLocation - SpawnLocation).Rotation();
 	SpawnTransform.SetLocation(SpawnLocation);
 	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
 
-	AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass,  SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(CurrentAttackData.ProjectileClass,  SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
 	const int32 Level = GetAbilityLevel();
 	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());

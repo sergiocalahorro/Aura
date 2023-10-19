@@ -65,7 +65,7 @@ private:
 	void InitializeProjectile() const;
 
 	/** Functionality performed when projectile hits something */
-	void ProjectileHit() const;
+	void ProjectileHit();
 
 public:
 

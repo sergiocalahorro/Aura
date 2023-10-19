@@ -7,7 +7,7 @@
 
 // Headers - Aura
 #include "AuraGameplayAbility.h"
-#include "Interaction/TaggedMontage.h"
+#include "Interaction/AttackData.h"
 
 #include "AuraDamageGameplayAbility.generated.h"
 
@@ -26,8 +26,8 @@ protected:
 	/** Apply damage to target Actor */
 	void ApplyDamage(AActor* TargetActor);
 
-	/** Get attack to use (montage and tag) */
-	virtual FTaggedMontage GetTaggedAttackMontageToUse(const FGameplayTag& AttackTag, const TArray<FTaggedMontage>& TaggedAttackMontages);
+	/** Get attack to use */
+	virtual FAttackData GetAttackToUse(const FGameplayTag& AttackTag, const TArray<FAttackData>& Attacks);
 
 protected:
 
@@ -38,6 +38,9 @@ protected:
 	/** Damage values per type */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage")
 	TMap<FGameplayTag, FScalableFloat> DamageTypes;
+
+	/** Current attack data to use in this ability */
+	FAttackData CurrentAttackData;
 
 #pragma endregion DAMAGE
 };

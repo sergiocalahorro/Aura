@@ -7,7 +7,7 @@
 
 // Headers - Aura
 #include "AuraDamageGameplayAbility.h"
-#include "Interaction/TaggedMontage.h"
+#include "Interaction/AttackData.h"
 
 #include "AuraMeleeAttack.generated.h"
 
@@ -44,13 +44,10 @@ private:
 	void MeleeAttack(FGameplayEventData Payload);
 
 private:
-	
-	/** Attack's radius */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|MeleeAttack", meta = (ClampMin = 0.f, UIMin = 0.f, Delta = 0.1f))
-	float AttackRadius = 45.f;
 
-	/** Attack's montage and tag */
-	FTaggedMontage TaggedAttackMontage;
+	/** Event's gameplay tag to wait for dealing damage */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|MeleeAttack")
+	FGameplayTag DamageEventTag;
 
 #pragma endregion MELEE_ATTACK
 

@@ -48,10 +48,6 @@ protected:
 
 protected:
 
-	/** Projectile to spawn's class */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack")
-	TSubclassOf<AAuraProjectile> ProjectileClass;
-
 	/** Event's gameplay tag to wait for to spawn the projectile (if no tag is set, a random attack will be used) */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack")
 	FGameplayTag SpawnProjectileEventTag;

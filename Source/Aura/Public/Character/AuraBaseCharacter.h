@@ -9,7 +9,7 @@
 
 // Headers - Aura
 #include "Interaction/CombatInterface.h"
-#include "Interaction/TaggedMontage.h"
+#include "Interaction/AttackData.h"
 
 #include "AuraBaseCharacter.generated.h"
 
@@ -71,11 +71,11 @@ public:
 	/** Set target location to face */
 	virtual void SetFacingTarget(const FVector& FacingTargetLocation) override;
 
-	/** Get attack montages */
-	TArray<FTaggedMontage> GetAttackMontages_Implementation() const;
+	/** Get all attacks */
+	TArray<FAttackData> GetAllAttacks_Implementation() const;
 
-	/** Get attack montage with given tag */
-	FTaggedMontage GetAttackMontageWithTag_Implementation(const FGameplayTag& MontageTag) const;
+	/** Get attack with given tag */
+	FAttackData GetAttackWithTag_Implementation(const FGameplayTag& MontageTag) const;
 
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const override;
@@ -112,7 +112,7 @@ protected:
 
 	/** Attack montages */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Attacks")
-	TArray<FTaggedMontage> AttackMontages;
+	TArray<FAttackData> AttackMontages;
 		
 	/** HitReact's montage to play */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|HitReact")
@@ -137,6 +137,10 @@ protected:
 	/** Blood effect */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Effects")
 	TObjectPtr<UNiagaraSystem> BloodEffect;
+
+	/** Death sound */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Effects")
+	TObjectPtr<USoundBase> DeathSound;
 	
 #pragma endregion COMBAT
 

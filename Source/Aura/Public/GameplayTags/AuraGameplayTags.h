@@ -234,6 +234,9 @@ public:
 
 	/** Socket for attacks with left hand */
 	FGameplayTag CombatSocket_LeftHand;
+
+	/** Socket for attacks with tail */
+	FGameplayTag CombatSocket_Tail;
 	
 #pragma endregion COMBAT_SOCKETS
 

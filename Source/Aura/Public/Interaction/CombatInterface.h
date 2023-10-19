@@ -7,7 +7,7 @@
 #include "UObject/Interface.h"
 
 // Headers - Aura
-#include "TaggedMontage.h"
+#include "AttackData.h"
 
 #include "CombatInterface.generated.h"
 
@@ -51,13 +51,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	AActor* GetCombatTarget() const;
 
-	/** Get attack montages */
+	/** Get all attacks */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	TArray<FTaggedMontage> GetAttackMontages() const;
+	TArray<FAttackData> GetAllAttacks() const;
 
-	/** Get attack montage with given tag */
+	/** Get attack with given tag */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	FTaggedMontage GetAttackMontageWithTag(const FGameplayTag& MontageTag) const;
+	FAttackData GetAttackWithTag(const FGameplayTag& MontageTag) const;
 
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const;

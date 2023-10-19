@@ -26,23 +26,23 @@ void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor)
 	}
 }
 
-/** Get attack to use (montage and tag) */
-FTaggedMontage UAuraDamageGameplayAbility::GetTaggedAttackMontageToUse(const FGameplayTag& AttackTag, const TArray<FTaggedMontage>& TaggedAttackMontages)
+/** Get attack to use */
+FAttackData UAuraDamageGameplayAbility::GetAttackToUse(const FGameplayTag& AttackTag, const TArray<FAttackData>& Attacks)
 {
 	if (AttackTag.IsValid())
 	{
-		for (const FTaggedMontage& TaggedAttackMontage : TaggedAttackMontages)
+		for (const FAttackData& AttackData : Attacks)
 		{
-			if (AttackTag.MatchesTagExact(TaggedAttackMontage.MontageTag))
+			if (AttackTag.MatchesTagExact(AttackData.AttackMontageTag))
 			{
-				// In case AttackTag is valid, choose the TaggedAttackMontage associated with its SocketTag
-				return TaggedAttackMontage;
+				// In case AttackTag is valid, choose the TaggedAttackMontage associated with its AttackMontageTag
+				return AttackData;
 			}
 		}
 	}
 
 	// In case AttackTag isn't valid, pick a random TaggedAttackMontage
-	return TaggedAttackMontages[FMath::RandRange(0, TaggedAttackMontages.Num() - 1)];
+	return Attacks[FMath::RandRange(0, Attacks.Num() - 1)];
 }
 
 #pragma endregion DAMAGE

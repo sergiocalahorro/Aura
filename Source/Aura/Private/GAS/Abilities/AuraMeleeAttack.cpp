@@ -27,22 +27,22 @@ void UAuraMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		}
 	}
 
-	TArray<FTaggedMontage> TaggedAttackMontages = ICombatInterface::Execute_GetAttackMontages(ActorInfo->AvatarActor.Get());
-	if (TaggedAttackMontages.IsEmpty())
+	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAllAttacks(ActorInfo->AvatarActor.Get());
+	if (Attacks.IsEmpty() && !DamageEventTag.IsValid())
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
 	}
 	
-	TaggedAttackMontage = TaggedAttackMontages[FMath::RandRange(0, TaggedAttackMontages.Num() - 1)];
+	CurrentAttackData = GetAttackToUse(DamageEventTag, Attacks);
 
-	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, TaggedAttackMontage.Montage);
+	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
 	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
 	PlayMontageTask->OnInterrupted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
 	PlayMontageTask->OnCancelled.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);
 	PlayMontageTask->ReadyForActivation();
 
-	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, TaggedAttackMontage.MontageTag);
+	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag);
 	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraMeleeAttack::MeleeAttack);
 	WaitEventTask->ReadyForActivation();
 }
@@ -73,11 +73,11 @@ void UAuraMeleeAttack::MeleeAttack(FGameplayEventData Payload)
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();
 	if (const ICombatInterface* CombatAvatarActor = Cast<ICombatInterface>(AvatarActor))
 	{
-		const FVector CombatSocketLocation = CombatAvatarActor->GetCombatSocketLocation(TaggedAttackMontage.SocketTag);
+		const FVector CombatSocketLocation = CombatAvatarActor->GetCombatSocketLocation(CurrentAttackData.CombatSocketTag);
 		TArray<AActor*> ActorsToDamage;
 		TArray<AActor*> ActorsToIgnore;
 		ActorsToIgnore.Add(AvatarActor);
-		UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(this, CombatSocketLocation, AttackRadius, ActorsToIgnore, ActorsToDamage);
+		UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(this, CombatSocketLocation, CurrentAttackData.MeleeAttackRadius, ActorsToIgnore, ActorsToDamage);
 
 		bool bHasHitTarget = false;
 		for (AActor* DamagedActor : ActorsToDamage)
@@ -95,9 +95,11 @@ void UAuraMeleeAttack::MeleeAttack(FGameplayEventData Payload)
 			GameplayCueParams.Location = CombatSocketLocation;
 			GameplayCueParams.EffectCauser = AvatarActor;
 			GameplayCueParams.SourceObject = ICombatInterface::Execute_GetCombatTarget(AvatarActor);
-			GameplayCueParams.AggregatedSourceTags = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(TaggedAttackMontage.MontageTag);
+			GameplayCueParams.AggregatedSourceTags = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(CurrentAttackData.AttackMontageTag);
 			K2_ExecuteGameplayCueWithParams(FAuraGameplayTags::Get().GameplayCue_MeleeImpact, GameplayCueParams);
 		}
+
+		DrawDebugSphere(GetWorld(), CombatSocketLocation, CurrentAttackData.MeleeAttackRadius, 12, bHasHitTarget ? FColor::Green : FColor::Red, false, 0.5f);
 	}
 }
 
