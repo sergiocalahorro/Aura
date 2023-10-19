@@ -5,6 +5,7 @@
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Interaction/AttackData.h"
 
 #include "AuraGameplayAbility.generated.h"
 
@@ -34,5 +35,19 @@ public:
 	FGameplayTag StartupInputTag;
 
 #pragma endregion INPUT
+
+#pragma region ATTACK
+
+protected:
+	
+	/** Get attack to use */
+	virtual FAttackData GetAttackToUse(const TArray<FAttackData>& Attacks, const FGameplayTag& AttackTag = FGameplayTag());
+
+protected:
+	
+	/** Current attack data to use in this ability */
+	FAttackData CurrentAttackData;
+
+#pragma endregion ATTACK
 	
 };

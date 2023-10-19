@@ -34,7 +34,7 @@ void UAuraMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		return;
 	}
 	
-	CurrentAttackData = GetAttackToUse(DamageEventTag, Attacks);
+	CurrentAttackData = GetAttackToUse(Attacks, DamageEventTag);
 
 	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
 	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);

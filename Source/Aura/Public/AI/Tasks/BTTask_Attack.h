@@ -35,4 +35,8 @@ private:
 	/** Combat target key selector */
 	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector CombatTargetSelector;
+
+	/** Attack tag used to trigger ability associated with it */
+	UPROPERTY(EditAnywhere)
+	FGameplayTag AttackTag;
 };

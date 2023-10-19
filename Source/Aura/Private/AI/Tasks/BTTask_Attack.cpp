@@ -10,7 +10,6 @@
 
 // Headers - Aura
 #include "BehaviorTree/BTFunctionLibrary.h"
-#include "GameplayTags/AuraGameplayTags.h"
 #include "Interaction/CombatInterface.h"
 
 #pragma region OVERRIDES
@@ -24,7 +23,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 		AActor* CombatTarget = UBTFunctionLibrary::GetBlackboardValueAsActor(this, CombatTargetSelector);
 		ICombatInterface::Execute_SetCombatTarget(ControlledPawn, CombatTarget);
 
-		const FGameplayTagContainer AttackTagContainer = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(FAuraGameplayTags::Get().Abilities_Attack);
+		const FGameplayTagContainer AttackTagContainer = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(AttackTag);
 		PawnASC->TryActivateAbilitiesByTag(AttackTagContainer);
 
 		FinishExecute(true);

@@ -72,4 +72,8 @@ public:
 	/** Get blood particles' effect */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	UNiagaraSystem* GetBloodEffect() const;
+
+	/** Get minion count */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	int32 GetMinionCount() const;
 };

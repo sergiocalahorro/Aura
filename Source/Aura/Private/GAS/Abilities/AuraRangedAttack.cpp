@@ -35,7 +35,7 @@ void UAuraRangedAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 	
-	CurrentAttackData = GetAttackToUse(SpawnProjectileEventTag, Attacks);
+	CurrentAttackData = GetAttackToUse(Attacks, SpawnProjectileEventTag);
 
 	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
 	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraRangedAttack::K2_EndAbility);

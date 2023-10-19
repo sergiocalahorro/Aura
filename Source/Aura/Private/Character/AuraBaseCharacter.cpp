@@ -161,6 +161,12 @@ UNiagaraSystem* AAuraBaseCharacter::GetBloodEffect_Implementation() const
 	return BloodEffect;
 }
 
+/** Get minion count */
+int32 AAuraBaseCharacter::GetMinionCount_Implementation() const
+{
+	return MinionCount;
+}
+
 #pragma endregion COMBAT
 
 #pragma region GAS

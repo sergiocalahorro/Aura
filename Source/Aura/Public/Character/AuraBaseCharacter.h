@@ -100,6 +100,9 @@ public:
 	/** Get blood particles' effect */
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() const override;
 
+	/** Get minion count */
+	int32 GetMinionCount_Implementation() const;
+
 protected:
 
 	/** Weapon mesh */
@@ -141,6 +144,9 @@ protected:
 	/** Death sound */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Effects")
 	TObjectPtr<USoundBase> DeathSound;
+
+	/** Minion count */
+	int32 MinionCount;
 	
 #pragma endregion COMBAT
 

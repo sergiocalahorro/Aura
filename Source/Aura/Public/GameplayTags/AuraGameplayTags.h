@@ -169,6 +169,9 @@ public:
 	/** Attack ability */
 	FGameplayTag Abilities_Attack;
 
+	/** Summon ability */
+	FGameplayTag Abilities_Summon;
+
 	/** Hit React ability */
 	FGameplayTag Abilities_HitReact;
 
