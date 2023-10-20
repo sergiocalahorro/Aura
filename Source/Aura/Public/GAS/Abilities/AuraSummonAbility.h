@@ -6,8 +6,7 @@
 #include "CoreMinimal.h"
 
 // Headers - Aura
-#include "AuraGameplayAbility.h"
-#include "Interaction/AttackData.h"
+#include "AuraDamageGameplayAbility.h"
 
 #include "AuraSummonAbility.generated.h"
 
@@ -20,9 +19,18 @@ class UNiagaraSystem;
  * 
  */
 UCLASS(Abstract)
-class AURA_API UAuraSummonAbility : public UAuraGameplayAbility
+class AURA_API UAuraSummonAbility : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
+	
+#pragma region INITIALIZATION
+
+public:
+
+	/** Sets default values for this object's properties */
+	UAuraSummonAbility();
+
+#pragma endregion INITIALIZATION
 
 #pragma region OVERRIDES
 	
@@ -46,40 +54,16 @@ private:
 	/** Start spawning minions */
 	UFUNCTION()
 	void StartSpawning(FGameplayEventData Payload);
-
+	
 	/** Spawn minion */
 	UFUNCTION()
 	void SpawnMinion();
 
+	/** Functionality performed when a spawned minion dies */
+	UFUNCTION()
+	void OnMinionDead(AActor* DestroyedActor);
+
 private:
-	
-	/** Minion classes to summon */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon")
-	TArray<TSubclassOf<APawn>> MinionClasses;
-
-	/** Minimum number of minions to summon */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 2, UIMin = 2, ClampMax = 10, UIMax = 10))
-	int32 MinNumberOfMinions = 3;
-
-	/** Maximum number of minions to summon */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 2, UIMin = 2, ClampMax = 10, UIMax = 10))
-	int32 MaxNumberOfMinions = 5;
-	
-	/** Minimum distance from caster to summon minions */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 1000.f, UIMax = 1000.f, Delta = 1.f, Units = "Centimeters"))
-	float MinSpawnDistance = 150.f;
-
-	/** Maximum distance from caster to summon minions */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 1000.f, UIMax = 1000.f, Delta = 1.f, Units = "Centimeters"))
-	float MaxSpawnDistance = 500.f;
-
-	/** Maximum distance from caster to summon minions */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 360.f, UIMax = 360.f, Delta = 1.f, Units = "Degrees"))
-	float SpawnSpread = 90.f;
-	
-	/** Time between minion spawns */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "Seconds"))
-	float TimeBetweenSpawns = 0.2f;
 
 	/** Distance used for tracing on the Z axis when calculating a spawn location */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "Centimeters"))
@@ -88,10 +72,6 @@ private:
 	/** Offset applied to correct spawning location on the Z axis */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "Centimeters"))
 	float SpawnHeightOffset = 70.f;
-	
-	/** Summon effect particles */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Summon")
-	TObjectPtr<UNiagaraSystem> SummonEffect;
 
 	/** Calculated spawn locations */
 	TArray<FVector> SpawnLocations;

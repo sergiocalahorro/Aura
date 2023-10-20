@@ -6,13 +6,13 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/Tasks/BTTask_BlueprintBase.h"
 
-#include "BTTask_Attack.generated.h"
+#include "BTTask_Attack_Elementalist.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AURA_API UBTTask_Attack : public UBTTask_BlueprintBase
+class AURA_API UBTTask_Attack_Elementalist : public UBTTask_BlueprintBase
 {
 	GENERATED_BODY()
 
@@ -21,7 +21,7 @@ class AURA_API UBTTask_Attack : public UBTTask_BlueprintBase
 public:
 
 	/** Sets default values for this object's properties */
-	UBTTask_Attack();
+	UBTTask_Attack_Elementalist();
 
 #pragma endregion INITIALIZATION
 
@@ -48,4 +48,12 @@ private:
 	/** Attack tag used to trigger ability associated with it */
 	UPROPERTY(EditAnywhere)
 	FGameplayTag AttackTag;
+
+	/** Summon tag used to trigger ability associated with it */
+	UPROPERTY(EditAnywhere)
+	FGameplayTag SummonTag;
+
+	/** Threshold used to decide what ability to use. If the minion count is above this threshold, an attack will be performed */
+	UPROPERTY(EditAnywhere)
+	int32 MinionSummonThreshold = 2;
 };

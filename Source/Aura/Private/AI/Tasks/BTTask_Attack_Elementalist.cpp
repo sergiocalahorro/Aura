@@ -1,6 +1,6 @@
 ﻿// Copyright Sergio Calahorro
 
-#include "AI/Tasks/BTTask_Attack.h"
+#include "AI/Tasks/BTTask_Attack_Elementalist.h"
 
 // Headers - Unreal Engine
 #include "AbilitySystemBlueprintLibrary.h"
@@ -16,9 +16,10 @@
 #pragma region INITIALIZATION
 
 /** Sets default values for this object's properties */
-UBTTask_Attack::UBTTask_Attack()
+UBTTask_Attack_Elementalist::UBTTask_Attack_Elementalist()
 {
 	AttackTag = FAuraGameplayTags::Get().Abilities_Attack;
+	SummonTag = FAuraGameplayTags::Get().Abilities_Summon;
 }
 
 #pragma endregion INITIALIZATION
@@ -26,17 +27,18 @@ UBTTask_Attack::UBTTask_Attack()
 #pragma region OVERRIDES
 
 /** Execute Task */
-EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_Attack_Elementalist::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	APawn* ControlledPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (UAbilitySystemComponent* PawnASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ControlledPawn))
 	{
 		AActor* CombatTarget = UBTFunctionLibrary::GetBlackboardValueAsActor(this, CombatTargetSelector);
 		ICombatInterface::Execute_SetCombatTarget(ControlledPawn, CombatTarget);
-
-		const FGameplayTagContainer AttackTagContainer = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(AttackTag);
-		PawnASC->TryActivateAbilitiesByTag(AttackTagContainer);
-
+		const int32 MinionCount = ICombatInterface::Execute_GetMinionCount(ControlledPawn);
+		const FGameplayTag AbilityTag = MinionCount < MinionSummonThreshold ? SummonTag : AttackTag;
+		const FGameplayTagContainer AbilityTagContainer = UBlueprintGameplayTagLibrary::MakeGameplayTagContainerFromTag(AbilityTag);
+		PawnASC->TryActivateAbilitiesByTag(AbilityTagContainer);
+		
 		FinishExecute(true);
 		return EBTNodeResult::Type::Succeeded;
 	}
@@ -46,7 +48,7 @@ EBTNodeResult::Type UBTTask_Attack::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 }
 
 /** Abort Task */
-EBTNodeResult::Type UBTTask_Attack::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTTask_Attack_Elementalist::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	return Super::AbortTask(OwnerComp, NodeMemory);
 }

@@ -37,4 +37,23 @@ protected:
 	TMap<FGameplayTag, FScalableFloat> DamageTypes;
 
 #pragma endregion DAMAGE
+
+#pragma region ATTACK
+
+protected:
+	
+	/** Get attack to use */
+	virtual FAttackData GetAttackToUse(const TArray<FAttackData>& Attacks, const FGameplayTag& AttackTag = FGameplayTag());
+
+protected:
+	
+	/** Current attack data to use in this ability */
+	FAttackData CurrentAttackData;
+
+	/** Type of attack supported by this ability */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Attack")
+	EAttackType AttackType;
+
+#pragma endregion ATTACK
+	
 };

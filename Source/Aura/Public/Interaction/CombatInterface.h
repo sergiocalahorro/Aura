@@ -55,6 +55,10 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	TArray<FAttackData> GetAllAttacks() const;
 
+	/** Get attacks of given type */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	TArray<FAttackData> GetAttacksOfType(EAttackType AttackType) const;
+
 	/** Get attack with given tag */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	FAttackData GetAttackWithTag(const FGameplayTag& MontageTag) const;
@@ -76,4 +80,12 @@ public:
 	/** Get minion count */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	int32 GetMinionCount() const;
+
+	/** Modify minion count by amount */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void ModifyMinionCount(int32 Amount);
+
+	/** Tweening effect */
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void Tweening();
 };

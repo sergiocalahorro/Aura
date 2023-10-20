@@ -23,6 +23,15 @@ class AURA_API UAuraMeleeAttack : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
 
+#pragma region INITIALIZATION
+
+public:
+
+	/** Sets default values for this object's properties */
+	UAuraMeleeAttack();
+
+#pragma endregion INITIALIZATION
+
 #pragma region OVERRIDES
 	
 protected:

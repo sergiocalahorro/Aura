@@ -26,6 +26,15 @@ class AURA_API UAuraRangedAttack : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
 
+#pragma region INITIALIZATION
+
+public:
+
+	/** Sets default values for this object's properties */
+	UAuraRangedAttack();
+
+#pragma endregion INITIALIZATION
+
 #pragma region OVERRIDES
 	
 protected:

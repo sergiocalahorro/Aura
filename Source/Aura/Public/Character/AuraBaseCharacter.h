@@ -74,6 +74,9 @@ public:
 	/** Get all attacks */
 	TArray<FAttackData> GetAllAttacks_Implementation() const;
 
+	/** Get attacks of given type */
+	TArray<FAttackData> GetAttacksOfType_Implementation(EAttackType AttackType) const;
+
 	/** Get attack with given tag */
 	FAttackData GetAttackWithTag_Implementation(const FGameplayTag& MontageTag) const;
 
@@ -103,6 +106,9 @@ public:
 	/** Get minion count */
 	int32 GetMinionCount_Implementation() const;
 
+	/** Modify minion count by amount */
+	void ModifyMinionCount_Implementation(int32 Amount);
+
 protected:
 
 	/** Weapon mesh */
@@ -115,7 +121,7 @@ protected:
 
 	/** Attack montages */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Attacks")
-	TArray<FAttackData> AttackMontages;
+	TArray<FAttackData> Attacks;
 		
 	/** HitReact's montage to play */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|HitReact")

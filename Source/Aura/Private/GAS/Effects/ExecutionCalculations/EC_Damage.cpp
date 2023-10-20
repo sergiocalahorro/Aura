@@ -151,7 +151,7 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 		// That way, the DamageType from the EffectContext could be accessed and used for finding its matching Resistance in the DamageTypesToResistances map,
 		// instead of unnecessarily looping through all the existing Damage Types
 		
-		const float DamageTypeValue = EffectSpec.GetSetByCallerMagnitude(DamageTypeTag);
+		const float DamageTypeValue = EffectSpec.GetSetByCallerMagnitude(DamageTypeTag, false);
 		CalculateDamageByResistanceToDamageType(ResistanceDamageTypeTag, ExecutionParams, EvaluateParams, DamageTypeValue, FinalDamage);
 	}
 

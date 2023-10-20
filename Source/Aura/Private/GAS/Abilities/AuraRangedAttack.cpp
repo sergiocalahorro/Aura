@@ -12,6 +12,16 @@
 #include "Actor/Projectile/AuraProjectile.h"
 #include "Interaction/CombatInterface.h"
 
+#pragma region INITIALIZATION
+
+/** Sets default values for this object's properties */
+UAuraRangedAttack::UAuraRangedAttack()
+{
+	AttackType = EAttackType::Ranged;
+}
+
+#pragma endregion INITIALIZATION
+
 #pragma region OVERRIDES
 
 /** Actually activate ability, do not call this directly */
@@ -28,7 +38,7 @@ void UAuraRangedAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		}
 	}
 		
-	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAllAttacks(ActorInfo->AvatarActor.Get());
+	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAttacksOfType(ActorInfo->AvatarActor.Get(), AttackType);
 	if (Attacks.IsEmpty() && !SpawnProjectileEventTag.IsValid())
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
@@ -43,7 +53,7 @@ void UAuraRangedAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	PlayMontageTask->OnCancelled.AddUniqueDynamic(this, &UAuraRangedAttack::K2_EndAbility);
 	PlayMontageTask->ReadyForActivation();
 
-	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag);
+	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag, nullptr, true, true);
 	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraRangedAttack::SpawnProjectile);
 	WaitEventTask->ReadyForActivation();
 }

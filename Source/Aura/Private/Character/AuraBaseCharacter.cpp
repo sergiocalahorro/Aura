@@ -77,13 +77,29 @@ void AAuraBaseCharacter::SetFacingTarget(const FVector& FacingTargetLocation)
 /** Get attack montages */
 TArray<FAttackData> AAuraBaseCharacter::GetAllAttacks_Implementation() const
 {
-	return AttackMontages;
+	return Attacks;
+}
+
+/** Get attacks of given type */
+TArray<FAttackData> AAuraBaseCharacter::GetAttacksOfType_Implementation(EAttackType AttackType) const
+{
+	TArray<FAttackData> AttacksOfType;
+	
+	for (const FAttackData& AttackData : Attacks)
+	{
+		if (AttackData.AttackType == AttackType)
+		{
+			AttacksOfType.Add(AttackData);
+		}
+	}
+	
+	return AttacksOfType;
 }
 
 /** Get attack montage with given tag */
 FAttackData AAuraBaseCharacter::GetAttackWithTag_Implementation(const FGameplayTag& MontageTag) const
 {
-	for (const FAttackData& AttackMontage : AttackMontages)
+	for (const FAttackData& AttackMontage : Attacks)
 	{
 		if (AttackMontage.AttackMontageTag.MatchesTagExact(MontageTag))
 		{
@@ -165,6 +181,12 @@ UNiagaraSystem* AAuraBaseCharacter::GetBloodEffect_Implementation() const
 int32 AAuraBaseCharacter::GetMinionCount_Implementation() const
 {
 	return MinionCount;
+}
+
+/** Modify minion count by amount */
+void AAuraBaseCharacter::ModifyMinionCount_Implementation(int32 Amount)
+{
+	MinionCount += Amount;
 }
 
 #pragma endregion COMBAT

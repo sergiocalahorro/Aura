@@ -11,5 +11,6 @@ UENUM(BlueprintType)
 enum class EAttackType : uint8
 {
 	Melee,
-	Ranged
+	Ranged,
+	Summon
 };
