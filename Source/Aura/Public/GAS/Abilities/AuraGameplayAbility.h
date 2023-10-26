@@ -5,6 +5,8 @@
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+
+// Headers - Aura
 #include "Interaction/AttackData.h"
 
 #include "AuraGameplayAbility.generated.h"

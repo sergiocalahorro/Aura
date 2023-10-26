@@ -3,6 +3,7 @@
 #include "GAS/Attributes/Data/AttributesInfo.h"
 
 // Headers - Aura
+#include "AuraLogChannels.h"
 #include "GAS/Attributes/Data/AuraAttributeInfo.h"
 
 /** Find Attribute's info by GameplayTag */
@@ -18,7 +19,7 @@ FAuraAttributeInfo UAttributesInfo::FindAttributeInfoForTag(const FGameplayTag& 
 
 	if (bLogNotFound)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UAttributeInfo::FindAttributeInfoForTag - Can't find Info for AttributeTag [%s] on AttributesInfo [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
+		UE_LOG(LogAura, Error, TEXT("UAttributesInfo::FindAttributeInfoForTag - Can't find Info for AttributeTag [%s] on AttributesInfo [%s]"), *AttributeTag.ToString(), *GetNameSafe(this));
 	}
 
 	return FAuraAttributeInfo();

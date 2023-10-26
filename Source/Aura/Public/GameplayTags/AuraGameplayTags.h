@@ -163,14 +163,14 @@ public:
 
 public:
 
-	/** Fire Bolt ability */
-	FGameplayTag Abilities_FireBolt;
-
 	/** Attack ability */
 	FGameplayTag Abilities_Attack;
 
 	/** Summon ability */
 	FGameplayTag Abilities_Summon;
+
+	/** Fire Bolt ability */
+	FGameplayTag Abilities_Fire_FireBolt;
 
 	/** Hit React ability */
 	FGameplayTag Abilities_HitReact;

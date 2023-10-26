@@ -4,6 +4,7 @@
 
 // Headers - Aura
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
+#include "GAS/AbilitySystem/Data/AbilitiesInfo.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
 #include "UI/Widget/UIWidgetRow.h"
 #include "Utils/FunctionLibraries/HelperFunctionLibrary.h"
@@ -57,8 +58,20 @@ void UOverlayWidgetController::BindCallbacksToDelegates()
 		}
 	);
 
+	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+
+	// Give abilities
+	if (AuraASC->bStartupAbilitiesGiven)
+	{
+		OnAbilitiesGiven(AuraASC);
+	}
+	else
+	{
+		AuraASC->AbilitiesGivenDelegate.AddUObject(this, &UOverlayWidgetController::OnAbilitiesGiven);
+	}
+
 	// Effect asset tag callback
-	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->EffectAssetTagsDelegate.AddLambda(
+	AuraASC->EffectAssetTagsDelegate.AddLambda(
 		[&](const FGameplayTagContainer& EffectAssetTags)
 		{
 			for (const FGameplayTag& Tag : EffectAssetTags)
@@ -75,6 +88,28 @@ void UOverlayWidgetController::BindCallbacksToDelegates()
 			}
 		}
 	);
+	
+}
+
+/** Called when abilities are given */
+void UOverlayWidgetController::OnAbilitiesGiven(UAuraAbilitySystemComponent* AuraASC) const
+{
+	if (!AuraASC->bStartupAbilitiesGiven)
+	{
+		return;
+	}
+
+	FBroadcastAbilitySignature BroadcastAbilityDelegate;
+	BroadcastAbilityDelegate.BindLambda(
+		[this, AuraASC](const FGameplayAbilitySpec& AbilitySpec)
+		{
+			FAuraAbilityInfo AbilityInfo = AbilitiesInfo->FindAbilityInfoForTag(AuraASC->GetAbilityTagFromSpec(AbilitySpec));
+			AbilityInfo.InputTag = AuraASC->GetAbilityInputTagFromSpec(AbilitySpec);
+			AbilityInfoDelegate.Broadcast(AbilityInfo);
+		}
+	);
+
+	AuraASC->BroadcastAbility(BroadcastAbilityDelegate);
 }
 
 #pragma endregion CORE

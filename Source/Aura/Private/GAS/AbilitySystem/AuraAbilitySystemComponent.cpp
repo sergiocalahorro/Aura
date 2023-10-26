@@ -3,7 +3,24 @@
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 
 // Headers - Aura
+#include "AuraLogChannels.h"
 #include "GAS/Abilities/AuraGameplayAbility.h"
+
+#pragma region OVERRIDES
+
+/** RepNotify callback for ActivatableAbilities */
+void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
+{
+	Super::OnRep_ActivateAbilities();
+
+	if (!bStartupAbilitiesGiven)
+	{
+		bStartupAbilitiesGiven = true;
+		AbilitiesGivenDelegate.Broadcast(this);
+	}
+}
+
+#pragma endregion OVERRIDES
 
 #pragma region CORE
 
@@ -41,6 +58,9 @@ void UAuraAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGamepla
 			GiveAbility(AbilitySpec);
 		}
 	}
+
+	bStartupAbilitiesGiven = true;
+	AbilitiesGivenDelegate.Broadcast(this);
 }
 
 /** Activate ability by input tag when released */
@@ -79,6 +99,51 @@ void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputT
 			}
 		}
 	}
+}
+
+/** Broadcast ability */
+void UAuraAbilitySystemComponent::BroadcastAbility(const FBroadcastAbilitySignature& BroadcastAbilityDelegate)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	
+	for (const FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if (!BroadcastAbilityDelegate.ExecuteIfBound(AbilitySpec))
+		{
+			UE_LOG(LogAura, Error, TEXT("Failed to execute delegate in %hs"), __FUNCTION__);
+		}
+	}
+}
+
+/** Get ability's tag from ability spec */
+FGameplayTag UAuraAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	if (const TObjectPtr<UGameplayAbility> Ability = AbilitySpec.Ability)
+	{
+		for (FGameplayTag AbilityTag : Ability.Get()->AbilityTags)
+		{
+			if (AbilityTag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities"))))
+			{
+				return AbilityTag;
+			}
+		}
+	}
+
+	return FGameplayTag();
+}
+
+/** Get ability's input tag from ability spec */
+FGameplayTag UAuraAbilitySystemComponent::GetAbilityInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for (FGameplayTag AbilityInputTag : AbilitySpec.DynamicAbilityTags)
+	{
+		if (AbilityInputTag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("InputTag"))))
+		{
+			return AbilityInputTag;
+		}
+	}
+
+	return FGameplayTag();
 }
 
 #pragma endregion ABILITIES

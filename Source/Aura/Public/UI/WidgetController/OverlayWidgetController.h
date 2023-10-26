@@ -15,8 +15,14 @@
 class UDataTable;
 struct FOnAttributeChangeData;
 
+// Forward declarations - Aura
+class UAbilitiesInfo;
+class UAuraAbilitySystemComponent;
+struct FAuraAbilityInfo;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, const FUIWidgetRow&, Row);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, AbilityInfo);
 
 /**
  * 
@@ -35,6 +41,11 @@ public:
 
 	/** Bind callbacks to delegates */
 	virtual void BindCallbacksToDelegates() override;
+
+protected:
+
+	/** Called when abilities are given */
+	void OnAbilitiesGiven(UAuraAbilitySystemComponent* AuraASC) const;
 
 public:
 
@@ -58,11 +69,19 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Attributes")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
+	/** Delegate called to broadcast ability's info to widget */
+	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Abilities")
+	FAbilityInfoSignature AbilityInfoDelegate;
+
 protected:
 
 	/** Message widget data table */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Widget|Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
+
+	/** Abilities' info */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Widget|Data")
+	TObjectPtr<UAbilitiesInfo> AbilitiesInfo;
 
 #pragma endregion CORE
 	
