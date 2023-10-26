@@ -26,6 +26,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag;
 
+	/** Ability's cooldown GameplayTag */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag CooldownTag;
+
 	/** Ability's icon */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<const UTexture2D> Icon;

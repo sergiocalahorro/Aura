@@ -175,7 +175,7 @@ public:
 	/** Hit React ability */
 	FGameplayTag Abilities_HitReact;
 
-#pragma region ABILITIES
+#pragma endregion ABILITIES
 
 #pragma region EFFECTS
 
@@ -189,7 +189,21 @@ public:
 	/** Hit React effect */
 	FGameplayTag Effects_HitReact;
 
-#pragma region EFFECTS
+#pragma endregion EFFECTS
+
+#pragma region COOLDOWNS
+
+public:
+
+	/** Initialize native gameplay tags for cooldowns */
+	static void InitializeNativeCooldownsGameplayTags();
+
+public:
+
+	/** Fire Bolt's cooldown */
+	FGameplayTag Cooldown_Fire_FireBolt;
+
+#pragma endregion COOLDOWNS
 
 #pragma region DAMAGE
 
@@ -218,7 +232,7 @@ public:
 	/** Array that contains all Damage Types linked to Damage Type Resistances */
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
-#pragma region DAMAGE
+#pragma endregion DAMAGE
 
 #pragma region COMBAT_SOCKETS
 

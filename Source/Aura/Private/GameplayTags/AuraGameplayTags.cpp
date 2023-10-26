@@ -16,6 +16,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	InitializeNativeInputsGameplayTags();
 	InitializeNativeAbilitiesGameplayTags();
 	InitializeNativeEffectsGameplayTags();
+	InitializeNativeCooldownsGameplayTags();
 	InitializeNativeDamageGameplayTags();
 	InitializeNativeCombatSocketsGameplayTags();
 	InitializeNativeMontagesGameplayTags();
@@ -101,6 +102,16 @@ void FAuraGameplayTags::InitializeNativeEffectsGameplayTags()
 }
 
 #pragma endregion EFFECTS
+
+#pragma region COOLDOWNS
+
+/** Initialize native gameplay tags for cooldowns */
+void FAuraGameplayTags::InitializeNativeCooldownsGameplayTags()
+{
+	GameplayTags.Cooldown_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBolt"), FString("Fire Bolt's ability cooldown"));
+}
+
+#pragma endregion COOLDOWNS
 
 #pragma region DAMAGE
 
