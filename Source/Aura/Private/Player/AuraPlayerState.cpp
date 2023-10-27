@@ -34,6 +34,7 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AAuraPlayerState, Level);
+	DOREPLIFETIME(AAuraPlayerState, XP);
 }
 
 #pragma endregion OVERRIDES
@@ -46,10 +47,50 @@ int32 AAuraPlayerState::GetCurrentLevel() const
 	return Level;
 }
 
+/** Set level */
+void AAuraPlayerState::SetLevel(int32 InLevel)
+{
+	Level = InLevel;
+	OnLevelChangedDelegate.Broadcast(Level);
+}
+
+/** Add to level */
+void AAuraPlayerState::AddToLevel(int32 LevelToAdd)
+{
+	Level += LevelToAdd;
+	OnLevelChangedDelegate.Broadcast(Level);
+}
+
+/** Get XP */
+int32 AAuraPlayerState::GetXP() const
+{
+	return XP;
+}
+
+/** Set XP */
+void AAuraPlayerState::SetXP(int32 InXP)
+{
+	XP = InXP;
+	OnXPChangedDelegate.Broadcast(XP);
+}
+
+/** Add to XP */
+void AAuraPlayerState::AddToXP(int32 XPToAdd)
+{
+	XP += XPToAdd;
+	OnXPChangedDelegate.Broadcast(XP);
+}
+
 /** Level's Replication Notify Callback */
 void AAuraPlayerState::OnRep_Level(int32 OldLevel)
 {
-	
+	OnLevelChangedDelegate.Broadcast(Level);
+}
+
+/** XP's Replication Notify Callback */
+void AAuraPlayerState::OnRep_XP(int32 OldXP)
+{
+	OnXPChangedDelegate.Broadcast(XP);
 }
 
 #pragma endregion CORE

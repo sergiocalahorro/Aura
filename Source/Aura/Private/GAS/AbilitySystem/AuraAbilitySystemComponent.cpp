@@ -63,6 +63,16 @@ void UAuraAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGamepla
 	AbilitiesGivenDelegate.Broadcast(this);
 }
 
+/** Add given list of passive abilities */
+void UAuraAbilitySystemComponent::AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities)
+{
+	for (const TSubclassOf<UGameplayAbility>& AbilityClass : Abilities)
+	{
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1.f);
+		GiveAbilityAndActivateOnce(AbilitySpec);
+	}
+}
+
 /** Activate ability by input tag when released */
 void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {

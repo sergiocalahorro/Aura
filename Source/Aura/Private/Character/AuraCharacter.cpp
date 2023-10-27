@@ -7,7 +7,6 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "MotionWarpingComponent.h"
 
 // Headers - Aura
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
@@ -44,6 +43,8 @@ AAuraCharacter::AAuraCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
+
+	CharacterClass = ECharacterClass::Elementalist;
 }
 
 #pragma endregion INITIALIZATION
@@ -56,7 +57,7 @@ void AAuraCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitAbilityActorInfo();
-	AddCharacterAbilities(StartupAbilities);
+	AddCharacterAbilities();
 }
 
 /** PlayerState Replication Notification Callback. Only called on clients */

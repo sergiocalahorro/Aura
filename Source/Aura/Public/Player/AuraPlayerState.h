@@ -9,9 +9,12 @@
 
 #include "AuraPlayerState.generated.h"
 
+class ULevelUpInfo;
 // Forward declarations - Unreal Engine
 class UAttributeSet;
 class UAbilitySystemComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32);
 
 /**
  * 
@@ -46,17 +49,52 @@ public:
 	/** Get level */
 	int32 GetCurrentLevel() const;
 
+	/** Set level */
+	void SetLevel(int32 InLevel);
+
+	/** Add to level */
+	void AddToLevel(int32 LevelToAdd);
+
+	/** Get XP */
+	int32 GetXP() const;
+
+	/** Set XP */
+	void SetXP(int32 InXP);
+
+	/** Add to XP */
+	void AddToXP(int32 XPToAdd);
+
 private:
 
 	/** Level's Replication Notify Callback */
 	UFUNCTION()
 	void OnRep_Level(int32 OldLevel);
 
+	/** XP's Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_XP(int32 OldXP);
+
+public:
+
+	/** Level up information */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Core")
+	TObjectPtr<ULevelUpInfo> LevelUpInfo;
+
+	/** Delegate called whenever level changes */
+	FOnPlayerStatChangedSignature OnLevelChangedDelegate;
+
+	/** Delegate called whenever XP changes */
+	FOnPlayerStatChangedSignature OnXPChangedDelegate;
+
 private:
 
 	/** Player's level */
 	UPROPERTY(VisibleDefaultsOnly, ReplicatedUsing = OnRep_Level, Category = "AA|Core")
 	int32 Level = 1;
+	
+	/** Player's XP */
+	UPROPERTY(VisibleDefaultsOnly, ReplicatedUsing = OnRep_XP, Category = "AA|Core")
+	int32 XP = 0;
 
 #pragma endregion CORE
 

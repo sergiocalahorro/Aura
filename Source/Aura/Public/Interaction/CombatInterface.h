@@ -8,6 +8,7 @@
 
 // Headers - Aura
 #include "AttackData.h"
+#include "Character/Data/CharacterClass.h"
 
 #include "CombatInterface.generated.h"
 
@@ -36,6 +37,10 @@ public:
 
 	/** Get level */
 	virtual int32 GetCurrentLevel() const;
+
+	/** Get character's class */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	ECharacterClass GetCharacterClass();
 	
 	/** Get socket's location that will be used in combat */
 	virtual FVector GetCombatSocketLocation(const FGameplayTag& MontageTag) const;

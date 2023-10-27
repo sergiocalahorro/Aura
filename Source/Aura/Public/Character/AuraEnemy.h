@@ -7,7 +7,6 @@
 
 // Headers - Aura
 #include "AuraBaseCharacter.h"
-#include "Data/CharacterClass.h"
 #include "Interaction/InteractableInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 
@@ -100,24 +99,20 @@ private:
 
 private:
 	
-	/** Enemy's character class */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat")
-	ECharacterClass CharacterClass = ECharacterClass::Warrior;
-	
 	/** Enemy level */
-	UPROPERTY(EditAnywhere, Category = "AA|Combat")
+	UPROPERTY(EditAnywhere, Category = "AA|Combat|Core")
 	int32 Level = 1;
 
 	/** Base value for walking speed */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat")
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Core")
 	float BaseWalkSpeed = 250.f;
 
 	/** Time in order to destroy the enemy after it's dead */
-	UPROPERTY(EditAnywhere, Category = "AA|Combat")
+	UPROPERTY(EditAnywhere, Category = "AA|Combat|Core")
 	float LifeSpan = 5.f;
 
 	/** Target to attack in combat */
-	UPROPERTY(BlueprintReadWrite, Category = "AA|Combat", meta = (AllowPrivateAccess = true))
+	UPROPERTY(BlueprintReadWrite, Category = "AA|Combat|Core", meta = (AllowPrivateAccess = true))
 	TObjectPtr<AActor> CombatTarget;
 
 #pragma endregion COMBAT

@@ -62,6 +62,9 @@ protected:
 
 public:
 
+	/** Get character's class */
+	ECharacterClass GetCharacterClass_Implementation();
+
 	/** Get Avatar that is the owner of the interface */
 	virtual AActor* GetAvatar_Implementation() override;
 
@@ -110,6 +113,10 @@ public:
 	void ModifyMinionCount_Implementation(int32 Amount);
 
 protected:
+		
+	/** Character's class */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Core")
+	ECharacterClass CharacterClass = ECharacterClass::Warrior;
 
 	/** Weapon mesh */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Combat|Weapon")
@@ -178,7 +185,7 @@ protected:
 	void ApplyEffectDefinitionsToSelf(const TArray<FEffectDefinition>& Effects) const;
 
 	/** Grant abilities to the character */
-	virtual void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
+	virtual void AddCharacterAbilities();
 
 protected:
 
@@ -189,6 +196,10 @@ protected:
 	/** Abilities granted at startup */
 	UPROPERTY(EditAnywhere, Category = "AA|GAS|Default")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	/** Passive abilities granted at startup */
+	UPROPERTY(EditAnywhere, Category = "AA|GAS|Default")
+	TArray<TSubclassOf<UGameplayAbility>> StartupPassiveAbilities;
 	
 	/** Ability system component */
 	UPROPERTY()

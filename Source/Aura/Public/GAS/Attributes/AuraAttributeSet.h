@@ -285,12 +285,20 @@ private:
 	/** Show floating damage text above target */
 	void ShowFloatingDamageText(const FEffectProperties& EffectProperties, float Damage) const;
 
+	/** Handle incoming XP */
+	void HandleIncomingXP(const FEffectProperties& EffectProperties);
+
 public:
 
 	/** IncomingDamage Attribute */
 	UPROPERTY(BlueprintReadOnly, Category = "AA|Attributes|Meta")
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingDamage)
+
+	/** IncomingXP Attribute */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Attributes|Meta")
+	FGameplayAttributeData IncomingXP;
+	ATTRIBUTE_ACCESSORS(UAuraAttributeSet, IncomingXP)
 
 #pragma endregion ATTRIBUTES_META
 

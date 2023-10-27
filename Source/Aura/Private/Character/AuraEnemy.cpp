@@ -9,7 +9,6 @@
 
 // Headers - Aura
 #include "Aura.h"
-#include "BrainComponent.h"
 #include "AI/AuraAIController.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
@@ -73,6 +72,7 @@ void AAuraEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	InitAbilityActorInfo();
+	AddCharacterAbilities();
 	SetupEnemy();
 }
 

@@ -6,6 +6,8 @@
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/AbilitySystem/Data/AbilitiesInfo.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
+#include "GAS/Experience/Data/LevelUpInfo.h"
+#include "Player/AuraPlayerState.h"
 #include "UI/Widget/UIWidgetRow.h"
 #include "Utils/FunctionLibraries/HelperFunctionLibrary.h"
 
@@ -88,7 +90,11 @@ void UOverlayWidgetController::BindCallbacksToDelegates()
 			}
 		}
 	);
-	
+
+	// Listen for changes on level and XP
+	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	AuraPlayerState->OnLevelChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnLevelChanged);
+	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
 }
 
 /** Called when abilities are given */
@@ -110,6 +116,35 @@ void UOverlayWidgetController::OnAbilitiesGiven(UAuraAbilitySystemComponent* Aur
 	);
 
 	AuraASC->BroadcastAbility(BroadcastAbilityDelegate);
+}
+
+/** Called when player's level changes */
+void UOverlayWidgetController::OnLevelChanged(int32 NewLevel)
+{
+	
+}
+
+/** Called when player's XP changes */
+void UOverlayWidgetController::OnXPChanged(int32 NewXP) const
+{
+	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	const ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+	check(LevelUpInfo);
+	
+	const int32 CurrentLevel = LevelUpInfo->FindLevelForXP(NewXP);
+	const int32 MaxLevel = LevelUpInfo->LevelUpInformation.Num();
+
+	if (CurrentLevel > 0 && CurrentLevel <= MaxLevel)
+	{
+		const int32 CurrentLevelUpRequirement = LevelUpInfo->LevelUpInformation[CurrentLevel].LevelUpRequirement;
+		const int32 PreviousLevelUpRequirement = LevelUpInfo->LevelUpInformation[CurrentLevel - 1].LevelUpRequirement;
+		const int32 DeltaLevelUpRequirement = CurrentLevelUpRequirement - PreviousLevelUpRequirement;
+
+		const int32 CurrentLevelXP = NewXP - PreviousLevelUpRequirement;
+
+		const float XPBarPercent = static_cast<float>(CurrentLevelXP) / static_cast<float>(DeltaLevelUpRequirement);
+		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
+	}
 }
 
 #pragma endregion CORE

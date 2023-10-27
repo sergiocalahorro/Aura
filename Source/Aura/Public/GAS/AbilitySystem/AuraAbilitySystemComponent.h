@@ -63,6 +63,9 @@ public:
 	/** Add given list of abilities */
 	void AddAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
 
+	/** Add given list of passive abilities */
+	void AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
+
 	/** Activate ability by input tag when released */
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 

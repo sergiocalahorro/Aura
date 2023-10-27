@@ -123,6 +123,15 @@ public:
 
 #pragma endregion ATTRIBUTES_VITAL
 
+#pragma region ATTRIBUTES_META
+
+public:
+
+	/** Health Attribute */
+	FGameplayTag Attributes_Meta_IncomingXP;
+
+#pragma endregion ATTRIBUTES_META
+
 #pragma endregion ATTRIBUTES
 
 #pragma region INPUT

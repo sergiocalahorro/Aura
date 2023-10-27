@@ -4,6 +4,7 @@
 
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
+#include "ScalableFloat.h"
 
 #include "CharacterClassDefaultInfo.generated.h"
 
@@ -25,4 +26,8 @@ public:
 	/** Startup abilities */
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	/** XP reward */
+	UPROPERTY(EditDefaultsOnly)
+	FScalableFloat XPReward;
 };

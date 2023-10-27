@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 
 // Headers - Aura
+#include "AuraLogChannels.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
@@ -120,6 +121,10 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	else if (Data.EvaluatedData.Attribute == GetIncomingDamageAttribute())
 	{
 		HandleIncomingDamage(EffectProperties);
+	}
+	else if (Data.EvaluatedData.Attribute == GetIncomingXPAttribute())
+	{
+		HandleIncomingXP(EffectProperties);
 	}
 }
 
@@ -281,6 +286,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor))
 			{
 				CombatInterface->Death();
+				
 			}
 		}
 		else
@@ -317,6 +323,14 @@ void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectPr
 	{
 		AuraPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
 	}
+}
+
+/** Handle incoming XP */
+void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& EffectProperties)
+{
+	const float IncomingXPAmount = GetIncomingXP();
+	SetIncomingXP(0.f);
+	UE_LOG(LogAura, Log, TEXT("Incoming XP: %f"), IncomingXPAmount);
 }
 
 #pragma endregion ATTRIBUTES_META

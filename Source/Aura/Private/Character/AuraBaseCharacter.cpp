@@ -51,6 +51,12 @@ void AAuraBaseCharacter::BeginPlay()
 
 #pragma region COMBAT
 
+/** Get character's class */
+ECharacterClass AAuraBaseCharacter::GetCharacterClass_Implementation()
+{
+	return CharacterClass;
+}
+
 /** Get Avatar that is the owner of the interface */
 AActor* AAuraBaseCharacter::GetAvatar_Implementation()
 {
@@ -236,7 +242,7 @@ void AAuraBaseCharacter::ApplyEffectDefinitionsToSelf(const TArray<FEffectDefini
 }
 
 /** Grant abilities to the character */
-void AAuraBaseCharacter::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities)
+void AAuraBaseCharacter::AddCharacterAbilities()
 {
 	if (!HasAuthority())
 	{
@@ -244,7 +250,8 @@ void AAuraBaseCharacter::AddCharacterAbilities(const TArray<TSubclassOf<UGamepla
 	}
 
 	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
-	AuraASC->AddAbilities(Abilities);
+	AuraASC->AddAbilities(StartupAbilities);
+	AuraASC->AddPassiveAbilities(StartupPassiveAbilities);
 }
 
 #pragma endregion GAS

@@ -47,6 +47,12 @@ protected:
 	/** Called when abilities are given */
 	void OnAbilitiesGiven(UAuraAbilitySystemComponent* AuraASC) const;
 
+	/** Called when player's level changes */
+	void OnLevelChanged(int32 NewLevel);
+
+	/** Called when player's XP changes */
+	void OnXPChanged(int32 NewXP) const;
+
 public:
 
 	/** Delegate called when Health Attribute is changed */
@@ -66,12 +72,16 @@ public:
 	FOnAttributeChangedSignature OnMaxManaChanged;
 
 	/** Delegate called when an effect is applied, to send data to the Widget associated with the effect's message tag */
-	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Attributes")
+	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
 	/** Delegate called to broadcast ability's info to widget */
 	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Abilities")
 	FAbilityInfoSignature AbilityInfoDelegate;
+
+	/** Delegate called to broadcast XP percent to widget */
+	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|XP")
+	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
 
 protected:
 
