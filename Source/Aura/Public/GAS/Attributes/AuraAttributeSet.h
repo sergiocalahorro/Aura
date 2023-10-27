@@ -288,6 +288,9 @@ private:
 	/** Handle incoming XP */
 	void HandleIncomingXP(const FEffectProperties& EffectProperties);
 
+	/** Send XP event */
+	void SendXPEvent(const FEffectProperties& EffectProperties);
+
 public:
 
 	/** IncomingDamage Attribute */

@@ -39,8 +39,8 @@ float UMMC_MaxHealth::CalculateBaseMagnitude_Implementation(const FGameplayEffec
 	Vigor = FMath::Max<float>(Vigor, 0.f);
 
 	// Get Source's current level
-	const ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
-	const int32 Level = CombatInterface->GetCurrentLevel();
+	UObject* SourceObject = Spec.GetContext().GetSourceObject();
+	const int32 Level = SourceObject->Implements<UCombatInterface>() ? ICombatInterface::Execute_GetCurrentLevel(SourceObject) : 1;
 
 	constexpr float BaseMaxHealth = 80.f;
 	constexpr float VigorCoefficient = 2.5f;

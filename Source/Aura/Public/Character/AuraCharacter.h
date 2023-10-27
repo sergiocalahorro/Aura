@@ -7,6 +7,7 @@
 
 // Headers - Aura
 #include "AuraBaseCharacter.h"
+#include "Interaction/PlayerInterface.h"
 
 #include "AuraCharacter.generated.h"
 
@@ -15,7 +16,7 @@ class USpringArmComponent;
 class UCameraComponent;
 
 UCLASS(Abstract)
-class AURA_API AAuraCharacter : public AAuraBaseCharacter
+class AURA_API AAuraCharacter : public AAuraBaseCharacter, public IPlayerInterface
 {
 	GENERATED_BODY()
 
@@ -64,9 +65,42 @@ private:
 public:
 
 	/** Get level */
-	virtual int32 GetCurrentLevel() const override;
+	virtual int32 GetCurrentLevel_Implementation() override;
 
 #pragma endregion COMBAT
+
+#pragma region PLAYER
+
+public:
+
+	/** Add incoming XP to accumulated XP */
+	virtual void AddToXP_Implementation(int32 InXP) override;
+
+	/** Get current accumulated XP */
+	virtual int32 GetXP_Implementation() const override;
+
+	/** Get attribute points reward for new level */
+	virtual int32 GetAttributePointsReward_Implementation(int32 Level) const override;
+
+	/** Get spell points reward for new level */
+	virtual int32 GetSpellPointsReward_Implementation(int32 Level) const override;
+
+	/** Add incoming level to player's current level */
+	virtual void AddToPlayerLevel_Implementation(int32 InPlayerLevel) override;
+
+	/** Add incoming attribute points to player's current attribute points */
+	virtual void AddToAttributePoints_Implementation(int32 InAttributePoints) override;
+
+	/** Add incoming spell points to player's current spell points */
+	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
+
+	/** Handle level up */
+	virtual void LevelUp_Implementation() override;
+
+	/** Find level for incoming XP */
+	virtual int32 FindLevelForXP_Implementation(int32 InXP) const override;
+
+#pragma endregion PLAYER
 
 #pragma region GAS
 

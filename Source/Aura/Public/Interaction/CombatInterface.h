@@ -36,10 +36,11 @@ public:
 	AActor* GetAvatar();
 
 	/** Get level */
-	virtual int32 GetCurrentLevel() const;
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GetCurrentLevel();
 
 	/** Get character's class */
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UFUNCTION(BlueprintNativeEvent)
 	ECharacterClass GetCharacterClass();
 	
 	/** Get socket's location that will be used in combat */

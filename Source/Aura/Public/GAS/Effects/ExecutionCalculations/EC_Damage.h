@@ -50,10 +50,10 @@ private:
 	bool HandleBlock(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const;
 
 	/** Check Target's Armor and Source's ArmorPenetration in order to calculate Damage taken */
-	void HandleArmor(const UCharacterClassInfo* CharacterClassInfo, const ICombatInterface* SourceAvatarCombat, const ICombatInterface* TargetAvatarCombat, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const;
+	void HandleArmor(const UCharacterClassInfo* CharacterClassInfo, int32 SourceLevel, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const;
 
 	/** Check Target's CriticalHitChance and Source's CriticalHitResistance in order to calculate Damage taken */
-	bool HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, const ICombatInterface* TargetAvatarCombat, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const;
+	bool HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const;
 
 #pragma endregion DAMAGE
 	

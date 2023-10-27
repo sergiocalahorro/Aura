@@ -99,8 +99,8 @@ void UAuraAbilitySystemLibrary::GiveDefaultAbilities(const UObject* WorldContext
 	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	check(CharacterClassInfo);
 
-	const ICombatInterface* AvatarActor = Cast<ICombatInterface>(AbilitySystemComponent->GetAvatarActor());
-	const int32 AbilityLevel = AvatarActor->GetCurrentLevel();
+	AActor* AvatarActor = AbilitySystemComponent->GetAvatarActor();
+	const int32 AbilityLevel = AvatarActor->Implements<UCombatInterface>() ? ICombatInterface::Execute_GetCurrentLevel(AvatarActor) : 1;
 
 	for (const TSubclassOf<UGameplayAbility>& AbilityClass : CharacterClassInfo->CommonAbilities)
 	{

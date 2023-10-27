@@ -2,6 +2,7 @@
 
 #include "GAS/Abilities/Passive/Startup/ListenForEvent.h"
 
+// Headers - Unreal Engine
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
@@ -47,11 +48,16 @@ void UListenForEvent::EndAbility(const FGameplayAbilitySpecHandle Handle, const 
 /** Function called whenever an event with the given tag is received */
 void UListenForEvent::OnEventReceived(FGameplayEventData Payload)
 {
+	check(EventBasedEffectClass);
+	
 	UAbilitySystemComponent* OwningASC = GetAbilitySystemComponentFromActorInfo();
 	const FGameplayEffectContextHandle EffectContextHandle = OwningASC->MakeEffectContext();
 	const FGameplayEffectSpecHandle EffectSpecHandle = OwningASC->MakeOutgoingSpec(EventBasedEffectClass, 1.f, EffectContextHandle);
-	const FGameplayEffectSpecHandle SetByCallerEffectSpecHandle = UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, Payload.EventTag, Payload.EventMagnitude);
-	OwningASC->ApplyGameplayEffectSpecToSelf(*SetByCallerEffectSpecHandle.Data.Get());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, Payload.EventTag, Payload.EventMagnitude);
+	if (EffectSpecHandle.Data.IsValid())
+	{
+		OwningASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data.Get());
+	}
 }
 
 #pragma endregion EVENT

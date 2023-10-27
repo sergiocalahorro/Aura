@@ -10,6 +10,7 @@
 
 // Headers - Aura
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
+#include "GAS/Experience/Data/LevelUpInfo.h"
 #include "Player/AuraPlayerController.h"
 #include "Player/AuraPlayerState.h"
 #include "UI/HUD/AuraHUD.h"
@@ -79,13 +80,86 @@ void AAuraCharacter::BeginPlay()
 #pragma region COMBAT
 
 /** Get level */
-int32 AAuraCharacter::GetCurrentLevel() const
+int32 AAuraCharacter::GetCurrentLevel_Implementation()
 {
 	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
 	return AuraPlayerState->GetCurrentLevel();
 }
 
 #pragma endregion COMBAT
+
+#pragma region PLAYER
+
+/** Add incoming XP to accumulated XP */
+void AAuraCharacter::AddToXP_Implementation(int32 InXP)
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	AuraPlayerState->AddToXP(InXP);
+}
+
+/** Get current accumulated XP */
+int32 AAuraCharacter::GetXP_Implementation() const
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	return AuraPlayerState->GetXP();
+}
+
+/** Get attribute points reward for new level */
+int32 AAuraCharacter::GetAttributePointsReward_Implementation(int32 Level) const
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	const ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+	check(LevelUpInfo);
+
+	return LevelUpInfo->LevelUpInformation[Level].AttributePointReward;
+}
+
+/** Get spell points reward for new level */
+int32 AAuraCharacter::GetSpellPointsReward_Implementation(int32 Level) const
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	const ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+	check(LevelUpInfo);
+
+	return LevelUpInfo->LevelUpInformation[Level].SpellPointReward;
+}
+
+/** Add incoming level to player's current level */
+void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
+{
+	AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	AuraPlayerState->AddToLevel(InPlayerLevel);
+}
+
+/** Add incoming attribute points to player's current attribute points */
+void AAuraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
+{
+	// ToDo: Add AttributePoints to AuraPlayerState
+}
+
+/** Add incoming spell points to player's current spell points */
+void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
+{
+	// ToDo: Add SpellPoints to AuraPlayerState
+}
+
+/** Handle level up */
+void AAuraCharacter::LevelUp_Implementation()
+{
+	// ToDo: Handle level up
+}
+
+/** Find level for incoming XP */
+int32 AAuraCharacter::FindLevelForXP_Implementation(int32 InXP) const
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	const ULevelUpInfo* LevelUpInfo = AuraPlayerState->LevelUpInfo;
+	check(LevelUpInfo);
+	
+	return LevelUpInfo->FindLevelForXP(InXP);
+}
+
+#pragma endregion PLAYER
 
 #pragma region GAS
 

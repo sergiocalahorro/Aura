@@ -93,7 +93,7 @@ void AAuraEnemy::SetInitialBlackboardValues() const
 #pragma region COMBAT
 
 /** Get level */
-int32 AAuraEnemy::GetCurrentLevel() const
+int32 AAuraEnemy::GetCurrentLevel_Implementation()
 {
 	return Level;
 }

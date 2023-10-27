@@ -39,8 +39,8 @@ float UMMC_MaxMana::CalculateBaseMagnitude_Implementation(const FGameplayEffectS
 	Intelligence = FMath::Max<float>(Intelligence, 0.f);
 
 	// Get Source's current level
-	const ICombatInterface* CombatInterface = Cast<ICombatInterface>(Spec.GetContext().GetSourceObject());
-	const int32 Level = CombatInterface->GetCurrentLevel();
+	UObject* SourceObject = Spec.GetContext().GetSourceObject();
+	const int32 Level = SourceObject->Implements<UCombatInterface>() ? ICombatInterface::Execute_GetCurrentLevel(SourceObject) : 1;
 
 	constexpr float BaseMaxMana = 50.f;
 	constexpr float IntelligenceCoefficient = 2.5f;

@@ -81,7 +81,7 @@ protected:
 public:
 
 	/** Get level */
-	virtual int32 GetCurrentLevel() const override;
+	virtual int32 GetCurrentLevel_Implementation() override;
 
 	/** Set new combat target */
 	void SetCombatTarget_Implementation(AActor* InCombatTarget);

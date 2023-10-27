@@ -63,7 +63,7 @@ protected:
 public:
 
 	/** Get character's class */
-	ECharacterClass GetCharacterClass_Implementation();
+	ECharacterClass GetCharacterClass() const;
 
 	/** Get Avatar that is the owner of the interface */
 	virtual AActor* GetAvatar_Implementation() override;

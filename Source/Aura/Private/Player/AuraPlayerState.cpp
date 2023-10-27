@@ -61,6 +61,12 @@ void AAuraPlayerState::AddToLevel(int32 LevelToAdd)
 	OnLevelChangedDelegate.Broadcast(Level);
 }
 
+/** Level's Replication Notify Callback */
+void AAuraPlayerState::OnRep_Level(int32 OldLevel)
+{
+	OnLevelChangedDelegate.Broadcast(Level);
+}
+
 /** Get XP */
 int32 AAuraPlayerState::GetXP() const
 {
@@ -79,12 +85,6 @@ void AAuraPlayerState::AddToXP(int32 XPToAdd)
 {
 	XP += XPToAdd;
 	OnXPChangedDelegate.Broadcast(XP);
-}
-
-/** Level's Replication Notify Callback */
-void AAuraPlayerState::OnRep_Level(int32 OldLevel)
-{
-	OnLevelChangedDelegate.Broadcast(Level);
 }
 
 /** XP's Replication Notify Callback */

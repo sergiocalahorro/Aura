@@ -123,8 +123,8 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	AActor* SourceAvatar = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
 	AActor* TargetAvatar = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
 
-	const ICombatInterface* SourceAvatarCombat = Cast<ICombatInterface>(SourceAvatar);
-	const ICombatInterface* TargetAvatarCombat = Cast<ICombatInterface>(TargetAvatar);
+	const int32 SourceLevel = SourceAvatar->Implements<UCombatInterface>() ? ICombatInterface::Execute_GetCurrentLevel(SourceAvatar) : 1;
+	const int32 TargetLevel = SourceAvatar->Implements<UCombatInterface>() ? ICombatInterface::Execute_GetCurrentLevel(TargetAvatar) : 1;
 
 	const UCharacterClassInfo* CharacterClassInfo = UAuraAbilitySystemLibrary::GetCharacterClassInfo(SourceAvatar);
 
@@ -160,10 +160,10 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bIsBlockedHit);
 
 	// Check Target's Armor and Source's ArmorPenetration and calculate incoming Damage's value
-	HandleArmor(CharacterClassInfo, SourceAvatarCombat, TargetAvatarCombat, ExecutionParams, EvaluateParams, FinalDamage);
+	HandleArmor(CharacterClassInfo, SourceLevel, TargetLevel, ExecutionParams, EvaluateParams, FinalDamage);
 
 	// Check Target's CriticalHitChance and Source's CriticalHitResistance and calculate incoming Damage's value if it's a critical hit
-	const bool bIsCriticalHit = HandleCriticalHit(CharacterClassInfo, TargetAvatarCombat, ExecutionParams, EvaluateParams, FinalDamage);
+	const bool bIsCriticalHit = HandleCriticalHit(CharacterClassInfo, TargetLevel, ExecutionParams, EvaluateParams, FinalDamage);
 	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bIsCriticalHit);
 
 	// Modify IncomingDamage attribute with the calculated final Damage value
@@ -202,7 +202,7 @@ bool UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& Exe
 }
 
 /** Check Target's Armor and Source's ArmorPenetration in order to calculate Damage taken */
-void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, const ICombatInterface* SourceAvatarCombat, const ICombatInterface* TargetAvatarCombat, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
+void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, int32 SourceLevel, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
 {
 	// Capture Armor on Target
 	float TargetArmor = 0.f;
@@ -216,11 +216,11 @@ void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, cons
 	
 	// Retrieve the armor penetration's coefficient based on the Source's level
 	const FRealCurve* ArmorPenetrationCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("ArmorPenetration"), FString());
-	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceAvatarCombat->GetCurrentLevel());
+	const float ArmorPenetrationCoefficient = ArmorPenetrationCurve->Eval(SourceLevel);
 
 	// Retrieve the effective armor's coefficient based on the Target's level
 	const FRealCurve* EffectiveArmorCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("EffectiveArmor"), FString());
-	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetAvatarCombat->GetCurrentLevel());
+	const float EffectiveArmorCoefficient = EffectiveArmorCurve->Eval(TargetLevel);
 
 	// Apply Source's armor penetration and its coefficient to the Target's armor, in order to calculate the effective armor
 	const float EffectiveArmor = TargetArmor * (100.f - SourceArmorPenetration * ArmorPenetrationCoefficient) / 100.f;
@@ -230,7 +230,7 @@ void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, cons
 }
 
 /** Check Target's CriticalHitChance and Source's CriticalHitResistance in order to calculate Damage taken */
-bool UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, const ICombatInterface* TargetAvatarCombat, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
+bool UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
 {
 	// Capture CriticalHitChance on Source in order to determine if there was a critical hit
 	float SourceCriticalHitChance = 0.f;
@@ -249,7 +249,7 @@ bool UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo
 
 	// Retrieve the critical hit resistance's coefficient based on the Target's level
 	const FRealCurve* CriticalHitResistanceCurve = CharacterClassInfo->DamageCalculationCoefficients->FindCurve(FName("CriticalHitResistance"), FString());
-	const float CriticalHitResistanceCoefficient = CriticalHitResistanceCurve->Eval(TargetAvatarCombat->GetCurrentLevel());
+	const float CriticalHitResistanceCoefficient = CriticalHitResistanceCurve->Eval(TargetLevel);
 
 	// Apply Target's critical hit resistance and its coefficient in order to reduce the critical hit chance
 	const float EffectiveCriticalHitChance = SourceCriticalHitChance - TargetCriticalHitResistance * CriticalHitResistanceCoefficient;

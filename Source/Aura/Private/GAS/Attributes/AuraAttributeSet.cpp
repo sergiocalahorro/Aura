@@ -11,10 +11,10 @@
 #include "Net/UnrealNetwork.h"
 
 // Headers - Aura
-#include "AuraLogChannels.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "Interaction/CombatInterface.h"
+#include "Interaction/PlayerInterface.h"
 #include "Player/AuraPlayerController.h"
 
 #pragma region INITIALIZATION
@@ -286,8 +286,8 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor))
 			{
 				CombatInterface->Death();
-				
 			}
+			SendXPEvent(EffectProperties);
 		}
 		else
 		{
@@ -313,15 +313,15 @@ void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectPr
 
 	// ToDo: Create a Damage struct holding info such as the DamageAmount, its DamageType(s), whether it's a blocked/critical hit...
 
-	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(EffectProperties.SourceController))
+	if (AAuraPlayerController* SourcePlayerController = Cast<AAuraPlayerController>(EffectProperties.SourceController))
 	{
-		AuraPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
+		SourcePlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
 		return;
 	}
 
-	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(EffectProperties.TargetController))
+	if (AAuraPlayerController* TargetPlayerController = Cast<AAuraPlayerController>(EffectProperties.TargetController))
 	{
-		AuraPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
+		TargetPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
 	}
 }
 
@@ -330,7 +330,50 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& EffectProperti
 {
 	const float IncomingXPAmount = GetIncomingXP();
 	SetIncomingXP(0.f);
-	UE_LOG(LogAura, Log, TEXT("Incoming XP: %f"), IncomingXPAmount);
+
+	ACharacter* SourceCharacter = EffectProperties.SourceCharacter;
+	if (SourceCharacter->Implements<UCombatInterface>() && SourceCharacter->Implements<UPlayerInterface>())
+	{
+		const int32 CurrentLevel = ICombatInterface::Execute_GetCurrentLevel(SourceCharacter);
+		const int32 CurrentXP = IPlayerInterface::Execute_GetXP(SourceCharacter);
+		const int32 NewLevel = IPlayerInterface::Execute_FindLevelForXP(SourceCharacter, CurrentXP + IncomingXPAmount);
+
+		const int32 NumberOfLevelUps = NewLevel - CurrentLevel;
+		if (NumberOfLevelUps > 0)
+		{
+			// Increase player's level and reward player with both attribute and spell points
+			const int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(SourceCharacter, CurrentLevel);
+			const int32 SpellPointsReward = IPlayerInterface::Execute_GetSpellPointsReward(SourceCharacter, CurrentLevel);
+
+			IPlayerInterface::Execute_AddToPlayerLevel(SourceCharacter, NumberOfLevelUps);
+			IPlayerInterface::Execute_AddToAttributePoints(SourceCharacter, AttributePointsReward);
+			IPlayerInterface::Execute_AddToSpellPoints(SourceCharacter, SpellPointsReward);
+
+			// Fill health and mana
+			SetHealth(GetMaxHealth());
+			SetMana(GetMaxMana());
+		}
+
+		IPlayerInterface::Execute_AddToXP(SourceCharacter, IncomingXPAmount);
+	}
+}
+
+/** Send XP event */
+void UAuraAttributeSet::SendXPEvent(const FEffectProperties& EffectProperties)
+{
+	if (EffectProperties.TargetCharacter->Implements<UCombatInterface>())
+	{
+		const int32 TargetLevel = ICombatInterface::Execute_GetCurrentLevel(EffectProperties.TargetCharacter);
+		const ECharacterClass TargetClass = ICombatInterface::Execute_GetCharacterClass(EffectProperties.TargetCharacter);
+		const int32 XPReward = UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(EffectProperties.TargetCharacter, TargetClass, TargetLevel);
+
+		const FGameplayTag XPEventTag = FAuraGameplayTags::Get().Attributes_Meta_IncomingXP;
+
+		FGameplayEventData Payload;
+		Payload.EventTag = XPEventTag;
+		Payload.EventMagnitude = XPReward;
+		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(EffectProperties.SourceCharacter, XPEventTag, Payload);
+	}
 }
 
 #pragma endregion ATTRIBUTES_META

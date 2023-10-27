@@ -52,7 +52,7 @@ void AAuraBaseCharacter::BeginPlay()
 #pragma region COMBAT
 
 /** Get character's class */
-ECharacterClass AAuraBaseCharacter::GetCharacterClass_Implementation()
+ECharacterClass AAuraBaseCharacter::GetCharacterClass() const
 {
 	return CharacterClass;
 }
