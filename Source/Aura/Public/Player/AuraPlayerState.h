@@ -9,10 +9,12 @@
 
 #include "AuraPlayerState.generated.h"
 
-class ULevelUpInfo;
 // Forward declarations - Unreal Engine
 class UAttributeSet;
 class UAbilitySystemComponent;
+
+// Forward declarations - Aura
+class ULevelUpInfo;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerStatChangedSignature, int32);
 

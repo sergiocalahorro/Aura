@@ -14,6 +14,7 @@
 // Forward declarations - Unreal Engine
 class USpringArmComponent;
 class UCameraComponent;
+class UNiagaraComponent;
 
 UCLASS(Abstract)
 class AURA_API AAuraCharacter : public AAuraBaseCharacter, public IPlayerInterface
@@ -58,6 +59,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "AA|Components")
 	TObjectPtr<USpringArmComponent> SpringArm;
 
+	/** Level Up Niagara component */
+	UPROPERTY(VisibleDefaultsOnly, Category = "AA|Components")
+	TObjectPtr<UNiagaraComponent> LevelUpNiagaraComponent;
+
 #pragma endregion COMPONENTS
 
 #pragma region COMBAT
@@ -99,6 +104,12 @@ public:
 
 	/** Find level for incoming XP */
 	virtual int32 FindLevelForXP_Implementation(int32 InXP) const override;
+
+private:
+
+	/** Multicast RPC for displaying level up particles */
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastLevelUpParticles() const;
 
 #pragma endregion PLAYER
 

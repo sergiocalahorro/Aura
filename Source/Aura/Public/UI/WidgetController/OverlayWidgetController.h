@@ -21,6 +21,7 @@ class UAuraAbilitySystemComponent;
 struct FAuraAbilityInfo;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerValueChangedSignature, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, const FUIWidgetRow&, Row);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, AbilityInfo);
 
@@ -82,6 +83,10 @@ public:
 	/** Delegate called to broadcast XP percent to widget */
 	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
+
+	/** Delegate called to broadcast a level change to widget */
+	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Level")
+	FOnPlayerValueChangedSignature OnPlayerLevelChangedDelegate;
 
 protected:
 

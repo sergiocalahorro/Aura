@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 
 // Headers - Aura
+#include "NiagaraComponent.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Experience/Data/LevelUpInfo.h"
 #include "Player/AuraPlayerController.h"
@@ -25,7 +26,9 @@ AAuraCharacter::AAuraCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
 	SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+	SpringArm->SetUsingAbsoluteRotation(true);
 	SpringArm->TargetArmLength = 750.f;
+	SpringArm->bDoCollisionTest = false;
 	SpringArm->bUsePawnControlRotation = false;
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->bInheritPitch = false;
@@ -35,6 +38,10 @@ AAuraCharacter::AAuraCharacter()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
 	Camera->bUsePawnControlRotation = false;
+
+	LevelUpNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("LevelUpNiagaraComponent"));
+	LevelUpNiagaraComponent->SetupAttachment(RootComponent);
+	LevelUpNiagaraComponent->bAutoActivate = false;
 	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 400.f, 0.f);
@@ -146,7 +153,7 @@ void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 /** Handle level up */
 void AAuraCharacter::LevelUp_Implementation()
 {
-	// ToDo: Handle level up
+	MulticastLevelUpParticles();
 }
 
 /** Find level for incoming XP */
@@ -157,6 +164,16 @@ int32 AAuraCharacter::FindLevelForXP_Implementation(int32 InXP) const
 	check(LevelUpInfo);
 	
 	return LevelUpInfo->FindLevelForXP(InXP);
+}
+
+/** Multicast RPC for displaying level up particles */
+void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
+{
+	const FVector CameraLocation = Camera->GetComponentLocation();
+	const FVector NiagaraComponentLocation = LevelUpNiagaraComponent->GetComponentLocation();
+	const FRotator NiagaraComponentToCameraRotation = (CameraLocation - NiagaraComponentLocation).Rotation();
+	LevelUpNiagaraComponent->SetWorldRotation(NiagaraComponentToCameraRotation);
+	LevelUpNiagaraComponent->Activate(true);
 }
 
 #pragma endregion PLAYER

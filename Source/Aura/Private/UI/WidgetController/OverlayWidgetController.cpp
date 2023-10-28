@@ -93,8 +93,8 @@ void UOverlayWidgetController::BindCallbacksToDelegates()
 
 	// Listen for changes on level and XP
 	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
-	AuraPlayerState->OnLevelChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnLevelChanged);
 	AuraPlayerState->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
+	AuraPlayerState->OnLevelChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnLevelChanged);
 }
 
 /** Called when abilities are given */
@@ -121,7 +121,7 @@ void UOverlayWidgetController::OnAbilitiesGiven(UAuraAbilitySystemComponent* Aur
 /** Called when player's level changes */
 void UOverlayWidgetController::OnLevelChanged(int32 NewLevel)
 {
-	
+	OnPlayerLevelChangedDelegate.Broadcast(NewLevel);
 }
 
 /** Called when player's XP changes */

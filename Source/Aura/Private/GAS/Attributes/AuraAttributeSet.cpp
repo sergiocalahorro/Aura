@@ -348,6 +348,7 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& EffectProperti
 			IPlayerInterface::Execute_AddToPlayerLevel(SourceCharacter, NumberOfLevelUps);
 			IPlayerInterface::Execute_AddToAttributePoints(SourceCharacter, AttributePointsReward);
 			IPlayerInterface::Execute_AddToSpellPoints(SourceCharacter, SpellPointsReward);
+			IPlayerInterface::Execute_LevelUp(SourceCharacter);
 
 			// Fill health and mana
 			SetHealth(GetMaxHealth());
