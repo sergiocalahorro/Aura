@@ -55,7 +55,7 @@ public:
 	void SetLevel(int32 InLevel);
 
 	/** Add to level */
-	void AddToLevel(int32 LevelToAdd);
+	void AddToLevel(int32 InLevel);
 
 	/** Get XP */
 	int32 GetXP() const;
@@ -64,7 +64,19 @@ public:
 	void SetXP(int32 InXP);
 
 	/** Add to XP */
-	void AddToXP(int32 XPToAdd);
+	void AddToXP(int32 InXP);
+
+	/** Get AttributePoints */
+	int32 GetAttributePoints() const;
+
+	/** Add to AttributePoints */
+	void AddToAttributePoints(int32 InAttributePoints);
+
+	/** Get SpellPoints */
+	int32 GetSpellPoints() const;
+
+	/** Add to SpellPoints */
+	void AddToSpellPoints(int32 InSpellPoints);
 
 private:
 
@@ -75,6 +87,14 @@ private:
 	/** XP's Replication Notify Callback */
 	UFUNCTION()
 	void OnRep_XP(int32 OldXP);
+
+	/** AttributePoints' Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_AttributePoints(int32 OldAttributePoints);
+
+	/** SpellPoints' Replication Notify Callback */
+	UFUNCTION()
+	void OnRep_SpellPoints(int32 OldSpellPoints);
 
 public:
 
@@ -88,6 +108,12 @@ public:
 	/** Delegate called whenever XP changes */
 	FOnPlayerStatChangedSignature OnXPChangedDelegate;
 
+	/** Delegate called whenever attribute points change */
+	FOnPlayerStatChangedSignature OnAttributePointsChangedDelegate;
+
+	/** Delegate called whenever spell points change */
+	FOnPlayerStatChangedSignature OnSpellPointsChangedDelegate;
+
 private:
 
 	/** Player's level */
@@ -97,6 +123,14 @@ private:
 	/** Player's XP */
 	UPROPERTY(VisibleDefaultsOnly, ReplicatedUsing = OnRep_XP, Category = "AA|Core")
 	int32 XP = 0;
+
+	/** Player's attribute points */
+	UPROPERTY(VisibleDefaultsOnly, ReplicatedUsing = OnRep_AttributePoints, Category = "AA|Core")
+	int32 AttributePoints = 0;
+	
+	/** Player's spell points */
+	UPROPERTY(VisibleDefaultsOnly, ReplicatedUsing = OnRep_SpellPoints, Category = "AA|Core")
+	int32 SpellPoints = 0;
 
 #pragma endregion CORE
 

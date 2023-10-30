@@ -15,6 +15,8 @@ class UAbilitySystemComponent;
 // Forward declarations - Aura
 struct FWidgetControllerParams;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerValueChangedSignature, int32, NewValue);
+
 /**
  * 
  */

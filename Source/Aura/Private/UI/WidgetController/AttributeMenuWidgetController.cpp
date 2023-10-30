@@ -3,9 +3,11 @@
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
 
 // Headers - Aura
+#include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
 #include "GAS/Attributes/Data/AttributesInfo.h"
 #include "GAS/Attributes/Data/AuraAttributeInfo.h"
+#include "Player/AuraPlayerState.h"
 
 #pragma region CORE
 
@@ -18,6 +20,9 @@ void UAttributeMenuWidgetController::BroadcastInitialValues()
 	{
 		BroadcastAttributeInfo(Pair.Key, Pair.Value());
 	}
+
+	const AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	OnAttributePointsChangedDelegate.Broadcast(AuraPlayerState->GetAttributePoints());
 }
 
 /** Bind callbacks to delegates */
@@ -33,6 +38,21 @@ void UAttributeMenuWidgetController::BindCallbacksToDelegates()
 			}
 		);
 	}
+
+	AAuraPlayerState* AuraPlayerState = CastChecked<AAuraPlayerState>(PlayerState);
+	AuraPlayerState->OnAttributePointsChangedDelegate.AddLambda(
+		[this](int32 NewValue)
+		{
+			OnAttributePointsChangedDelegate.Broadcast(NewValue);
+		}
+	);
+}
+
+/** Upgrade attribute with given tag */
+void UAttributeMenuWidgetController::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	UAuraAbilitySystemComponent* AuraASC = CastChecked<UAuraAbilitySystemComponent>(AbilitySystemComponent);
+	AuraASC->UpgradeAttribute(AttributeTag);
 }
 
 /** Broadcast attribute info */

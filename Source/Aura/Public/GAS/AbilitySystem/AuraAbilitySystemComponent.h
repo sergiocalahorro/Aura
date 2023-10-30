@@ -81,6 +81,15 @@ public:
 	/** Get ability's input tag from ability spec */
 	static FGameplayTag GetAbilityInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 
+	/** Upgrade attribute with given tag */
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+
+private:
+
+	/** (Server) Upgrade attribute with given tag */
+	UFUNCTION(Server, Reliable)
+	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
+
 public:
 
 	/** Whether startup abilities have been given */

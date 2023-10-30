@@ -141,13 +141,29 @@ void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 /** Add incoming attribute points to player's current attribute points */
 void AAuraCharacter::AddToAttributePoints_Implementation(int32 InAttributePoints)
 {
-	// ToDo: Add AttributePoints to AuraPlayerState
+	AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	AuraPlayerState->AddToAttributePoints(InAttributePoints);
 }
 
 /** Add incoming spell points to player's current spell points */
 void AAuraCharacter::AddToSpellPoints_Implementation(int32 InSpellPoints)
 {
-	// ToDo: Add SpellPoints to AuraPlayerState
+	AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	AuraPlayerState->AddToSpellPoints(InSpellPoints);
+}
+
+/** Get player's attribute points */
+int32 AAuraCharacter::GetAttributePoints_Implementation() const
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	return AuraPlayerState->GetAttributePoints();
+}
+
+/** Get player's spell points */
+int32 AAuraCharacter::GetSpellPoints_Implementation() const
+{
+	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
+	return AuraPlayerState->GetSpellPoints();
 }
 
 /** Handle level up */

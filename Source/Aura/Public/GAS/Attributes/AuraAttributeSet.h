@@ -54,6 +54,9 @@ public:
 	/**	Called just before a GameplayEffect is executed to modify the base value of an attribute. No more changes can be made */
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData &Data) override;
 
+	/** Called just after any modification happens to an attribute. */
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
+	
 #pragma endregion OVERRIDES
 
 #pragma region ATTRIBUTES
@@ -62,6 +65,12 @@ public:
 
 	/** Map that links Gameplay Tags to pointers to Attributes' getters */
 	TMap<FGameplayTag, TStaticFuncPtr<FGameplayAttribute()>> TaggedAttributes;
+
+	/** Whether Health should be filled due to a level up */
+	bool bShouldFillHealth = false;
+
+	/** Whether Mana should be filled due to a level up */
+	bool bShouldFillMana = false;
 
 #pragma region ATTRIBUTES_PRIMARY
 

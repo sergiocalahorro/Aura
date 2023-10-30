@@ -35,6 +35,8 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(AAuraPlayerState, Level);
 	DOREPLIFETIME(AAuraPlayerState, XP);
+	DOREPLIFETIME(AAuraPlayerState, AttributePoints);
+	DOREPLIFETIME(AAuraPlayerState, SpellPoints);
 }
 
 #pragma endregion OVERRIDES
@@ -55,15 +57,9 @@ void AAuraPlayerState::SetLevel(int32 InLevel)
 }
 
 /** Add to level */
-void AAuraPlayerState::AddToLevel(int32 LevelToAdd)
+void AAuraPlayerState::AddToLevel(int32 InLevel)
 {
-	Level += LevelToAdd;
-	OnLevelChangedDelegate.Broadcast(Level);
-}
-
-/** Level's Replication Notify Callback */
-void AAuraPlayerState::OnRep_Level(int32 OldLevel)
-{
+	Level += InLevel;
 	OnLevelChangedDelegate.Broadcast(Level);
 }
 
@@ -81,16 +77,60 @@ void AAuraPlayerState::SetXP(int32 InXP)
 }
 
 /** Add to XP */
-void AAuraPlayerState::AddToXP(int32 XPToAdd)
+void AAuraPlayerState::AddToXP(int32 InXP)
 {
-	XP += XPToAdd;
+	XP += InXP;
 	OnXPChangedDelegate.Broadcast(XP);
+}
+
+/** Get AttributePoints */
+int32 AAuraPlayerState::GetAttributePoints() const
+{
+	return AttributePoints;
+}
+
+/** Add to AttributePoints */
+void AAuraPlayerState::AddToAttributePoints(int32 InAttributePoints)
+{
+	AttributePoints += InAttributePoints;
+	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
+}
+
+/** Get SpellPoints */
+int32 AAuraPlayerState::GetSpellPoints() const
+{
+	return SpellPoints;
+}
+
+/** Add to SpellPoints */
+void AAuraPlayerState::AddToSpellPoints(int32 InSpellPoints)
+{
+	SpellPoints += InSpellPoints;
+	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
+}
+
+/** Level's Replication Notify Callback */
+void AAuraPlayerState::OnRep_Level(int32 OldLevel)
+{
+	OnLevelChangedDelegate.Broadcast(Level);
 }
 
 /** XP's Replication Notify Callback */
 void AAuraPlayerState::OnRep_XP(int32 OldXP)
 {
 	OnXPChangedDelegate.Broadcast(XP);
+}
+
+/** AttributePoints' Replication Notify Callback */
+void AAuraPlayerState::OnRep_AttributePoints(int32 OldAttributePoints)
+{
+	OnAttributePointsChangedDelegate.Broadcast(AttributePoints);
+}
+
+/** SpellPoints' Replication Notify Callback */
+void AAuraPlayerState::OnRep_SpellPoints(int32 OldSpellPoints)
+{
+	OnSpellPointsChangedDelegate.Broadcast(SpellPoints);
 }
 
 #pragma endregion CORE

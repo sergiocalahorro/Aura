@@ -128,6 +128,24 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	}
 }
 
+/** Called just after any modification happens to an attribute. */
+void UAuraAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute() && bShouldFillHealth)
+	{
+		SetHealth(GetMaxHealth());
+		bShouldFillHealth = false;
+	}
+	
+	if (Attribute == GetMaxManaAttribute() && bShouldFillMana)
+	{
+		SetMana(GetMaxMana());
+		bShouldFillMana = false;
+	}
+}
+
 #pragma endregion OVERRIDES
 
 #pragma region ATTRIBUTES
@@ -350,9 +368,8 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& EffectProperti
 			IPlayerInterface::Execute_AddToSpellPoints(SourceCharacter, SpellPointsReward);
 			IPlayerInterface::Execute_LevelUp(SourceCharacter);
 
-			// Fill health and mana
-			SetHealth(GetMaxHealth());
-			SetMana(GetMaxMana());
+			bShouldFillHealth = true;
+			bShouldFillMana = true;
 		}
 
 		IPlayerInterface::Execute_AddToXP(SourceCharacter, IncomingXPAmount);

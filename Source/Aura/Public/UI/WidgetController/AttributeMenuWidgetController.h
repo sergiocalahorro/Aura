@@ -36,6 +36,10 @@ public:
 	/** Bind callbacks to delegates */
 	virtual void BindCallbacksToDelegates() override;
 
+	/** Upgrade attribute with given tag */
+	UFUNCTION(BlueprintCallable)
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+
 private:
 
 	/** Broadcast attribute info */
@@ -46,6 +50,10 @@ public:
 	/** Delegate called to broadcast attribute info */
 	UPROPERTY(BlueprintAssignable)
 	FAttributeInfoSignature AttributeInfoDelegate;
+
+	/** Delegate called to broadcast attribute points to widget */
+	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Attributes")
+	FOnPlayerValueChangedSignature OnAttributePointsChangedDelegate;
 
 protected:
 

@@ -2,9 +2,13 @@
 
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 
+// Headers - Unreal Engine
+#include "AbilitySystemBlueprintLibrary.h"
+
 // Headers - Aura
 #include "AuraLogChannels.h"
 #include "GAS/Abilities/AuraGameplayAbility.h"
+#include "Interaction/PlayerInterface.h"
 
 #pragma region OVERRIDES
 
@@ -154,6 +158,32 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityInputTagFromSpec(const FGame
 	}
 
 	return FGameplayTag();
+}
+
+/** Upgrade attribute with given tag */
+void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
+{
+	if (GetAvatarActor()->Implements<UPlayerInterface>())
+	{
+		if (IPlayerInterface::Execute_GetAttributePoints(GetAvatarActor()) > 0)
+		{
+			ServerUpgradeAttribute(AttributeTag);
+		}
+	}
+}
+
+/** (Server) Upgrade attribute with given tag */
+void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FGameplayTag& AttributeTag)
+{
+	FGameplayEventData Payload;
+	Payload.EventTag = AttributeTag;
+	Payload.EventMagnitude = 1.f;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetAvatarActor(), AttributeTag, Payload);
+	if (GetAvatarActor()->Implements<UPlayerInterface>())
+	{
+		IPlayerInterface::Execute_AddToAttributePoints(GetAvatarActor(), -1);
+	}
 }
 
 #pragma endregion ABILITIES

@@ -99,6 +99,12 @@ public:
 	/** Add incoming spell points to player's current spell points */
 	virtual void AddToSpellPoints_Implementation(int32 InSpellPoints) override;
 
+	/** Get player's attribute points */
+	virtual int32 GetAttributePoints_Implementation() const override;
+
+	/** Get player's spell points */
+	virtual int32 GetSpellPoints_Implementation() const override;
+
 	/** Handle level up */
 	virtual void LevelUp_Implementation() override;
 
