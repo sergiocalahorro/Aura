@@ -178,6 +178,9 @@ public:
 
 public:
 
+	/** None ability */
+	FGameplayTag Abilities_None;
+
 	/** Attack ability */
 	FGameplayTag Abilities_Attack;
 
@@ -186,6 +189,9 @@ public:
 
 	/** Fire Bolt ability */
 	FGameplayTag Abilities_Fire_FireBolt;
+
+	/** Electrocute ability */
+	FGameplayTag Abilities_Lightning_Electrocute;
 
 	/** Hit React ability */
 	FGameplayTag Abilities_HitReact;

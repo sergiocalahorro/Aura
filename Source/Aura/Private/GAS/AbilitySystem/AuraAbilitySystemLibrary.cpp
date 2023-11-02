@@ -161,6 +161,17 @@ int32 UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* Worl
 
 #pragma endregion CHARACTER
 
+#pragma region ABILITIES
+
+/** Get DataAsset containing information for abilities */
+UAbilitiesInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(const UObject* WorldContextObject)
+{
+	const AAuraBaseGameMode* AuraGameMode = Cast<AAuraBaseGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
+	return AuraGameMode ? AuraGameMode->AbilitiesInfo : nullptr;
+}
+
+#pragma endregion ABILITIES
+
 #pragma region EFFECT
 
 /** Return whether damage effect is blocked */

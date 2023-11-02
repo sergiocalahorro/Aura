@@ -8,6 +8,7 @@
 
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UAbilitiesInfo;
 class AAuraHUD;
 // Forward declarations - Unreal Engine
 class UAbilitySystemComponent;
@@ -72,6 +73,16 @@ public:
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel);
 	
 #pragma endregion CHARACTER
+
+#pragma region ABILITIES
+
+public:
+	
+	/** Get DataAsset containing information for abilities */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|Abilities", meta = (DefaultToSelf = "WorldContextObject")) 
+	static UAbilitiesInfo* GetAbilitiesInfo(const UObject* WorldContextObject);
+
+#pragma endregion ABILITIES
 
 #pragma region EFFECT
 

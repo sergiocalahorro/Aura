@@ -13,6 +13,7 @@ class UAuraAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagsSignature, const FGameplayTagContainer&);
 DECLARE_MULTICAST_DELEGATE(FAbilitiesGivenSignature);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChangedSignature, const FGameplayTag&, const FGameplayTag&);
 DECLARE_DELEGATE_OneParam(FBroadcastAbilitySignature, const FGameplayAbilitySpec&);
 
 UCLASS()
@@ -47,6 +48,9 @@ public:
 
 	/** Delegate called when abilities are given */
 	FAbilitiesGivenSignature AbilitiesGivenDelegate;
+
+	/** Delegate called when an ability status has changed */
+	FAbilityStatusChangedSignature AbilityStatusChangedDelegate;
 	
 protected:
 
@@ -75,6 +79,9 @@ public:
 	/** Broadcast ability */
 	void BroadcastAbility(const FBroadcastAbilitySignature& BroadcastAbilityDelegate);
 
+	/** Update abilities' statuses based on level */
+	void UpdateAbilitiesStatuses(int32 Level);
+
 	/** Get ability's tag from ability spec */
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 
@@ -84,14 +91,14 @@ public:
 	/** Get ability's status tag from ability spec */
 	static FGameplayTag GetAbilityStatusTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 
-	/** Upgrade attribute with given tag */
-	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+	/** Get ability spec from ability's tag */
+	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
-private:
+protected:
 
-	/** (Server) Upgrade attribute with given tag */
-	UFUNCTION(Server, Reliable)
-	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
+	/** Client RPC called to update an ability's status */
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
 
 public:
 
@@ -99,5 +106,20 @@ public:
 	bool bStartupAbilitiesGiven;
 
 #pragma endregion ABILITIES
+
+#pragma region ATTRIBUTES
+
+public:
+	
+	/** Upgrade attribute with given tag */
+	void UpgradeAttribute(const FGameplayTag& AttributeTag);
+	
+private:
+
+	/** (Server) Upgrade attribute with given tag */
+	UFUNCTION(Server, Reliable)
+	void ServerUpgradeAttribute(const FGameplayTag& AttributeTag);
+	
+#pragma endregion ATTRIBUTES
 
 };

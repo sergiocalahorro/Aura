@@ -10,6 +10,7 @@
 
 // Forward declarations - Aura
 class UCharacterClassInfo;
+class UAbilitiesInfo;
 
 /**
  * 
@@ -28,5 +29,15 @@ public:
 	TObjectPtr<UCharacterClassInfo> CharacterClassInfo;
 
 #pragma endregion CHARACTER
+
+#pragma region ABILITIES
+	
+public:
+	
+	/** Abilities' info */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Abilities")
+	TObjectPtr<UAbilitiesInfo> AbilitiesInfo;
+	
+#pragma endregion ABILITIES
 
 };

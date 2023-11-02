@@ -44,7 +44,7 @@ void AAuraPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 #pragma region CORE
 
 /** Get level */
-int32 AAuraPlayerState::GetCurrentLevel() const
+int32 AAuraPlayerState::GetPlayerLevel() const
 {
 	return Level;
 }

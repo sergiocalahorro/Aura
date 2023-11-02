@@ -9,6 +9,8 @@
 #include "AuraLogChannels.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/Abilities/AuraGameplayAbility.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "GAS/AbilitySystem/Data/AbilitiesInfo.h"
 #include "Interaction/PlayerInterface.h"
 
 #pragma region OVERRIDES
@@ -131,6 +133,35 @@ void UAuraAbilitySystemComponent::BroadcastAbility(const FBroadcastAbilitySignat
 	}
 }
 
+/** Update abilities' statuses based on level */
+void UAuraAbilitySystemComponent::UpdateAbilitiesStatuses(int32 Level)
+{
+	UAbilitiesInfo* AbilitiesInfo = UAuraAbilitySystemLibrary::GetAbilitiesInfo(GetAvatarActor());
+	for (const FAuraAbilityInfo& AbilityInfo : AbilitiesInfo->AbilitiesInformation)
+	{
+		if (!AbilityInfo.AbilityTag.IsValid() || Level < AbilityInfo.LevelRequirement)
+		{
+			continue;
+		}
+
+		if (!GetSpecFromAbilityTag(AbilityInfo.AbilityTag))
+		{
+			const FGameplayTag NewStatusTag = FAuraGameplayTags::Get().Abilities_Status_Eligible;
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityInfo.AbilityClass, 1.f);
+			AbilitySpec.DynamicAbilityTags.AddTag(NewStatusTag);
+			GiveAbility(AbilitySpec);
+			MarkAbilitySpecDirty(AbilitySpec);
+			ClientUpdateAbilityStatus(AbilityInfo.AbilityTag, NewStatusTag);
+		}
+	}
+}
+
+/** Client RPC called to update an ability's status */
+void UAuraAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag)
+{
+	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag);
+}
+
 /** Get ability's tag from ability spec */
 FGameplayTag UAuraAbilitySystemComponent::GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
 {
@@ -176,6 +207,29 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityStatusTagFromSpec(const FGam
 	return FGameplayTag();
 }
 
+/** Get ability spec from ability's tag */
+FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		for (const FGameplayTag& Tag : AbilitySpec.Ability.Get()->AbilityTags)
+		{
+			if (Tag.MatchesTag(AbilityTag))
+			{
+				return &AbilitySpec;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+#pragma endregion ABILITIES
+
+#pragma region ATTRIBUTES
+
 /** Upgrade attribute with given tag */
 void UAuraAbilitySystemComponent::UpgradeAttribute(const FGameplayTag& AttributeTag)
 {
@@ -202,4 +256,4 @@ void UAuraAbilitySystemComponent::ServerUpgradeAttribute_Implementation(const FG
 	}
 }
 
-#pragma endregion ABILITIES
+#pragma endregion ATTRIBUTES

@@ -90,7 +90,7 @@ void AAuraCharacter::BeginPlay()
 int32 AAuraCharacter::GetCurrentLevel_Implementation()
 {
 	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
-	return AuraPlayerState->GetCurrentLevel();
+	return AuraPlayerState->GetPlayerLevel();
 }
 
 #pragma endregion COMBAT
@@ -136,6 +136,11 @@ void AAuraCharacter::AddToPlayerLevel_Implementation(int32 InPlayerLevel)
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
 	AuraPlayerState->AddToLevel(InPlayerLevel);
+
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		AuraASC->UpdateAbilitiesStatuses(AuraPlayerState->GetPlayerLevel());
+	}
 }
 
 /** Add incoming attribute points to player's current attribute points */

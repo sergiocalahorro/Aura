@@ -8,6 +8,9 @@
 
 #include "AuraAbilityInfo.generated.h"
 
+// Forward declarations - Unreal Engine
+class UGameplayAbility;
+
 /**
  * 
  */
@@ -33,6 +36,14 @@ public:
 	/** Ability's cooldown GameplayTag */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag CooldownTag;
+
+	/** Level required in order to unlock the ability */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (ClampMin = 1, UIMin = 1))
+	int32 LevelRequirement = 1;
+
+	/** Ability class */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayAbility> AbilityClass;
 
 	/** Ability's icon */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

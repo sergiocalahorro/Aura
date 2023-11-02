@@ -49,7 +49,7 @@ public:
 public:
 
 	/** Get level */
-	int32 GetCurrentLevel() const;
+	int32 GetPlayerLevel() const;
 
 	/** Set level */
 	void SetLevel(int32 InLevel);
