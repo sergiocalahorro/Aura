@@ -8,6 +8,7 @@
 
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class AAuraHUD;
 // Forward declarations - Unreal Engine
 class UAbilitySystemComponent;
 struct FGameplayEffectContextHandle;
@@ -15,7 +16,9 @@ struct FGameplayEffectContextHandle;
 // Forward declarations - Aura
 class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
+class USpellMenuWidgetController;
 class UCharacterClassInfo;
+struct FWidgetControllerParams;
 
 /**
  * 
@@ -30,12 +33,21 @@ class AURA_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 public:
 
 	/** Get Overlay Widget Controller */
-	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static UOverlayWidgetController* GetOverlayWidgetController(const UObject* WorldContextObject);
 
 	/** Get Attribute Menu Widget Controller */
-	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|WidgetController")
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
 	static UAttributeMenuWidgetController* GetAttributeMenuWidgetController(const UObject* WorldContextObject);
+
+	/** Get Spell Menu Widget Controller */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|WidgetController", meta = (DefaultToSelf = "WorldContextObject"))
+	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
+
+private:
+
+	/** Create widget controller params */
+	static bool MakeWidgetControllerParams(const UObject* WorldContextObject, FWidgetControllerParams& OutWidgetControllerParams, AAuraHUD*& OutAuraHUD);
 
 #pragma endregion WIDGET
 
@@ -44,19 +56,19 @@ public:
 public:
 
 	/** Initialize character with its default attributes' values per level */
-	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults") 
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults", meta = (DefaultToSelf = "WorldContextObject")) 
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject, ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* AbilitySystemComponent);
 
 	/** Initialize character with its default abilities */
-	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults") 
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults", meta = (DefaultToSelf = "WorldContextObject")) 
 	static void GiveDefaultAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent, ECharacterClass CharacterClass);
 
 	/** Get DataAsset containing information for character class */
-	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults") 
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults", meta = (DefaultToSelf = "WorldContextObject")) 
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
 	/** Get XP reward for given class and level */
-	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults") 
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|CharacterDefaults", meta = (DefaultToSelf = "WorldContextObject")) 
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject, ECharacterClass CharacterClass, int32 CharacterLevel);
 	
 #pragma endregion CHARACTER

@@ -15,14 +15,8 @@
 class UDataTable;
 struct FOnAttributeChangeData;
 
-// Forward declarations - Aura
-class UAbilitiesInfo;
-class UAuraAbilitySystemComponent;
-struct FAuraAbilityInfo;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttributeChangedSignature, float, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMessageWidgetRowSignature, const FUIWidgetRow&, Row);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAbilityInfoSignature, const FAuraAbilityInfo&, AbilityInfo);
 
 /**
  * 
@@ -44,14 +38,11 @@ public:
 
 protected:
 
-	/** Called when abilities are given */
-	void OnAbilitiesGiven(UAuraAbilitySystemComponent* AuraASC) const;
-
 	/** Called when player's level changes */
 	void OnLevelChanged(int32 NewLevel);
 
 	/** Called when player's XP changes */
-	void OnXPChanged(int32 NewXP) const;
+	void OnXPChanged(int32 NewXP);
 
 public:
 
@@ -75,10 +66,6 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Messages")
 	FMessageWidgetRowSignature MessageWidgetRowDelegate;
 
-	/** Delegate called to broadcast ability's info to widget */
-	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|Abilities")
-	FAbilityInfoSignature AbilityInfoDelegate;
-
 	/** Delegate called to broadcast XP percent to widget */
 	UPROPERTY(BlueprintAssignable, Category = "AA|GAS|XP")
 	FOnAttributeChangedSignature OnXPPercentChangedDelegate;
@@ -92,10 +79,6 @@ protected:
 	/** Message widget data table */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Widget|Data")
 	TObjectPtr<UDataTable> MessageWidgetDataTable;
-
-	/** Abilities' info */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "AA|Widget|Data")
-	TObjectPtr<UAbilitiesInfo> AbilitiesInfo;
 
 #pragma endregion CORE
 	

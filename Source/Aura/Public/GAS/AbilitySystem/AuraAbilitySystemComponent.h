@@ -12,7 +12,7 @@
 class UAuraAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagsSignature, const FGameplayTagContainer&);
-DECLARE_MULTICAST_DELEGATE_OneParam(FAbilitiesGivenSignature, UAuraAbilitySystemComponent*);
+DECLARE_MULTICAST_DELEGATE(FAbilitiesGivenSignature);
 DECLARE_DELEGATE_OneParam(FBroadcastAbilitySignature, const FGameplayAbilitySpec&);
 
 UCLASS()
@@ -80,6 +80,9 @@ public:
 
 	/** Get ability's input tag from ability spec */
 	static FGameplayTag GetAbilityInputTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
+
+	/** Get ability's status tag from ability spec */
+	static FGameplayTag GetAbilityStatusTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 
 	/** Upgrade attribute with given tag */
 	void UpgradeAttribute(const FGameplayTag& AttributeTag);

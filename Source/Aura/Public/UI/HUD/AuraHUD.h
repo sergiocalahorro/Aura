@@ -16,6 +16,7 @@ class UAbilitySystemComponent;
 class UAuraUserWidget;
 class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
+class USpellMenuWidgetController;
 struct FWidgetControllerParams;
 
 /**
@@ -74,5 +75,24 @@ private:
 	TObjectPtr<UAttributeMenuWidgetController> AttributeMenuWidgetController;
 
 #pragma endregion ATTRIBUTE_MENU
+
+#pragma region SPELL_MENU
+
+public:
+	
+	/** Get Spell Menu Widget Controller */
+	USpellMenuWidgetController* GetSpellMenuWidgetController(const FWidgetControllerParams& WidgetControllerParams);
+
+private:
+
+	/** Spell Menu Controller class */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|SpellMenu")
+	TSubclassOf<USpellMenuWidgetController> SpellMenuWidgetControllerClass;
+	
+	/** Spell Menu Widget Controller */
+	UPROPERTY()
+	TObjectPtr<USpellMenuWidgetController> SpellMenuWidgetController;
+
+#pragma endregion SPELL_MENU
 	
 };

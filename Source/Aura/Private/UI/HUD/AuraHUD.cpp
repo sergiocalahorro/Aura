@@ -10,6 +10,7 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "UI/WidgetController/WidgetControllerParams.h"
 #include "UI/WidgetController/AttributeMenuWidgetController.h"
+#include "UI/WidgetController/SpellMenuWidgetController.h"
 
 #pragma region OVERLAY
 
@@ -60,3 +61,20 @@ UAttributeMenuWidgetController* AAuraHUD::GetAttributeMenuWidgetController(const
 }
 
 #pragma endregion ATTRIBUTE_MENU
+
+#pragma region SPELL_MENU
+	
+/** Get Spell Menu Widget Controller */
+USpellMenuWidgetController* AAuraHUD::GetSpellMenuWidgetController(const FWidgetControllerParams& WidgetControllerParams)
+{
+	if (!SpellMenuWidgetController)
+	{
+		SpellMenuWidgetController = NewObject<USpellMenuWidgetController>(this, SpellMenuWidgetControllerClass);
+		SpellMenuWidgetController->SetWidgetControllerParams(WidgetControllerParams);
+		SpellMenuWidgetController->BindCallbacksToDelegates();
+	}
+
+	return SpellMenuWidgetController;
+}
+
+#pragma endregion SPELL_MENU

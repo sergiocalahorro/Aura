@@ -7,6 +7,7 @@
 
 // Headers - Aura
 #include "AuraLogChannels.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/Abilities/AuraGameplayAbility.h"
 #include "Interaction/PlayerInterface.h"
 
@@ -20,7 +21,7 @@ void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
 	if (!bStartupAbilitiesGiven)
 	{
 		bStartupAbilitiesGiven = true;
-		AbilitiesGivenDelegate.Broadcast(this);
+		AbilitiesGivenDelegate.Broadcast();
 	}
 }
 
@@ -59,12 +60,13 @@ void UAuraAbilitySystemComponent::AddAbilities(const TArray<TSubclassOf<UGamepla
 		if (const UAuraGameplayAbility* Ability = Cast<UAuraGameplayAbility>(AbilitySpec.Ability))
 		{
 			AbilitySpec.DynamicAbilityTags.AddTag(Ability->StartupInputTag);
+			AbilitySpec.DynamicAbilityTags.AddTag(FAuraGameplayTags::Get().Abilities_Status_Equipped);
 			GiveAbility(AbilitySpec);
 		}
 	}
 
 	bStartupAbilitiesGiven = true;
-	AbilitiesGivenDelegate.Broadcast(this);
+	AbilitiesGivenDelegate.Broadcast();
 }
 
 /** Add given list of passive abilities */
@@ -154,6 +156,20 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityInputTagFromSpec(const FGame
 		if (AbilityInputTag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("InputTag"))))
 		{
 			return AbilityInputTag;
+		}
+	}
+
+	return FGameplayTag();
+}
+
+/** Get ability's status tag from ability spec */
+FGameplayTag UAuraAbilitySystemComponent::GetAbilityStatusTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
+{
+	for (FGameplayTag AbilityStatusTag : AbilitySpec.DynamicAbilityTags)
+	{
+		if (AbilityStatusTag.MatchesTag(FGameplayTag::RequestGameplayTag(FName("Abilities.Status"))))
+		{
+			return AbilityStatusTag;
 		}
 	}
 

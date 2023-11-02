@@ -161,6 +161,12 @@ public:
 	/** Input 4 key */
 	FGameplayTag InputTag_4;
 
+	/** Input for passive 1 */
+	FGameplayTag InputTag_Passive_1;
+
+	/** Input for passive 2 */
+	FGameplayTag InputTag_Passive_2;
+
 #pragma endregion INPUT
 
 #pragma region ABILITIES
@@ -183,6 +189,39 @@ public:
 
 	/** Hit React ability */
 	FGameplayTag Abilities_HitReact;
+
+#pragma region ABILITIES_STATUS
+
+public:
+
+	/** Status to represent an ability is locked */
+	FGameplayTag Abilities_Status_Locked;
+
+	/** Status to represent an ability is eligible */
+	FGameplayTag Abilities_Status_Eligible;
+
+	/** Status to represent an ability is unlocked */
+	FGameplayTag Abilities_Status_Unlocked;
+
+	/** Status to represent an ability is equipped */
+	FGameplayTag Abilities_Status_Equipped;
+
+#pragma endregion ABILITIES_STATUS
+
+#pragma region ABILITIES_TYPES
+
+public:
+
+	/** Type to represent an offensive ability */
+	FGameplayTag Abilities_Types_Offensive;
+
+	/** Type to represent a passive ability */
+	FGameplayTag Abilities_Types_Passive;
+
+	/** Type to represent an ability that isn't offensive either passive */
+	FGameplayTag Abilities_Types_None;
+
+#pragma endregion ABILITIES_TYPES
 
 #pragma endregion ABILITIES
 

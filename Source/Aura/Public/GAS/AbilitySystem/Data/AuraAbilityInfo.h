@@ -26,6 +26,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag;
 
+	/** Ability's status GameplayTag */
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTag StatusTag;
+
 	/** Ability's cooldown GameplayTag */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag CooldownTag;
