@@ -26,6 +26,13 @@ void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor)
 	}
 }
 
+/** Get damage value by damage type tag */
+float UAuraDamageGameplayAbility::GetDamageByDamageType(float InLevel, const FGameplayTag& DamageTypeTag) const
+{
+	checkf(DamageTypes.Contains(DamageTypeTag), TEXT("GameplayAbility [%s] does not contain DamageTypeTag [%s]"), *GetNameSafe(this), *DamageTypeTag.ToString());
+	return DamageTypes[DamageTypeTag].GetValueAtLevel(InLevel);
+}
+
 #pragma endregion DAMAGE
 
 #pragma region ATTACK

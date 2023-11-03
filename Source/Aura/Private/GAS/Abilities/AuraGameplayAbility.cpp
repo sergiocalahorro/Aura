@@ -2,6 +2,9 @@
 
 #include "GAS/Abilities/AuraGameplayAbility.h"
 
+// Headers - Aura
+#include "GAS/Attributes/AuraAttributeSet.h"
+
 #pragma region INITIALIZATION
 
 /** Sets default values for this object's properties */
@@ -33,3 +36,42 @@ FString UAuraGameplayAbility::GetLockedDescription(int32 Level)
 }
 
 #pragma endregion DESCRIPTION
+
+#pragma region COST
+
+/** Get ability's mana cost for level */
+float UAuraGameplayAbility::GetManaCost(float InLevel) const
+{
+	float ManaCost = 0.f;
+	if (const UGameplayEffect* CostEffect = GetCostGameplayEffect())
+	{
+		for (const FGameplayModifierInfo& ModifierInfo : CostEffect->Modifiers)
+		{
+			if (ModifierInfo.Attribute == UAuraAttributeSet::GetManaAttribute())
+			{
+				ModifierInfo.ModifierMagnitude.GetStaticMagnitudeIfPossible(InLevel, ManaCost);
+				break;
+			}
+		}
+	}
+
+	return ManaCost;
+}
+	
+#pragma endregion COST
+
+#pragma region COOLDOWN
+
+/** Get ability's cooldown for level */
+float UAuraGameplayAbility::GetCooldown(float InLevel) const
+{
+	float Cooldown = 0.f;
+	if (const UGameplayEffect* CooldownEffect = GetCooldownGameplayEffect())
+	{
+		CooldownEffect->DurationMagnitude.GetStaticMagnitudeIfPossible(InLevel, Cooldown);
+	}
+
+	return Cooldown;
+}
+	
+#pragma endregion COOLDOWN

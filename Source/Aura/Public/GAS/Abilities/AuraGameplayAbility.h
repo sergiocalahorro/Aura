@@ -52,5 +52,22 @@ public:
 	static FString GetLockedDescription(int32 Level);
 
 #pragma endregion DESCRIPTION
+
+#pragma region COST
+
+protected:
+
+	/** Get ability's mana cost for level */
+	float GetManaCost(float InLevel = 1.f) const;
 	
+#pragma endregion COST
+
+#pragma region COOLDOWN
+
+protected:
+
+	/** Get ability's cooldown for level */
+	float GetCooldown(float InLevel = 1.f) const;
+	
+#pragma endregion COOLDOWN
 };

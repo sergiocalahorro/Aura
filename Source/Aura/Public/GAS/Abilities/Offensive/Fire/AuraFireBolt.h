@@ -8,13 +8,13 @@
 // Headers - Aura
 #include "GAS/Abilities/AuraProjectileSpell.h"
 
-#include "FireBolt.generated.h"
+#include "AuraFireBolt.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class AURA_API UFireBolt : public UAuraProjectileSpell
+class AURA_API UAuraFireBolt : public UAuraProjectileSpell
 {
 	GENERATED_BODY()
 

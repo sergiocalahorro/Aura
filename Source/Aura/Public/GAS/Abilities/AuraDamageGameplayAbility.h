@@ -26,6 +26,11 @@ protected:
 	/** Apply damage to target Actor */
 	void ApplyDamage(AActor* TargetActor);
 
+	/** Get damage value by damage type tag */
+	float GetDamageByDamageType(float InLevel, const FGameplayTag& DamageTypeTag) const;
+	
+#pragma endregion DAMAGE
+
 protected:
 
 	/** Damage's effect class for this ability */
