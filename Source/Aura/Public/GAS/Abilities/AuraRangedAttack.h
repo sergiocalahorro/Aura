@@ -60,6 +60,10 @@ protected:
 	/** Event's gameplay tag to wait for to spawn the projectile (if no tag is set, a random attack will be used) */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack")
 	FGameplayTag SpawnProjectileEventTag;
+
+	/** Maximum number of projectiles launched */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack", meta = (ClampMin = 1, UIMin = 1))
+	int32 NumberOfProjectiles = 5;
 	
 	/** Location the projectile should be aimed at */
 	UPROPERTY()

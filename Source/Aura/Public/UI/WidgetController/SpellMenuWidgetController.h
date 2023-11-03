@@ -11,7 +11,7 @@
 
 #include "SpellMenuWidgetController.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSpellGlobeSelectedSignature, bool, bCanSpendPoints, bool, bCanEquipSpell);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSpellGlobeSelectedSignature, bool, bCanSpendPoints, bool, bCanEquipSpell, FString, DescriptionString, FString, NextLevelDescriptionString);
 
 struct FSelectedAbility
 {
@@ -61,13 +61,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeSelected(const FGameplayTag& AbilityTag);
 
+	/** Spend spell point */
+	UFUNCTION(BlueprintCallable)
+	void SpendSpellPoint();
+
 private:
 
 	/** Update selected spell information */
-	void UpdateSelectedSpellInfo(const FGameplayTag& StatusTag, int32 SpellPoints) const;
+	void UpdateSelectedSpellInfo(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 SpellPoints);
 
 	/** Check spell status in order to enable/disable the options to spend points and equip the spell */
-	static void CheckSpellStatus(const FGameplayTag& StatusTag, int32 SpellPoints, bool& bCanSpendPoints, bool& bCanEquipSpell);
+	static void CheckSpellStatus(const FGameplayTag& StatusTag, int32 SpellPoints, bool& bOutCanSpendPoints, bool& bOutCanEquipSpell);
 	
 public:
 

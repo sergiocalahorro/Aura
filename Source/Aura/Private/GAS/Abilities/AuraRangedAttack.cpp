@@ -78,7 +78,7 @@ void UAuraRangedAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 #pragma region RANGED_ATTACK
 
-/** Perform Melee Attack */
+/** Spawn projectile */
 void UAuraRangedAttack::SpawnProjectile(FGameplayEventData Payload)
 {
 	if (!GetAvatarActorFromActorInfo()->HasAuthority())

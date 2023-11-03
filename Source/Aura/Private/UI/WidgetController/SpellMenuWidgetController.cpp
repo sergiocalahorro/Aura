@@ -32,13 +32,13 @@ void USpellMenuWidgetController::BroadcastInitialValues()
 void USpellMenuWidgetController::BindCallbacksToDelegates()
 {
 	GetAuraAbilitySystemComponent()->AbilityStatusChangedDelegate.AddLambda(
-		[this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag)
+		[this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 NewAbilityLevel)
 		{
 			// Handle the case when there is an already selected spell, in order to properly update the options on the UI
 			if (SelectedSpell.AbilityTag.MatchesTagExact(AbilityTag))
 			{
 				SelectedSpell.StatusTag = StatusTag;
-				UpdateSelectedSpellInfo(StatusTag, CurrentSpellPoints);
+				UpdateSelectedSpellInfo(AbilityTag, StatusTag, CurrentSpellPoints);
 			}
 			
 			if (AbilitiesInfo)
@@ -57,7 +57,7 @@ void USpellMenuWidgetController::BindCallbacksToDelegates()
 			CurrentSpellPoints = SpellPoints;
 
 			// Handle the case when there is an already selected spell, in order to properly update the options on the UI
-			UpdateSelectedSpellInfo(SelectedSpell.StatusTag, CurrentSpellPoints);
+			UpdateSelectedSpellInfo(SelectedSpell.AbilityTag, SelectedSpell.StatusTag, CurrentSpellPoints);
 		}
 	);
 }
@@ -88,41 +88,50 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityT
 
 	SelectedSpell.AbilityTag = AbilityTag;
 	SelectedSpell.StatusTag = StatusTag;
-	UpdateSelectedSpellInfo(StatusTag, SpellPoints);
+	UpdateSelectedSpellInfo(AbilityTag, StatusTag, SpellPoints);
+}
+
+/** Spend spell point */
+void USpellMenuWidgetController::SpendSpellPoint()
+{
+	GetAuraAbilitySystemComponent()->ServerSpendSpellPoint(SelectedSpell.AbilityTag);
 }
 
 /** Update selected spell information */
-void USpellMenuWidgetController::UpdateSelectedSpellInfo(const FGameplayTag& StatusTag, int32 SpellPoints) const
+void USpellMenuWidgetController::UpdateSelectedSpellInfo(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 SpellPoints)
 {
 	bool bCanSpendPoints = false;
 	bool bCanEquipSpell = false;
+	FString Description;
+	FString NextLevelDescription;
 	CheckSpellStatus(StatusTag, SpellPoints, bCanSpendPoints, bCanEquipSpell);
-	SpellGlobeSelectedDelegate.Broadcast(bCanSpendPoints, bCanEquipSpell);
+	GetAuraAbilitySystemComponent()->GetDescriptionsByAbilityTag(AbilityTag, Description, NextLevelDescription);
+	SpellGlobeSelectedDelegate.Broadcast(bCanSpendPoints, bCanEquipSpell, Description, NextLevelDescription);
 }
 
 /** Check spell status in order to enable/disable the options to spend points and equip the spell */
-void USpellMenuWidgetController::CheckSpellStatus(const FGameplayTag& StatusTag, int32 SpellPoints, bool& bCanSpendPoints, bool& bCanEquipSpell)
+void USpellMenuWidgetController::CheckSpellStatus(const FGameplayTag& StatusTag, int32 SpellPoints, bool& bOutCanSpendPoints, bool& bOutCanEquipSpell)
 {
 	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
 	if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Equipped))
 	{
-		bCanEquipSpell = true;
-		bCanSpendPoints = SpellPoints > 0;
+		bOutCanEquipSpell = true;
+		bOutCanSpendPoints = SpellPoints > 0;
 	}
 	else if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Eligible))
 	{
-		bCanEquipSpell = false;
-		bCanSpendPoints = SpellPoints > 0;
+		bOutCanEquipSpell = false;
+		bOutCanSpendPoints = SpellPoints > 0;
 	}
 	if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Unlocked))
 	{
-		bCanEquipSpell = true;
-		bCanSpendPoints = SpellPoints > 0;
+		bOutCanEquipSpell = true;
+		bOutCanSpendPoints = SpellPoints > 0;
 	}
 	else if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Locked))
 	{
-		bCanEquipSpell = false;
-		bCanSpendPoints = false;
+		bOutCanEquipSpell = false;
+		bOutCanSpendPoints = false;
 	}
 }
 

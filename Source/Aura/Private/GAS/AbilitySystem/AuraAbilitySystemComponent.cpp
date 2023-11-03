@@ -151,15 +151,44 @@ void UAuraAbilitySystemComponent::UpdateAbilitiesStatuses(int32 Level)
 			AbilitySpec.DynamicAbilityTags.AddTag(NewStatusTag);
 			GiveAbility(AbilitySpec);
 			MarkAbilitySpecDirty(AbilitySpec);
-			ClientUpdateAbilityStatus(AbilityInfo.AbilityTag, NewStatusTag);
+			ClientUpdateAbilityStatus(AbilityInfo.AbilityTag, NewStatusTag, 1);
 		}
 	}
 }
 
-/** Client RPC called to update an ability's status */
-void UAuraAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag)
+/** Spend spell point in order to upgrade an ability */
+void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGameplayTag& AbilityTag)
 {
-	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag);
+	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (GetAvatarActor()->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(), -1);
+		}
+		
+		const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+		FGameplayTag StatusTag = GetAbilityStatusTagFromSpec(*AbilitySpec);
+		if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Eligible))
+		{
+			AbilitySpec->DynamicAbilityTags.RemoveTag(AuraGameplayTags.Abilities_Status_Eligible);
+			AbilitySpec->DynamicAbilityTags.AddTag(AuraGameplayTags.Abilities_Status_Unlocked);
+			StatusTag = AuraGameplayTags.Abilities_Status_Unlocked;
+		}
+		else if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Equipped) ||
+				 StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Unlocked))
+		{
+			AbilitySpec->Level += 1;
+		}
+
+		ClientUpdateAbilityStatus(AbilityTag, StatusTag, AbilitySpec->Level);
+		MarkAbilitySpecDirty(*AbilitySpec);
+	}
+}
+
+/** Client RPC called to update an ability's status */
+void UAuraAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel)
+{
+	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag, AbilityLevel);
 }
 
 /** Get ability's tag from ability spec */
@@ -224,6 +253,25 @@ FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const F
 	}
 
 	return nullptr;
+}
+
+/** Get ability's descriptions by its tag */
+bool UAuraAbilitySystemComponent::GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription)
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (UAuraGameplayAbility* AuraAbility = Cast<UAuraGameplayAbility>(AbilitySpec->Ability.Get()))
+		{
+			OutDescription = AuraAbility->GetDescription(AbilitySpec->Level);
+			OutNextLevelDescription = AuraAbility->GetNextLevelDescription(AbilitySpec->Level + 1);
+			return true;
+		}
+	}
+
+	const UAbilitiesInfo* AbilitiesInfo = UAuraAbilitySystemLibrary::GetAbilitiesInfo(GetAvatarActor());
+	OutDescription = UAuraGameplayAbility::GetLockedDescription(AbilitiesInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement);
+	OutNextLevelDescription = FString();
+	return false;
 }
 
 #pragma endregion ABILITIES

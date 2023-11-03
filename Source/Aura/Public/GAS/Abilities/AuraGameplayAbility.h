@@ -37,5 +37,20 @@ public:
 	FGameplayTag StartupInputTag;
 
 #pragma endregion INPUT
+
+#pragma region DESCRIPTION
+	
+public:
+
+	/** Get ability's description */
+	virtual FString GetDescription(int32 Level);
+
+	/** Get ability's description for next level */
+	virtual FString GetNextLevelDescription(int32 Level);
+
+	/** Get ability's description when it's locked */
+	static FString GetLockedDescription(int32 Level);
+
+#pragma endregion DESCRIPTION
 	
 };

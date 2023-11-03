@@ -13,7 +13,7 @@ class UAuraAbilitySystemComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTagsSignature, const FGameplayTagContainer&);
 DECLARE_MULTICAST_DELEGATE(FAbilitiesGivenSignature);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FAbilityStatusChangedSignature, const FGameplayTag&, const FGameplayTag&);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChangedSignature, const FGameplayTag&, const FGameplayTag&, int32);
 DECLARE_DELEGATE_OneParam(FBroadcastAbilitySignature, const FGameplayAbilitySpec&);
 
 UCLASS()
@@ -82,6 +82,10 @@ public:
 	/** Update abilities' statuses based on level */
 	void UpdateAbilitiesStatuses(int32 Level);
 
+	/** Spend spell point in order to upgrade an ability */
+	UFUNCTION(Server, Reliable)
+	void ServerSpendSpellPoint(const FGameplayTag& AbilityTag);
+
 	/** Get ability's tag from ability spec */
 	static FGameplayTag GetAbilityTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 
@@ -94,11 +98,14 @@ public:
 	/** Get ability spec from ability's tag */
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
+	/** Get ability's descriptions by its tag */
+	bool GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
+
 protected:
 
 	/** Client RPC called to update an ability's status */
 	UFUNCTION(Client, Reliable)
-	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag);
+	void ClientUpdateAbilityStatus(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel);
 
 public:
 
