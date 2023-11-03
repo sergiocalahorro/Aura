@@ -14,8 +14,6 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	
-	FString::Printf(TEXT("%s %s", *String1, *String2));
-
 	if (Level == 1)
 	{
 		return FString::Printf(TEXT(

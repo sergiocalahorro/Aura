@@ -25,6 +25,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag AbilityTag;
 
+	/** Ability's type GameplayTag */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag TypeTag;
+
 	/** Ability's input GameplayTag */
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag InputTag;
@@ -32,7 +36,7 @@ public:
 	/** Ability's status GameplayTag */
 	UPROPERTY(BlueprintReadOnly)
 	FGameplayTag StatusTag;
-
+	
 	/** Ability's cooldown GameplayTag */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag CooldownTag;

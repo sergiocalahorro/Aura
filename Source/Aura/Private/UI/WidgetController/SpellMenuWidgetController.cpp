@@ -14,7 +14,6 @@
 USpellMenuWidgetController::USpellMenuWidgetController()
 {
 	SelectedSpell = { FAuraGameplayTags::Get().Abilities_None, FAuraGameplayTags::Get().Abilities_Status_Locked };
-	CurrentSpellPoints = 0;
 }
 
 #pragma endregion INITIALIZATION
@@ -66,9 +65,16 @@ void USpellMenuWidgetController::BindCallbacksToDelegates()
 
 #pragma region SPELLS
 
-/** Function called when a spell is selected */
+/** Setup information about the selected spell */
 void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityTag)
 {
+	if (bWaitingForEquipSelection)
+	{
+		const FGameplayTag AbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(AbilityTag).TypeTag;
+		StopWaitForEquipSelectionDelegate.Broadcast(AbilityTypeTag);
+		bWaitingForEquipSelection = false;
+	}
+	
 	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
 	const int32 SpellPoints = GetAuraPlayerState()->GetSpellPoints();
 	FGameplayTag StatusTag;
@@ -91,10 +97,34 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityT
 	UpdateSelectedSpellInfo(AbilityTag, StatusTag, SpellPoints);
 }
 
+/** Clear information about the selected spell */
+void USpellMenuWidgetController::SpellGlobeDeselected()
+{
+	if (bWaitingForEquipSelection)
+	{
+		const FGameplayTag AbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(SelectedSpell.AbilityTag).TypeTag;
+		StopWaitForEquipSelectionDelegate.Broadcast(AbilityTypeTag);
+		bWaitingForEquipSelection = false;
+	}
+	
+	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+	SelectedSpell.AbilityTag = AuraGameplayTags.Abilities_None;
+	SelectedSpell.StatusTag = AuraGameplayTags.Abilities_Status_Locked;
+	SpellGlobeSelectedDelegate.Broadcast(false, false, FString(), FString());
+}
+
 /** Spend spell point */
 void USpellMenuWidgetController::SpendSpellPoint()
 {
 	GetAuraAbilitySystemComponent()->ServerSpendSpellPoint(SelectedSpell.AbilityTag);
+}
+
+/** Equip spell */
+void USpellMenuWidgetController::EquipSpell()
+{
+	const FGameplayTag AbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(SelectedSpell.AbilityTag).TypeTag;
+	WaitForEquipSelectionDelegate.Broadcast(AbilityTypeTag);
+	bWaitingForEquipSelection = true;
 }
 
 /** Update selected spell information */

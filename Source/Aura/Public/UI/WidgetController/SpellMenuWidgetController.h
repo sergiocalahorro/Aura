@@ -12,6 +12,7 @@
 #include "SpellMenuWidgetController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSpellGlobeSelectedSignature, bool, bCanSpendPoints, bool, bCanEquipSpell, FString, DescriptionString, FString, NextLevelDescriptionString);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitForEquipSelectionSignature, const FGameplayTag&, AbilityTypeTag);
 
 struct FSelectedAbility
 {
@@ -57,13 +58,21 @@ public:
 
 public:
 
-	/** Function called when a spell is selected */
+	/** Setup information about the selected spell */
 	UFUNCTION(BlueprintCallable)
 	void SpellGlobeSelected(const FGameplayTag& AbilityTag);
+
+	/** Clear information about the selected spell */
+	UFUNCTION(BlueprintCallable)
+	void SpellGlobeDeselected();
 
 	/** Spend spell point */
 	UFUNCTION(BlueprintCallable)
 	void SpendSpellPoint();
+
+	/** Equip spell */
+	UFUNCTION(BlueprintCallable)
+	void EquipSpell();
 
 private:
 
@@ -83,13 +92,24 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FSpellGlobeSelectedSignature SpellGlobeSelectedDelegate;
 
+	/** Delegate called to broadcast information up to the spell menu to wait for equipping a spell */
+	UPROPERTY(BlueprintAssignable)
+	FWaitForEquipSelectionSignature WaitForEquipSelectionDelegate;
+
+	/** Delegate called to broadcast information up to the spell menu to stop the wait for equipping a spell */
+	UPROPERTY(BlueprintAssignable)
+	FWaitForEquipSelectionSignature StopWaitForEquipSelectionDelegate;
+
 private:
 
 	/** Currently selected spell's info */
 	FSelectedAbility SelectedSpell;
 
 	/** Current spell points */
-	int32 CurrentSpellPoints;
+	int32 CurrentSpellPoints = 0;
+
+	/** Whether it's in waiting state for equipping a spell */
+	bool bWaitingForEquipSelection = false;
 	
 #pragma endregion SPELLS
 
