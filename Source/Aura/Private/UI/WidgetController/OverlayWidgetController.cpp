@@ -3,7 +3,10 @@
 #include "UI/WidgetController/OverlayWidgetController.h"
 
 // Headers - Aura
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
+#include "GAS/AbilitySystem/Data/AbilitiesInfo.h"
+#include "GAS/AbilitySystem/Data/AuraAbilityInfo.h"
 #include "GAS/Attributes/AuraAttributeSet.h"
 #include "GAS/Experience/Data/LevelUpInfo.h"
 #include "Player/AuraPlayerState.h"
@@ -84,6 +87,8 @@ void UOverlayWidgetController::BindCallbacksToDelegates()
 		}
 	);
 
+	GetAuraAbilitySystemComponent()->AbilityEquippedDelegate.AddUObject(this, &UOverlayWidgetController::OnAbilityEquipped);
+
 	// Listen for changes on level and XP
 	GetAuraPlayerState()->OnXPChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnXPChanged);
 	GetAuraPlayerState()->OnLevelChangedDelegate.AddUObject(this, &UOverlayWidgetController::OnLevelChanged);
@@ -115,6 +120,25 @@ void UOverlayWidgetController::OnXPChanged(int32 NewXP)
 		const float XPBarPercent = static_cast<float>(CurrentLevelXP) / static_cast<float>(DeltaLevelUpRequirement);
 		OnXPPercentChangedDelegate.Broadcast(XPBarPercent);
 	}
+}
+
+/** Callback called when ability is equipped */
+void UOverlayWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, const FGameplayTag& InputTag, const FGameplayTag& PrevInputTag) const
+{
+	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+
+	// Clear old slot
+	FAuraAbilityInfo OldInputSlot;
+	OldInputSlot.AbilityTag = AuraGameplayTags.Abilities_None;
+	OldInputSlot.StatusTag = AuraGameplayTags.Abilities_Status_Unlocked;
+	OldInputSlot.InputTag = PrevInputTag;
+	AbilityInfoDelegate.Broadcast(OldInputSlot);
+
+	// Assign ability to the new slot
+	FAuraAbilityInfo NewInputSlot = AbilitiesInfo->FindAbilityInfoForTag(AbilityTag);
+	NewInputSlot.StatusTag = StatusTag;
+	NewInputSlot.InputTag = InputTag;
+	AbilityInfoDelegate.Broadcast(NewInputSlot);
 }
 
 #pragma endregion CORE

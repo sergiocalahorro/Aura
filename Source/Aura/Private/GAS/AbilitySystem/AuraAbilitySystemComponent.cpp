@@ -185,10 +185,64 @@ void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGa
 	}
 }
 
+/** Equip ability */
+void UAuraAbilitySystemComponent::ServerEquipAbility_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag)
+{
+	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+		const FGameplayTag& PrevInputTag = GetAbilityInputTagFromSpec(*AbilitySpec);
+		const FGameplayTag& StatusTag = GetAbilityStatusTagFromSpec(*AbilitySpec);
+
+		if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Equipped) ||
+			StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Unlocked))
+		{
+			ClearAbilitiesOfInputTag(InputTag);
+			ClearInputTagFromSpec(AbilitySpec);
+			AbilitySpec->DynamicAbilityTags.AddTag(InputTag);
+			if (StatusTag.MatchesTagExact(AuraGameplayTags.Abilities_Status_Unlocked))
+			{
+				AbilitySpec->DynamicAbilityTags.RemoveTag(AuraGameplayTags.Abilities_Status_Unlocked);
+				AbilitySpec->DynamicAbilityTags.AddTag(AuraGameplayTags.Abilities_Status_Equipped);
+			}
+			MarkAbilitySpecDirty(*AbilitySpec);
+		}
+
+		ClientEquipAbility(AbilityTag, AuraGameplayTags.Abilities_Status_Equipped, InputTag, PrevInputTag);
+	}
+}
+
+/** Client RPC called to equip an ability */
+void UAuraAbilitySystemComponent::ClientEquipAbility_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, const FGameplayTag& InputTag, const FGameplayTag& PrevInputTag)
+{
+	AbilityEquippedDelegate.Broadcast(AbilityTag, StatusTag, InputTag, PrevInputTag);
+}
+
 /** Client RPC called to update an ability's status */
 void UAuraAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 AbilityLevel)
 {
 	AbilityStatusChangedDelegate.Broadcast(AbilityTag, StatusTag, AbilityLevel);
+}
+
+/** Clear an ability's input tag from its spec */
+void UAuraAbilitySystemComponent::ClearInputTagFromSpec(FGameplayAbilitySpec* AbilitySpec)
+{
+	const FGameplayTag& InputTag = GetAbilityInputTagFromSpec(*AbilitySpec);
+	AbilitySpec->DynamicAbilityTags.RemoveTag(InputTag);
+	MarkAbilitySpecDirty(*AbilitySpec);
+}
+
+/** Clear any abilities assigned to this input tag */
+void UAuraAbilitySystemComponent::ClearAbilitiesOfInputTag(const FGameplayTag& InputTag)
+{
+	FScopedAbilityListLock ActiveScopeLock(*this);
+	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	{
+		if (AbilityHasInputTag(&AbilitySpec, InputTag))
+		{
+			ClearInputTagFromSpec(&AbilitySpec);
+		}
+	}
 }
 
 /** Get ability's tag from ability spec */
@@ -222,6 +276,17 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityInputTagFromSpec(const FGame
 	return FGameplayTag();
 }
 
+/** Get ability's input tag from ability tag */
+FGameplayTag UAuraAbilitySystemComponent::GetAbilityInputTagFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		return GetAbilityInputTagFromSpec(*AbilitySpec);
+	}
+
+	return FGameplayTag();
+}
+
 /** Get ability's status tag from ability spec */
 FGameplayTag UAuraAbilitySystemComponent::GetAbilityStatusTagFromSpec(const FGameplayAbilitySpec& AbilitySpec)
 {
@@ -231,6 +296,17 @@ FGameplayTag UAuraAbilitySystemComponent::GetAbilityStatusTagFromSpec(const FGam
 		{
 			return AbilityStatusTag;
 		}
+	}
+
+	return FGameplayTag();
+}
+
+/** Get ability's status tag from ability tag */
+FGameplayTag UAuraAbilitySystemComponent::GetAbilityStatusTagFromAbilityTag(const FGameplayTag& AbilityTag)
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		return GetAbilityStatusTagFromSpec(*AbilitySpec);
 	}
 
 	return FGameplayTag();
@@ -253,6 +329,12 @@ FGameplayAbilitySpec* UAuraAbilitySystemComponent::GetSpecFromAbilityTag(const F
 	}
 
 	return nullptr;
+}
+
+/** Check whether the ability has a given input tag */
+bool UAuraAbilitySystemComponent::AbilityHasInputTag(const FGameplayAbilitySpec* AbilitySpec, const FGameplayTag& InputTag) const
+{
+	return AbilitySpec->DynamicAbilityTags.HasTag(InputTag);
 }
 
 /** Get ability's descriptions by its tag */

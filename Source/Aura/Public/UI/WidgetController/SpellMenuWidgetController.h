@@ -13,6 +13,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FSpellGlobeSelectedSignature, bool, bCanSpendPoints, bool, bCanEquipSpell, FString, DescriptionString, FString, NextLevelDescriptionString);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitForEquipSelectionSignature, const FGameplayTag&, AbilityTypeTag);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSpellGlobeReassignedSignature, const FGameplayTag&, AbilityTag);
 
 struct FSelectedAbility
 {
@@ -74,6 +75,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EquipSpell();
 
+	/** Handle spell selected from spell row */
+	UFUNCTION(BlueprintCallable)
+	void HandleSpellRowGlobe(const FGameplayTag& InputTag, const FGameplayTag& TypeTag);
+
 private:
 
 	/** Update selected spell information */
@@ -81,6 +86,9 @@ private:
 
 	/** Check spell status in order to enable/disable the options to spend points and equip the spell */
 	static void CheckSpellStatus(const FGameplayTag& StatusTag, int32 SpellPoints, bool& bOutCanSpendPoints, bool& bOutCanEquipSpell);
+
+	/** Callback called when ability is equipped */
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, const FGameplayTag& InputTag, const FGameplayTag& PrevInputTag);
 	
 public:
 
@@ -100,16 +108,23 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FWaitForEquipSelectionSignature StopWaitForEquipSelectionDelegate;
 
+	/** Delegate called when a spell is reassigned to a different slot */
+	UPROPERTY(BlueprintAssignable)
+	FSpellGlobeReassignedSignature SpellGlobeReassignedDelegate;
+
 private:
 
-	/** Currently selected spell's info */
-	FSelectedAbility SelectedSpell;
+	/** Currently selected ability's info */
+	FSelectedAbility SelectedAbility;
 
 	/** Current spell points */
 	int32 CurrentSpellPoints = 0;
 
 	/** Whether it's in waiting state for equipping a spell */
 	bool bWaitingForEquipSelection = false;
+	
+	/** Tag belonging to the selected input slot */
+	FGameplayTag SelectedSlotTag;
 	
 #pragma endregion SPELLS
 

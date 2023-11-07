@@ -44,6 +44,11 @@ protected:
 	/** Called when player's XP changes */
 	void OnXPChanged(int32 NewXP);
 
+private:
+
+	/** Callback called when ability is equipped */
+	void OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, const FGameplayTag& InputTag, const FGameplayTag& PrevInputTag) const;
+
 public:
 
 	/** Delegate called when Health Attribute is changed */

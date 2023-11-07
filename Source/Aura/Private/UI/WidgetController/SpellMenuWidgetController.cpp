@@ -13,7 +13,7 @@
 /** Sets default values for this object's properties */
 USpellMenuWidgetController::USpellMenuWidgetController()
 {
-	SelectedSpell = { FAuraGameplayTags::Get().Abilities_None, FAuraGameplayTags::Get().Abilities_Status_Locked };
+	SelectedAbility = { FAuraGameplayTags::Get().Abilities_None, FAuraGameplayTags::Get().Abilities_Status_Locked };
 }
 
 #pragma endregion INITIALIZATION
@@ -34,9 +34,9 @@ void USpellMenuWidgetController::BindCallbacksToDelegates()
 		[this](const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, int32 NewAbilityLevel)
 		{
 			// Handle the case when there is an already selected spell, in order to properly update the options on the UI
-			if (SelectedSpell.AbilityTag.MatchesTagExact(AbilityTag))
+			if (SelectedAbility.AbilityTag.MatchesTagExact(AbilityTag))
 			{
-				SelectedSpell.StatusTag = StatusTag;
+				SelectedAbility.StatusTag = StatusTag;
 				UpdateSelectedSpellInfo(AbilityTag, StatusTag, CurrentSpellPoints);
 			}
 			
@@ -49,6 +49,8 @@ void USpellMenuWidgetController::BindCallbacksToDelegates()
 		}
 	);
 
+	GetAuraAbilitySystemComponent()->AbilityEquippedDelegate.AddUObject(this, &USpellMenuWidgetController::OnAbilityEquipped);
+
 	GetAuraPlayerState()->OnSpellPointsChangedDelegate.AddLambda(
 		[this](int32 SpellPoints)
 		{
@@ -56,7 +58,7 @@ void USpellMenuWidgetController::BindCallbacksToDelegates()
 			CurrentSpellPoints = SpellPoints;
 
 			// Handle the case when there is an already selected spell, in order to properly update the options on the UI
-			UpdateSelectedSpellInfo(SelectedSpell.AbilityTag, SelectedSpell.StatusTag, CurrentSpellPoints);
+			UpdateSelectedSpellInfo(SelectedAbility.AbilityTag, SelectedAbility.StatusTag, CurrentSpellPoints);
 		}
 	);
 }
@@ -92,8 +94,8 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityT
 		StatusTag = GetAuraAbilitySystemComponent()->GetAbilityStatusTagFromSpec(*AbilitySpec);
 	}
 
-	SelectedSpell.AbilityTag = AbilityTag;
-	SelectedSpell.StatusTag = StatusTag;
+	SelectedAbility.AbilityTag = AbilityTag;
+	SelectedAbility.StatusTag = StatusTag;
 	UpdateSelectedSpellInfo(AbilityTag, StatusTag, SpellPoints);
 }
 
@@ -102,29 +104,53 @@ void USpellMenuWidgetController::SpellGlobeDeselected()
 {
 	if (bWaitingForEquipSelection)
 	{
-		const FGameplayTag AbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(SelectedSpell.AbilityTag).TypeTag;
+		const FGameplayTag AbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(SelectedAbility.AbilityTag).TypeTag;
 		StopWaitForEquipSelectionDelegate.Broadcast(AbilityTypeTag);
 		bWaitingForEquipSelection = false;
 	}
 	
 	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
-	SelectedSpell.AbilityTag = AuraGameplayTags.Abilities_None;
-	SelectedSpell.StatusTag = AuraGameplayTags.Abilities_Status_Locked;
+	SelectedAbility.AbilityTag = AuraGameplayTags.Abilities_None;
+	SelectedAbility.StatusTag = AuraGameplayTags.Abilities_Status_Locked;
 	SpellGlobeSelectedDelegate.Broadcast(false, false, FString(), FString());
 }
 
 /** Spend spell point */
 void USpellMenuWidgetController::SpendSpellPoint()
 {
-	GetAuraAbilitySystemComponent()->ServerSpendSpellPoint(SelectedSpell.AbilityTag);
+	GetAuraAbilitySystemComponent()->ServerSpendSpellPoint(SelectedAbility.AbilityTag);
 }
 
 /** Equip spell */
 void USpellMenuWidgetController::EquipSpell()
 {
-	const FGameplayTag AbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(SelectedSpell.AbilityTag).TypeTag;
-	WaitForEquipSelectionDelegate.Broadcast(AbilityTypeTag);
+	const FGameplayTag AbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(SelectedAbility.AbilityTag).TypeTag;
+
 	bWaitingForEquipSelection = true;
+	WaitForEquipSelectionDelegate.Broadcast(AbilityTypeTag);
+
+	const FGameplayTag SelectedStatusTag = GetAuraAbilitySystemComponent()->GetAbilityStatusTagFromAbilityTag(SelectedAbility.AbilityTag);
+	if (SelectedStatusTag.MatchesTagExact(FAuraGameplayTags::Get().Abilities_Status_Equipped))
+	{
+		SelectedSlotTag = GetAuraAbilitySystemComponent()->GetAbilityInputTagFromAbilityTag(SelectedAbility.AbilityTag);
+	}
+}
+
+/** Handle spell selected from spell row */
+void USpellMenuWidgetController::HandleSpellRowGlobe(const FGameplayTag& InputTag, const FGameplayTag& TypeTag)
+{
+	if (!bWaitingForEquipSelection)
+	{
+		return;
+	}
+
+	const FGameplayTag& SelectedAbilityTypeTag = AbilitiesInfo->FindAbilityInfoForTag(SelectedAbility.AbilityTag).TypeTag;
+	if (!SelectedAbilityTypeTag.MatchesTagExact(TypeTag))
+	{
+		return;
+	}
+
+	GetAuraAbilitySystemComponent()->ServerEquipAbility(SelectedAbility.AbilityTag, InputTag);
 }
 
 /** Update selected spell information */
@@ -163,6 +189,31 @@ void USpellMenuWidgetController::CheckSpellStatus(const FGameplayTag& StatusTag,
 		bOutCanEquipSpell = false;
 		bOutCanSpendPoints = false;
 	}
+}
+
+/** Callback called when ability is equipped */
+void USpellMenuWidgetController::OnAbilityEquipped(const FGameplayTag& AbilityTag, const FGameplayTag& StatusTag, const FGameplayTag& InputTag, const FGameplayTag& PrevInputTag)
+{
+	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+
+	// Clear old slot
+	FAuraAbilityInfo OldInputSlot;
+	OldInputSlot.AbilityTag = AuraGameplayTags.Abilities_None;
+	OldInputSlot.StatusTag = AuraGameplayTags.Abilities_Status_Unlocked;
+	OldInputSlot.InputTag = PrevInputTag;
+	AbilityInfoDelegate.Broadcast(OldInputSlot);
+
+	// Assign ability to the new slot
+	FAuraAbilityInfo NewInputSlot = AbilitiesInfo->FindAbilityInfoForTag(AbilityTag);
+	NewInputSlot.StatusTag = StatusTag;
+	NewInputSlot.InputTag = InputTag;
+	AbilityInfoDelegate.Broadcast(NewInputSlot);
+
+	bWaitingForEquipSelection = false;
+	StopWaitForEquipSelectionDelegate.Broadcast(NewInputSlot.TypeTag);
+
+	SpellGlobeReassignedDelegate.Broadcast(AbilityTag);
+	SpellGlobeDeselected();
 }
 
 #pragma endregion SPELLS
