@@ -315,6 +315,7 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 		}
 
 		ShowFloatingDamageText(EffectProperties, IncomingDamageAmount);
+		HandleDebuff(EffectProperties);
 	}
 }
 
@@ -328,9 +329,7 @@ void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectPr
 
 	const bool bIsBlockedHit = UAuraAbilitySystemLibrary::IsBlockedHit(EffectProperties.EffectContextHandle);
 	const bool bIsCriticalHit = UAuraAbilitySystemLibrary::IsCriticalHit(EffectProperties.EffectContextHandle);
-
-	// ToDo: Create a Damage struct holding info such as the DamageAmount, its DamageType(s), whether it's a blocked/critical hit...
-
+	
 	if (AAuraPlayerController* SourcePlayerController = Cast<AAuraPlayerController>(EffectProperties.SourceController))
 	{
 		SourcePlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
@@ -340,6 +339,15 @@ void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectPr
 	if (AAuraPlayerController* TargetPlayerController = Cast<AAuraPlayerController>(EffectProperties.TargetController))
 	{
 		TargetPlayerController->DisplayDamage(EffectProperties.TargetCharacter, Damage, bIsBlockedHit, bIsCriticalHit);
+	}
+}
+
+/** Handle debuff */
+void UAuraAttributeSet::HandleDebuff(const FEffectProperties& EffectProperties)
+{
+	if (UAuraAbilitySystemLibrary::IsSuccessfulDebuff(EffectProperties.EffectContextHandle))
+	{
+		// ToDo: Handle debuff
 	}
 }
 

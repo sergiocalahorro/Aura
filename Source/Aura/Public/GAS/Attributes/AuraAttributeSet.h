@@ -294,6 +294,9 @@ private:
 	/** Show floating damage text above target */
 	void ShowFloatingDamageText(const FEffectProperties& EffectProperties, float Damage) const;
 
+	/** Handle debuff */
+	void HandleDebuff(const FEffectProperties& EffectProperties);
+
 	/** Handle incoming XP */
 	void HandleIncomingXP(const FEffectProperties& EffectProperties);
 

@@ -114,11 +114,41 @@ public:
 	/** Return whether the damage effect associated is critical */
 	bool IsCriticalHit() const { return bIsCriticalHit; }
 
+	/** Return whether the damage effect associated can apply a debuff successfully */
+	bool IsSuccessfulDebuff() const { return bIsSuccessfulDebuff; }
+
+	/** Return debuff's damage */
+	float GetDebuffDamage() const { return DebuffDamage; }
+
+	/** Return debuff's duration */
+	float GetDebuffDuration() const { return DebuffDuration; }
+
+	/** Return debuff's frequency */
+	float GetDebuffFrequency() const { return DebuffFrequency; }
+	
+	/** Return the damage type associated to this effect */
+	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
+
 	/** Set whether the damage effect associated is blocked */
 	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
 
 	/** Set whether the damage effect associated is critical */
 	void SetIsCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
+
+	/** Set whether the damage effect associated can apply a debuff successfully */
+	void SetIsSuccessfulDebuff(bool bInIsSuccessfulDebuff) { bIsSuccessfulDebuff = bInIsSuccessfulDebuff; }
+
+	/** Set debuff's damage */
+	void SetDebuffDamage(float InDebuffDamage) { DebuffDamage = InDebuffDamage; }
+
+	/** Set debuff's duration */
+	void SetDebuffDuration(float InDebuffDuration) { DebuffDuration = InDebuffDuration; }
+
+	/** Set debuff's frequency */
+	void SetDebuffFrequency(float InDebuffFrequency) { DebuffFrequency = InDebuffFrequency; }
+
+	/** Set damage type */
+	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
 
 protected:
 
@@ -129,6 +159,25 @@ protected:
 	/** Whether the damage effect associated is critical */
 	UPROPERTY()
 	bool bIsCriticalHit = false;
+
+	/** Whether the damage effect associated can apply a debuff successfully */
+	UPROPERTY()
+	bool bIsSuccessfulDebuff = false;
+
+	/** Debuff's damage */
+	UPROPERTY()
+	float DebuffDamage = 0.f;
+
+	/** Debuff's duration */
+	UPROPERTY()
+	float DebuffDuration = 0.f;
+
+	/** Debuff's frequency */
+	UPROPERTY()
+	float DebuffFrequency = 0.f;
+
+	/** Damage type tag */
+	TSharedPtr<FGameplayTag> DamageType;
 
 #pragma endregion EFFECT
 	

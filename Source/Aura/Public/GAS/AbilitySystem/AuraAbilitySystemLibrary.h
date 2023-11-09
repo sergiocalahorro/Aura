@@ -4,13 +4,11 @@
 
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
 #include "AuraAbilitySystemLibrary.generated.h"
 
-struct FDamageEffectParams;
-class UAbilitiesInfo;
-class AAuraHUD;
 // Forward declarations - Unreal Engine
 class UAbilitySystemComponent;
 struct FGameplayEffectContextHandle;
@@ -20,7 +18,11 @@ class UOverlayWidgetController;
 class UAttributeMenuWidgetController;
 class USpellMenuWidgetController;
 class UCharacterClassInfo;
+class UAbilitiesInfo;
+class AAuraHUD;
 struct FWidgetControllerParams;
+struct FDamageEffectParams;
+
 
 /**
  * 
@@ -100,6 +102,26 @@ public:
 	/** Return whether damage effect is critical hit */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
 	static bool IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/** Return whether damage effect can apply debuff successfully */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static bool IsSuccessfulDebuff(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/** Return debuff's damage */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static float GetDebuffDamage(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/** Return debuff's duration */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static float GetDebuffDuration(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/** Return debuff's frequency */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static float GetDebuffFrequency(const FGameplayEffectContextHandle& EffectContextHandle);
+	
+	/** Get the effect context's damage type */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle);
 	
 	/** Set whether damage effect is blocked */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
@@ -109,6 +131,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit);
 
+	/** Set whether damage effect can apply debuff successfully */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static void SetIsSuccessfulDebuff(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsSuccessfulDebuff);
+
+	/** Set debuff's damage */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static void SetDebuffDamage(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InDebuffDamage);
+
+	/** Set debuff's duration */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static void SetDebuffDuration(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InDebuffDuration);
+
+	/** Set debuff's frequency */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static void SetDebuffFrequency(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, float InDebuffFrequency);
+
+	/** Set damage type */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static void SetDamageType(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InDamageType);
+	
 #pragma endregion EFFECTS
 
 #pragma region UTILS

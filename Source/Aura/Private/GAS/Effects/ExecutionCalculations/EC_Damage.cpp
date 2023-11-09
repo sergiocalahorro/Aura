@@ -44,9 +44,6 @@ public:
 	/** Declare ResistancePhysical Attribute's capture definition */
 	DECLARE_ATTRIBUTE_CAPTUREDEF(ResistancePhysical);
 
-	/** Map Damage Type resistances to Attribute capture definitions */
-	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
-
 	/** Sets default values for this struct's properties */
 	AuraDamageStatics()
 	{
@@ -63,19 +60,6 @@ public:
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ResistanceLightning, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ResistanceArcane, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UAuraAttributeSet, ResistancePhysical, Target, false);
-
-		// Map capture definitions to corresponding tags
-		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, ArmorDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ArmorPenetration, ArmorPenetrationDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_BlockChance, BlockChanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitChance, CriticalHitChanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitDamage, CriticalHitDamageDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance, CriticalHitResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, ResistanceFireDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, ResistanceLightningDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane, ResistanceArcaneDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, ResistancePhysicalDef);
 	}
 };
 
@@ -117,6 +101,21 @@ UEC_Damage::UEC_Damage()
 /** Called whenever the owning gameplay effect is executed */
 void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
+	const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+
+	// Map capture definitions to corresponding tags
+	TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition> TagsToCaptureDefs;
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_Armor, DamageStatics().ArmorDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_ArmorPenetration, DamageStatics().ArmorPenetrationDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_BlockChance, DamageStatics().BlockChanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitChance, DamageStatics().CriticalHitChanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitDamage, DamageStatics().CriticalHitDamageDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Secondary_CriticalHitResistance, DamageStatics().CriticalHitResistanceDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, DamageStatics().ResistanceFireDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, DamageStatics().ResistanceLightningDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane, DamageStatics().ResistanceArcaneDef);
+	TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, DamageStatics().ResistancePhysicalDef);
+	
 	const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	
@@ -138,36 +137,28 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	EvaluateParams.TargetTags = TargetTags;
 
 	FGameplayEffectContextHandle EffectContextHandle = EffectSpec.GetContext();
-	
-	// Calculate damage value
-	float FinalDamage = 0.f;
-	for (auto DamageTypeToResistance : FAuraGameplayTags::Get().DamageTypesToResistances)
-	{
-		const FGameplayTag DamageTypeTag = DamageTypeToResistance.Key;
-		const FGameplayTag ResistanceDamageTypeTag = DamageTypeToResistance.Value;
-		checkf(AuraDamageStatics().TagsToCaptureDefs.Contains(ResistanceDamageTypeTag), TEXT("EC_Damage::Execute - TagsToCaptureDefs doesn't contain Tag: [%s]"), *ResistanceDamageTypeTag.ToString());
 
-		// ToDo: Add a DamageType GameplayTag (or GameplayTagContainer, in case an attack could use multiple Damage Types) to the EffectContext
-		// That way, the DamageType from the EffectContext could be accessed and used for finding its matching Resistance in the DamageTypesToResistances map,
-		// instead of unnecessarily looping through all the existing Damage Types
-		
-		const float DamageTypeValue = EffectSpec.GetSetByCallerMagnitude(DamageTypeTag, false);
-		CalculateDamageByResistanceToDamageType(ResistanceDamageTypeTag, ExecutionParams, EvaluateParams, DamageTypeValue, FinalDamage);
-	}
+	FGameplayTag DamageTypeTag = UAuraAbilitySystemLibrary::GetDamageType(EffectContextHandle);
+
+	// Determine whether a debuff occured
+	HandleDebuff(DamageTypeTag, ExecutionParams, EffectSpec, EvaluateParams, TagsToCaptureDefs);
+
+	// Calculate damage value
+	float Damage = CalculateDamage(DamageTypeTag, ExecutionParams, EffectSpec, EvaluateParams, TagsToCaptureDefs);
 
 	// Check Target's BlockChance and calculate incoming Damage's value if it's a block
-	const bool bIsBlockedHit = HandleBlock(ExecutionParams, EvaluateParams, FinalDamage);
+	const bool bIsBlockedHit = HandleBlock(ExecutionParams, EvaluateParams, Damage);
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle, bIsBlockedHit);
 
 	// Check Target's Armor and Source's ArmorPenetration and calculate incoming Damage's value
-	HandleArmor(CharacterClassInfo, SourceLevel, TargetLevel, ExecutionParams, EvaluateParams, FinalDamage);
+	HandleArmor(CharacterClassInfo, SourceLevel, TargetLevel, ExecutionParams, EvaluateParams, Damage);
 
 	// Check Target's CriticalHitChance and Source's CriticalHitResistance and calculate incoming Damage's value if it's a critical hit
-	const bool bIsCriticalHit = HandleCriticalHit(CharacterClassInfo, TargetLevel, ExecutionParams, EvaluateParams, FinalDamage);
+	const bool bIsCriticalHit = HandleCriticalHit(CharacterClassInfo, TargetLevel, ExecutionParams, EvaluateParams, Damage);
 	UAuraAbilitySystemLibrary::SetIsCriticalHit(EffectContextHandle, bIsCriticalHit);
 
 	// Modify IncomingDamage attribute with the calculated final Damage value
-	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, FinalDamage);
+	const FGameplayModifierEvaluatedData EvaluatedData(UAuraAttributeSet::GetIncomingDamageAttribute(), EGameplayModOp::Additive, Damage);
 	OutExecutionOutput.AddOutputModifier(EvaluatedData);
 }
 
@@ -175,19 +166,68 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 
 #pragma region DAMAGE
 
-/** Calculate final damage by checking the Resistance to the incoming Damage Type */
-void UEC_Damage::CalculateDamageByResistanceToDamageType(const FGameplayTag& ResistanceDamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float DamageTypeValue, float& Damage) const
+/** Calculate damage taking into account the resistances to the damage types */
+float UEC_Damage::CalculateDamage(const FGameplayTag& DamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& EffectSpec, const FAggregatorEvaluateParameters& EvaluateParams, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& TagsToCaptureDefs) const
 {
-	float ResistanceDamageTypeValue = 0.f;
-	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(AuraDamageStatics().TagsToCaptureDefs[ResistanceDamageTypeTag], EvaluateParams, ResistanceDamageTypeValue);
-	ResistanceDamageTypeValue = FMath::Clamp(ResistanceDamageTypeValue, 0.f, 100.f);
+	const FGameplayTag ResistanceDamageTypeTag = *FAuraGameplayTags::Get().DamageTypesToResistances.Find(DamageTypeTag);
 
-	DamageTypeValue *= (100.f - ResistanceDamageTypeValue) / 100.f;
-	Damage += DamageTypeValue;
+	checkf(TagsToCaptureDefs.Contains(ResistanceDamageTypeTag), TEXT("EC_Damage::CalculateDamage - TagsToCaptureDefs doesn't contain Tag: [%s]"), *ResistanceDamageTypeTag.ToString());
+
+	// Get base damage associated to the damage type
+	float Damage = EffectSpec.GetSetByCallerMagnitude(DamageTypeTag, false);
+
+	// Capture TargetResistanceToDamageType on Target, in order to modify the incoming damage received
+	float TargetResistanceToDamageType = 0.f;
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(TagsToCaptureDefs[ResistanceDamageTypeTag], EvaluateParams, TargetResistanceToDamageType);
+	TargetResistanceToDamageType = FMath::Clamp(TargetResistanceToDamageType, 0.f, 100.f);
+
+	// Calculate the final damage by subtracting the resistance to the damage type from the base damage
+	Damage *= (100.f - TargetResistanceToDamageType) / 100.f;
+	return Damage;
+}
+
+/** Determine whether a debuff occured */
+void UEC_Damage::HandleDebuff(const FGameplayTag& DamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& EffectSpec, const FAggregatorEvaluateParameters& EvaluateParams, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& TagsToCaptureDefs) const
+{
+	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+
+	const FGameplayTag DebuffTypeTag = *AuraGameplayTags.DamageTypesToDebuffs.Find(DamageTypeTag);
+		
+	const float DamageTypeValue = EffectSpec.GetSetByCallerMagnitude(DamageTypeTag, false, -1.f);
+	if (DamageTypeValue > -1.f)
+	{
+		const FGameplayTag& ResistanceDamageTypeTag = AuraGameplayTags.DamageTypesToResistances[DamageTypeTag];
+
+		// Retrieve Source's chance to cause a debuff
+		const float SourceDebuffChance = EffectSpec.GetSetByCallerMagnitude(AuraGameplayTags.Debuff_Chance, false, -1.f);
+
+		// Capture TargetResistanceToDamageType on Target, in order to modify the debuff's chance to occur
+		float TargetResistanceToDamageType = 0.f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(TagsToCaptureDefs[ResistanceDamageTypeTag], EvaluateParams, TargetResistanceToDamageType);
+		TargetResistanceToDamageType = FMath::Max<float>(TargetResistanceToDamageType, 0.f);
+
+		// Apply Source's debuff chance to the Target, in order to calculate the effective debuff chance based on the Target's resistance to the damage type associated to the debuff
+		const float EffectiveDebuffChance = SourceDebuffChance * (100.f - TargetResistanceToDamageType) / 100.f;
+
+		// Apply the debuff if it was successful
+		const bool bDebuff = FMath::RandRange(1.f, 100.f) < EffectiveDebuffChance;
+		if (bDebuff)
+		{
+			const float DebuffDamage = EffectSpec.GetSetByCallerMagnitude(AuraGameplayTags.Debuff_Damage, false, -1.f);
+			const float DebuffDuration = EffectSpec.GetSetByCallerMagnitude(AuraGameplayTags.Debuff_Duration, false, -1.f);
+			const float DebuffFrequency = EffectSpec.GetSetByCallerMagnitude(AuraGameplayTags.Debuff_Frequency, false, -1.f);
+
+			FGameplayEffectContextHandle EffectContextHandle = EffectSpec.GetContext();
+			UAuraAbilitySystemLibrary::SetIsSuccessfulDebuff(EffectContextHandle, bDebuff);
+			UAuraAbilitySystemLibrary::SetDebuffDamage(EffectContextHandle, DebuffDamage);
+			UAuraAbilitySystemLibrary::SetDebuffDuration(EffectContextHandle, DebuffDuration);
+			UAuraAbilitySystemLibrary::SetDebuffFrequency(EffectContextHandle, DebuffFrequency);
+		}
+	}
 }
 
 /** Check Target's BlockChance in order to calculate Damage taken if there's a successful block */
-bool UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
+bool UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& OutDamage) const
 {
 	// Capture BlockChance on Target in order to determine if there was a successful block
 	float TargetBlockChance = 0.f;
@@ -196,13 +236,13 @@ bool UEC_Damage::HandleBlock(const FGameplayEffectCustomExecutionParameters& Exe
 	
 	// Halve Damage's value if it's a block
 	const bool bBlocked = FMath::RandRange(1.f, 100.f) < TargetBlockChance;
-	Damage = bBlocked ? Damage / 2.f : Damage;
+	OutDamage = bBlocked ? OutDamage / 2.f : OutDamage;
 
 	return bBlocked;
 }
 
 /** Check Target's Armor and Source's ArmorPenetration in order to calculate Damage taken */
-void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, int32 SourceLevel, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
+void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, int32 SourceLevel, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& OutDamage) const
 {
 	// Capture Armor on Target
 	float TargetArmor = 0.f;
@@ -226,11 +266,11 @@ void UEC_Damage::HandleArmor(const UCharacterClassInfo* CharacterClassInfo, int3
 	const float EffectiveArmor = TargetArmor * (100.f - SourceArmorPenetration * ArmorPenetrationCoefficient) / 100.f;
 
 	// Calculate final Damage that will be dealt based on the effective armor and its coefficient
-	Damage *= (100.f - EffectiveArmor * EffectiveArmorCoefficient) / 100.f;
+	OutDamage *= (100.f - EffectiveArmor * EffectiveArmorCoefficient) / 100.f;
 }
 
 /** Check Target's CriticalHitChance and Source's CriticalHitResistance in order to calculate Damage taken */
-bool UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& Damage) const
+bool UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo, int32 TargetLevel, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FAggregatorEvaluateParameters& EvaluateParams, float& OutDamage) const
 {
 	// Capture CriticalHitChance on Source in order to determine if there was a critical hit
 	float SourceCriticalHitChance = 0.f;
@@ -256,7 +296,7 @@ bool UEC_Damage::HandleCriticalHit(const UCharacterClassInfo* CharacterClassInfo
 
 	// Double Damage's value and add to its value the Source's CriticalHitDamage if it's a critical hit
 	const bool bCriticalHit = FMath::RandRange(1.f, 100.f) < EffectiveCriticalHitChance;
-	Damage = bCriticalHit ? (Damage * 2.f) + SourceCriticalHitDamage : Damage;
+	OutDamage = bCriticalHit ? (OutDamage * 2.f) + SourceCriticalHitDamage : OutDamage;
 
 	return bCriticalHit;
 }
