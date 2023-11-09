@@ -6,31 +6,35 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
+// Headers - Aura
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "GAS/Utils/AuraAbilityTypes.h"
+
 #pragma region DAMAGE
 
 /** Apply damage to target Actor */
-void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor)
+void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor) const
 {
-	const int32 Level = GetAbilityLevel();
-	const FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(DamageEffectClass, Level);
-
-	for (auto DamageType : DamageTypes)
-	{
-		const float ScaledDamage = DamageType.Value.GetValueAtLevel(Level);
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, DamageType.Key, ScaledDamage);
-	}
-
-	if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor))
-	{
-		GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToTarget(*EffectSpecHandle.Data.Get(), TargetASC);
-	}
+	const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams(TargetActor);
+	UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 }
 
-/** Get damage value by damage type tag */
-float UAuraDamageGameplayAbility::GetDamageByDamageType(float InLevel, const FGameplayTag& DamageTypeTag) const
+/** Make damage effect's params from class defaults */
+FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParams(AActor* TargetActor) const
 {
-	checkf(DamageTypes.Contains(DamageTypeTag), TEXT("GameplayAbility [%s] does not contain DamageTypeTag [%s]"), *GetNameSafe(this), *DamageTypeTag.ToString());
-	return DamageTypes[DamageTypeTag].GetValueAtLevel(InLevel);
+	FDamageEffectParams DamageEffectParams;
+	DamageEffectParams.WorldContextObject = GetAvatarActorFromActorInfo();
+	DamageEffectParams.DamageEffectClass = DamageEffectClass;
+	DamageEffectParams.SourceASC = GetAbilitySystemComponentFromActorInfo();
+	DamageEffectParams.TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
+	DamageEffectParams.BaseDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	DamageEffectParams.AbilityLevel = GetAbilityLevel();
+	DamageEffectParams.DamageType = DamageType;
+	DamageEffectParams.DebuffChance = DebuffChance;
+	DamageEffectParams.DebuffDamage = DebuffDamage;
+	DamageEffectParams.DebuffDuration = DebuffDuration;
+	DamageEffectParams.DebuffFrequency = DebuffFrequency;
+	return DamageEffectParams;
 }
 
 #pragma endregion DAMAGE

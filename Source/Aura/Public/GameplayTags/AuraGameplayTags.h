@@ -283,10 +283,48 @@ public:
 	/** Physical Damage Type */
 	FGameplayTag Damage_Physical;
 
-	/** Array that contains all Damage Types linked to Damage Type Resistances */
+	/** Map that contains all Damage Types linked to Damage Type Resistances */
 	TMap<FGameplayTag, FGameplayTag> DamageTypesToResistances;
 
 #pragma endregion DAMAGE
+
+#pragma region DEBUFFS
+
+public:
+
+	/** Initialize native gameplay tags for debuffs */
+	static void InitializeNativeDebuffsGameplayTags();
+
+public:
+	
+	/** Burn Debuff */
+	FGameplayTag Debuff_Burn;
+
+	/** Stun Debuff */
+	FGameplayTag Debuff_Stun;
+
+	/** Arcane Debuff */
+	FGameplayTag Debuff_Arcane;
+
+	/** Physical Debuff */
+	FGameplayTag Debuff_Physical;
+
+	/** Debuff chance */
+	FGameplayTag Debuff_Chance;
+
+	/** Debuff damage */
+	FGameplayTag Debuff_Damage;
+
+	/** Debuff duration */
+	FGameplayTag Debuff_Duration;
+
+	/** Debuff frequency */
+	FGameplayTag Debuff_Frequency;
+
+	/** Map that contains all Damage Types linked to Debuffs */
+	TMap<FGameplayTag, FGameplayTag> DamageTypesToDebuffs;
+
+#pragma endregion DEBUFFS
 
 #pragma region COMBAT_SOCKETS
 

@@ -6,11 +6,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 // Headers - Aura
 #include "Character/Data/CharacterClassDefaultInfo.h"
 #include "Character/Data/CharacterClassInfo.h"
 #include "GameMode/AuraBaseGameMode.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/Utils/AuraAbilityTypes.h"
 #include "Interaction/CombatInterface.h"
 #include "Player/AuraPlayerState.h"
@@ -172,7 +174,26 @@ UAbilitiesInfo* UAuraAbilitySystemLibrary::GetAbilitiesInfo(const UObject* World
 
 #pragma endregion ABILITIES
 
-#pragma region EFFECT
+#pragma region EFFECTS
+
+/** Apply damage effect to target */
+FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
+{
+	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+
+	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParams.SourceASC->MakeEffectContext();
+	EffectContextHandle.AddSourceObject(DamageEffectParams.SourceASC->GetAvatarActor());
+	const FGameplayEffectSpecHandle EffectSpecHandle = DamageEffectParams.SourceASC->MakeOutgoingSpec(DamageEffectParams.DamageEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
+
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Chance, DamageEffectParams.DebuffChance);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Damage, DamageEffectParams.DebuffDamage);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
+
+	DamageEffectParams.TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+	return EffectContextHandle;
+}
 
 /** Return whether damage effect is blocked */
 bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
@@ -214,7 +235,7 @@ void UAuraAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle& E
 	}
 }
 
-#pragma endregion EFFECT
+#pragma endregion EFFECTS
 
 #pragma region UTILS
 

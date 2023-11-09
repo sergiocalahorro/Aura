@@ -18,6 +18,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 	InitializeNativeEffectsGameplayTags();
 	InitializeNativeCooldownsGameplayTags();
 	InitializeNativeDamageGameplayTags();
+	InitializeNativeDebuffsGameplayTags();
 	InitializeNativeCombatSocketsGameplayTags();
 	InitializeNativeMontagesGameplayTags();
 	InitializeNativeMessagesGameplayTags();
@@ -153,6 +154,29 @@ void FAuraGameplayTags::InitializeNativeDamageGameplayTags()
 }
 
 #pragma endregion DAMAGE
+
+#pragma region DEBUFFS
+
+void FAuraGameplayTags::InitializeNativeDebuffsGameplayTags()
+{
+	GameplayTags.Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Burn"), FString("Burn Debuff"));
+	GameplayTags.Debuff_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Stun"), FString("Stun Debuff"));
+	GameplayTags.Debuff_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Arcane"), FString("Arcane Debuff"));
+	GameplayTags.Debuff_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Physical"), FString("Physical Debuff"));
+
+	GameplayTags.Debuff_Chance = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Chance"), FString("Debuff chance"));
+	GameplayTags.Debuff_Damage = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Damage"), FString("Debuff damage"));
+	GameplayTags.Debuff_Duration = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Duration"), FString("Debuff duration"));
+	GameplayTags.Debuff_Frequency = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Debuff.Frequency"), FString("Debuff frequency"));
+	
+	// Map Damage Types to their debuffs
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Fire, GameplayTags.Debuff_Burn);
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Lightning, GameplayTags.Debuff_Stun);
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Arcane, GameplayTags.Debuff_Arcane);
+	GameplayTags.DamageTypesToDebuffs.Add(GameplayTags.Damage_Physical, GameplayTags.Debuff_Physical);
+}
+
+#pragma endregion DEBUFFS
 
 #pragma region COMBAT_SOCKETS
 

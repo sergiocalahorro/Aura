@@ -5,6 +5,9 @@
 // Headers - Unreal Engine
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GAS/Utils/AuraAbilityTypes.h"
+
+// Headers - Aura
 #include "GameplayEffectTypes.h"
 
 #include "AuraProjectile.generated.h"
@@ -69,9 +72,9 @@ private:
 
 public:
 
-	/** Damage effect's spec handle */
+	/** Damage effect's params*/
 	UPROPERTY()
-	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+	FDamageEffectParams DamageEffectParams;
 
 private:
 

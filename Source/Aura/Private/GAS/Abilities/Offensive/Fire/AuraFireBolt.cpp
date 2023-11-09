@@ -2,15 +2,12 @@
 
 #include "GAS/Abilities/Offensive/Fire/AuraFireBolt.h"
 
-// Headers - Aura
-#include "GameplayTags/AuraGameplayTags.h"
-
 #pragma region DESCRIPTION
 	
 /** Get ability's description */
 FString UAuraFireBolt::GetDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 	
@@ -41,7 +38,7 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 
 			// Values
 			Level,
-			Damage,
+			ScaledDamage,
 			ManaCost,
 			Cooldown);
 	}
@@ -71,7 +68,7 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 
 		// Values
 		Level,
-		Damage,
+		ScaledDamage,
 		ManaCost,
 		Cooldown,
 		FMath::Min(NumberOfProjectiles, Level));
@@ -80,7 +77,7 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 /** Get ability's description for next level */
 FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 {
-	const int32 Damage = GetDamageByDamageType(Level, FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 
@@ -109,7 +106,7 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 
 		// Values
 		Level,
-		Damage,
+		ScaledDamage,
 		ManaCost,
 		Cooldown,
 		FMath::Min(NumberOfProjectiles, Level));

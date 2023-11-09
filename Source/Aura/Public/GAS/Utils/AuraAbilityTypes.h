@@ -8,6 +8,69 @@
 
 #include "AuraAbilityTypes.generated.h"
 
+// Forward declarations - Unreal Engine
+class UGameplayEffect;
+
+USTRUCT(BlueprintType)
+struct FDamageEffectParams
+{
+	GENERATED_BODY()
+
+public:
+	
+	/** Default constructor */
+	FDamageEffectParams()
+	{
+		
+	}
+
+public:
+
+	/** World context object */
+	UPROPERTY()
+	TObjectPtr<UObject> WorldContextObject;
+
+	/** Damage effect's class */
+	UPROPERTY()
+	TSubclassOf<UGameplayEffect> DamageEffectClass;
+
+	/** Source's Ability System Component */
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> SourceASC;
+	
+	/** Target's Ability System Component */
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> TargetASC;
+
+	/** Base damage value */
+	UPROPERTY()
+	float BaseDamage = 0.f;
+	
+	/** Ability's level */
+	UPROPERTY()
+	float AbilityLevel = 1.f;
+
+	/** Damage type tag */
+	UPROPERTY()
+	FGameplayTag DamageType;
+	
+	/** Chance to apply debuff */
+	UPROPERTY()
+	float DebuffChance = 0.f;
+
+	/** Damage caused when debuff is applied */
+	UPROPERTY()
+	float DebuffDamage = 0.f;
+
+	/** Duration for the applied debuff */
+	UPROPERTY()
+	float DebuffDuration = 0.f;
+	
+	/** Frequency for the applied debuff */
+	UPROPERTY()
+	float DebuffFrequency = 0.f;
+};
+
 USTRUCT(BlueprintType)
 struct FAuraGameplayEffectContext : public FGameplayEffectContext
 {

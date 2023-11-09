@@ -87,12 +87,8 @@ void AAuraProjectile::Destroyed()
 /** BeginOverlap Callback */
 void AAuraProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!DamageEffectSpecHandle.Data.IsValid() || DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser() == OtherActor)
-	{
-		return;
-	}
-
-	if (UAuraAbilitySystemLibrary::AreActorsFriends(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
+	const AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
+	if (SourceAvatarActor == OtherActor || UAuraAbilitySystemLibrary::AreActorsFriends(SourceAvatarActor, OtherActor))
 	{
 		return;
 	}
@@ -103,9 +99,9 @@ void AAuraProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, A
 	{
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
 		{
-			TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+			DamageEffectParams.TargetASC = TargetASC;
+			UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
 		}
-		
 		Destroy();
 	}
 	else

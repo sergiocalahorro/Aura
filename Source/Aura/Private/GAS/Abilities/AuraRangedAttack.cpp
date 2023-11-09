@@ -96,21 +96,8 @@ void UAuraRangedAttack::SpawnProjectile(FGameplayEventData Payload)
 	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
 
 	AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(CurrentAttackData.ProjectileClass,  SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-
-	const int32 Level = GetAbilityLevel();
-	const UAbilitySystemComponent* SourceASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetAvatarActorFromActorInfo());
-	FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
-	EffectContextHandle.SetAbility(this);
-	EffectContextHandle.AddSourceObject(Projectile);
-	const FGameplayEffectSpecHandle EffectSpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, Level, EffectContextHandle);
-
-	for (auto DamageType : DamageTypes)
-	{
-		const float ScaledDamage = DamageType.Value.GetValueAtLevel(Level);
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, DamageType.Key, ScaledDamage);
-	}
-
-	Projectile->DamageEffectSpecHandle = EffectSpecHandle;
+	const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams();
+	Projectile->DamageEffectParams = DamageEffectParams;
 	Projectile->FinishSpawning(SpawnTransform);
 }
 

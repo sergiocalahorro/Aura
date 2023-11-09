@@ -8,6 +8,7 @@
 
 #include "AuraAbilitySystemLibrary.generated.h"
 
+struct FDamageEffectParams;
 class UAbilitiesInfo;
 class AAuraHUD;
 // Forward declarations - Unreal Engine
@@ -84,9 +85,13 @@ public:
 
 #pragma endregion ABILITIES
 
-#pragma region EFFECT
+#pragma region EFFECTS
 
 public:
+
+	/** Apply damage effect to target */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|DamageEffect")
+	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
 
 	/** Return whether damage effect is blocked */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
@@ -104,7 +109,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
 	static void SetIsCriticalHit(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, bool bInIsCriticalHit);
 
-#pragma endregion EFFECT
+#pragma endregion EFFECTS
 
 #pragma region UTILS
 

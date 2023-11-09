@@ -11,6 +11,9 @@
 
 #include "AuraDamageGameplayAbility.generated.h"
 
+// Forward declarations - Aura
+struct FDamageEffectParams;
+
 /**
  * 
  */
@@ -24,10 +27,10 @@ class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility
 protected:
 
 	/** Apply damage to target Actor */
-	void ApplyDamage(AActor* TargetActor);
+	void ApplyDamage(AActor* TargetActor) const;
 
-	/** Get damage value by damage type tag */
-	float GetDamageByDamageType(float InLevel, const FGameplayTag& DamageTypeTag) const;
+	/** Make damage effect's params from class defaults */
+	FDamageEffectParams MakeDamageEffectParams(AActor* TargetActor = nullptr) const;
 	
 #pragma endregion DAMAGE
 
@@ -37,9 +40,29 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage")
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
 
-	/** Damage values per type */
+	/** Damage type tag */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage")
-	TMap<FGameplayTag, FScalableFloat> DamageTypes;
+	FGameplayTag DamageType;
+
+	/** Damage value */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage")
+	FScalableFloat Damage;
+
+	/** Chance to apply debuff */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Debuff", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 100.f, UIMax = 100.f, Delta = 0.1f))
+	float DebuffChance = 20.f;
+
+	/** Damage caused when debuff is applied */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Debuff", meta = (ClampMin = 0.f, UIMin = 0.f))
+	float DebuffDamage = 5.f;
+
+	/** Duration for the applied debuff */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Debuff", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "Seconds"))
+	float DebuffDuration = 5.f;
+
+	/** Frequency for the applied debuff */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Debuff", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "Seconds"))
+	float DebuffFrequency = 1.f;
 
 #pragma endregion DAMAGE
 
