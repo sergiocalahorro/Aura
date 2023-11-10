@@ -304,25 +304,42 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 		const float NewHealth = GetHealth() - IncomingDamageAmount;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 		
-		const bool bOutOfHealth = NewHealth <= 0.f;
-		if (bOutOfHealth)
+		const bool bDead = NewHealth <= 0.f;
+		if (bDead)
 		{
-			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor))
-			{
-				CombatInterface->Death();
-			}
-			SendXPEvent(EffectProperties);
+			HandleDeath(EffectProperties);
 		}
 		else
 		{
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
-			EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			HandleHit(EffectProperties);
 		}
 
 		ShowFloatingDamageText(EffectProperties, IncomingDamageAmount);
 		HandleDebuff(EffectProperties);
 	}
+}
+
+/** Handle hit */
+void UAuraAttributeSet::HandleHit(const FEffectProperties& EffectProperties)
+{
+	EffectProperties.TargetASC->TryActivateAbilitiesByTag(FAuraGameplayTags::Get().Abilities_HitReact.GetSingleTagContainer());
+	const FVector KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(EffectProperties.EffectContextHandle);
+	if (!KnockbackForce.IsNearlyZero(1.f) && EffectProperties.TargetCharacter->Implements<UCombatInterface>())
+	{
+		ICombatInterface::Execute_Knockback(EffectProperties.TargetCharacter, KnockbackForce);
+	}
+}
+
+/** Handle death */
+void UAuraAttributeSet::HandleDeath(const FEffectProperties& EffectProperties)
+{
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(EffectProperties.TargetAvatarActor))
+	{
+		const FVector DeathImpulse = UAuraAbilitySystemLibrary::GetDeathImpulse(EffectProperties.EffectContextHandle);
+		CombatInterface->Death(DeathImpulse);
+	}
+			
+	SendXPEvent(EffectProperties);
 }
 
 /** Show floating damage text above target */

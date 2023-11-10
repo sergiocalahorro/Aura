@@ -291,6 +291,12 @@ private:
 	/** Handle incoming damage */
 	void HandleIncomingDamage(const FEffectProperties& EffectProperties);
 
+	/** Handle hit */
+	void HandleHit(const FEffectProperties& EffectProperties);
+
+	/** Handle death */
+	void HandleDeath(const FEffectProperties& EffectProperties);
+
 	/** Show floating damage text above target */
 	void ShowFloatingDamageText(const FEffectProperties& EffectProperties, float Damage) const;
 

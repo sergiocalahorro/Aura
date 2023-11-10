@@ -9,6 +9,7 @@
 
 #include "AuraAbilitySystemLibrary.generated.h"
 
+class UGameplayEffect;
 // Forward declarations - Unreal Engine
 class UAbilitySystemComponent;
 struct FGameplayEffectContextHandle;
@@ -91,10 +92,14 @@ public:
 
 public:
 
+	/** Apply effect to self */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|Effect")
+	static FGameplayEffectContextHandle ApplyEffectToSelf(UAbilitySystemComponent* AbilitySystemComponent, TSubclassOf<UGameplayEffect> EffectClass, float EffectLevel = 1.f);
+
 	/** Apply damage effect to target */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
-
+	
 	/** Return whether damage effect is blocked */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
 	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
@@ -122,6 +127,14 @@ public:
 	/** Get the effect context's damage type */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
 	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/** Get the effect context's death impulse */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static FVector GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	/** Get the effect context's knockback force */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static FVector GetKnockbackForce(const FGameplayEffectContextHandle& EffectContextHandle);
 	
 	/** Set whether damage effect is blocked */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
@@ -150,6 +163,14 @@ public:
 	/** Set damage type */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
 	static void SetDamageType(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FGameplayTag& InDamageType);
+
+	/** Set death impulse */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static void SetDeathImpulse(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InDeathImpulse);
+
+	/** Set knockback force */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
+	static void SetKnockbackForce(UPARAM(ref) FGameplayEffectContextHandle& EffectContextHandle, const FVector& InKnockbackForce);
 	
 #pragma endregion EFFECTS
 

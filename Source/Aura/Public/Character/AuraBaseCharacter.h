@@ -91,15 +91,18 @@ public:
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const override;
 
+	/** Apply knockback */
+	virtual void Knockback_Implementation(const FVector& KnockbackForce) override;
+
 	/** Functionality performed on death */
-	virtual void Death() override;
+	virtual void Death(const FVector& DeathImpulse) override;
 
 	/** Whether is dead */
 	virtual bool IsDead_Implementation() const override;
 
 	/** Handle death */
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastHandleDeath();
+	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 	/** Dissolve effect */
 	void Dissolve();

@@ -31,6 +31,7 @@ void UAuraBaseAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		GroundSpeed = CharacterMovement->Velocity.Size2D();
 		bShouldMove = GroundSpeed > IdleSpeed;
+		bIsFalling = CharacterMovement->IsFalling();
 	}
 }
 

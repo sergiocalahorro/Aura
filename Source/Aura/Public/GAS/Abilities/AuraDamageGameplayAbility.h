@@ -64,6 +64,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Debuff", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "Seconds"))
 	float DebuffFrequency = 1.f;
 
+	/** Chance to cause a knockback when applying normal damage */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Knockback", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 100.f, UIMax = 100.f, Delta = 1.f, Units = "Percent"))
+	float KnockbackChance = 0.f;
+
+	/** Force applied to knockback on normal damage */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Knockback", meta = (ClampMin = 0.f, UIMin = 0.f))
+	float KnockbackForceMagnitude = 500.f;
+	
+	/** Impulse applied on fatal damage */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Death", meta = (ClampMin = 0.f, UIMin = 0.f))
+	float DeathImpulseMagnitude = 15000.f;
+
 #pragma endregion DAMAGE
 
 #pragma region ATTACK

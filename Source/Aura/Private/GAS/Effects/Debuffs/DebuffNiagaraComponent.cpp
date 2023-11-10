@@ -53,7 +53,7 @@ void UDebuffNiagaraComponent::BeginPlay()
 /** Callback called whenever there's a change on the debuff tag */
 void UDebuffNiagaraComponent::OnDebuffTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
-	if (NewCount > 0)
+	if (NewCount > 0 && IsValid(GetOwner()) && GetOwner()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(GetOwner()))
 	{
 		Activate();
 	}

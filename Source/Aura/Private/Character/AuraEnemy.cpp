@@ -111,11 +111,11 @@ AActor* AAuraEnemy::GetCombatTarget_Implementation() const
 }
 
 /** Functionality performed on death */
-void AAuraEnemy::Death()
+void AAuraEnemy::Death(const FVector& DeathImpulse)
 {
 	AuraAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 	SetLifeSpan(LifeSpan);
-	Super::Death();
+	Super::Death(DeathImpulse);
 }
 
 /** Callback called whenever HitReact's tag is changed */

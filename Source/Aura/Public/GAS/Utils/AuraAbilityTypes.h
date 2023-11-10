@@ -69,6 +69,26 @@ public:
 	/** Frequency for the applied debuff */
 	UPROPERTY()
 	float DebuffFrequency = 0.f;
+
+	/** Impulse magnitude applied on fatal damage */
+	UPROPERTY()
+	float DeathImpulseMagnitude = 0.f;
+
+	/** Impulse applied on fatal damage */
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
+
+	/** Force magnitude applied to knockback on normal damage */
+	UPROPERTY()
+	float KnockbackForceMagnitude = 0.f;
+
+	/** Chance to apply knockback on normal damage */
+	UPROPERTY()
+	float KnockbackChance = 0.f;
+
+	/** Force applied to knockback on normal damage */
+	UPROPERTY()
+	FVector KnockbackForce = FVector::ZeroVector;
 };
 
 USTRUCT(BlueprintType)
@@ -129,6 +149,12 @@ public:
 	/** Return the damage type associated to this effect */
 	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
 
+	/** Return the death impulse associated to this effect */
+	FVector GetDeathImpulse() const { return DeathImpulse; }
+
+	/** Return the knockback force associated to this effect */
+	FVector GetKnockbackForce() const { return KnockbackForce; }
+
 	/** Set whether the damage effect associated is blocked */
 	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
 
@@ -149,6 +175,12 @@ public:
 
 	/** Set damage type */
 	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
+
+	/** Set death impulse */
+	void SetDeathImpulse(const FVector& InDeathImpulse) { DeathImpulse = InDeathImpulse; }
+
+	/** Set knockback force */
+	void SetKnockbackForce(const FVector& InKnockbackForce) { KnockbackForce = InKnockbackForce; }
 
 protected:
 
@@ -178,6 +210,14 @@ protected:
 
 	/** Damage type tag */
 	TSharedPtr<FGameplayTag> DamageType;
+
+	/** Impulse applied on death */
+	UPROPERTY()
+	FVector DeathImpulse = FVector::ZeroVector;
+
+	/** Force applied to knockback on normal damage */
+	UPROPERTY()
+	FVector KnockbackForce = FVector::ZeroVector;
 
 #pragma endregion EFFECT
 	

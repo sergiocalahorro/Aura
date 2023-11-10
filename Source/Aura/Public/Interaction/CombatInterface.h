@@ -76,8 +76,12 @@ public:
 	/** Get HitReact's montage */
 	virtual UAnimMontage* GetHitReactMontage() const;
 
+	/** Apply knockback */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Knockback(const FVector& KnockbackForce);
+
 	/** Functionality performed on death */
-	virtual void Death() = 0;
+	virtual void Death(const FVector& DeathImpulse) = 0;
 
 	/** Whether is dead */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)

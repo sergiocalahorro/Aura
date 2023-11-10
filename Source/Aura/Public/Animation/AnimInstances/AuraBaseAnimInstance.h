@@ -61,6 +61,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Core|Movement", meta = (ClampMin = 1.f, UIMin = 1.f, Delta = 1.f))
 	float IdleSpeed = 3.f;
 
+	/** Whether character is falling */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Core|Movement")
+	bool bIsFalling;
+
 #pragma endregion CORE
 	
 };

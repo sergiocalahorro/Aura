@@ -90,7 +90,7 @@ public:
 	AActor* GetCombatTarget_Implementation() const;
 	
 	/** Functionality performed on death */
-	virtual void Death() override;
+	virtual void Death(const FVector& DeathImpulse) override;
 	
 private:
 	
