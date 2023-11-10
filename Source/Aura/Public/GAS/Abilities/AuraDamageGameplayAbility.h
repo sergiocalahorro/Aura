@@ -49,7 +49,7 @@ protected:
 	FScalableFloat Damage;
 
 	/** Chance to apply debuff */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Debuff", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 100.f, UIMax = 100.f, Delta = 0.1f))
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Debuff", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 100.f, UIMax = 100.f, Delta = 1.f, Units = "Percent"))
 	float DebuffChance = 20.f;
 
 	/** Damage caused when debuff is applied */

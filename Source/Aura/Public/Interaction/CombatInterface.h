@@ -14,6 +14,10 @@
 
 // Forward declarations - Unreal Engine
 class UNiagaraSystem;
+class UAbilitySystemComponent;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FASCRegisteredSignature, UAbilitySystemComponent*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDeathSignature, AActor*, DeadActor);
 
 // This class does not need to be modified.
 UINTERFACE()
@@ -94,4 +98,10 @@ public:
 	/** Tweening effect */
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void Tweening();
+
+	/** Get delegate that is broadcasted once the ASC has been registered */
+	virtual FASCRegisteredSignature GetASCRegisteredDelegate() = 0;
+
+	/** Get delegate that is broadcasted once the actor has died */
+	virtual FDeathSignature GetDeathDelegate() = 0;
 };

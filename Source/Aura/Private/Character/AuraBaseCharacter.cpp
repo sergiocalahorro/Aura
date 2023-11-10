@@ -12,6 +12,7 @@
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Effects/EffectDefinition.h"
+#include "GAS/Effects/Debuffs/DebuffNiagaraComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 #pragma region INITIALIZATION
@@ -22,6 +23,10 @@ AAuraBaseCharacter::AAuraBaseCharacter()
 	PrimaryActorTick.bCanEverTick = false;
 
 	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
+
+	BurnDebuffComponent = CreateDefaultSubobject<UDebuffNiagaraComponent>(TEXT("BurnDebuffComponent"));
+	BurnDebuffComponent->SetupAttachment(GetRootComponent());
+	BurnDebuffComponent->DebuffTag = FAuraGameplayTags::Get().Debuff_Burn;
 
 	// Setup collisions
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -127,6 +132,7 @@ void AAuraBaseCharacter::Death()
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	MulticastHandleDeath();
+	DeathDelegate.Broadcast(this);
 }
 
 /** Whether is dead */
@@ -193,6 +199,18 @@ int32 AAuraBaseCharacter::GetMinionCount_Implementation() const
 void AAuraBaseCharacter::ModifyMinionCount_Implementation(int32 Amount)
 {
 	MinionCount += Amount;
+}
+
+/** Get delegate that is broadcasted once the ASC has been registered */
+FASCRegisteredSignature AAuraBaseCharacter::GetASCRegisteredDelegate()
+{
+	return ASCRegisteredDelegate;
+}
+
+/** Get delegate that is broadcasted once the actor has died */
+FDeathSignature AAuraBaseCharacter::GetDeathDelegate()
+{
+	return DeathDelegate;
 }
 
 #pragma endregion COMBAT

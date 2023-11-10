@@ -165,6 +165,8 @@ void AAuraEnemy::InitAbilityActorInfo()
 		UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 		UAuraAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent, CharacterClass);
 	}
+
+	ASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
 }
 
 /** Setup health logic and listening for changes on tags */

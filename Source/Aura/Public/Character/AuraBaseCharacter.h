@@ -22,6 +22,7 @@ class UMotionWarpingComponent;
 class UNiagaraSystem;
 
 // Forward declarations - Aura
+class UDebuffNiagaraComponent;
 struct FEffectDefinition;
 struct FActiveGameplayEffectHandle;
 
@@ -55,6 +56,10 @@ protected:
 	/** Motion Warping Component */
 	UPROPERTY(EditAnywhere, Category = "AA|Components")
 	TObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
+
+	/** Burn Debuff Niagara Component */
+	UPROPERTY(EditAnywhere, Category = "AA|Components")
+	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent; 
 
 #pragma endregion COMPONENTS
 
@@ -112,6 +117,12 @@ public:
 	/** Modify minion count by amount */
 	void ModifyMinionCount_Implementation(int32 Amount);
 
+	/** Get delegate that is broadcasted once the ASC has been registered */
+	virtual FASCRegisteredSignature GetASCRegisteredDelegate() override;
+
+	/** Get delegate that is broadcasted once the actor has died */
+	virtual FDeathSignature GetDeathDelegate() override;
+
 protected:
 		
 	/** Character's class */
@@ -160,6 +171,12 @@ protected:
 
 	/** Minion count */
 	int32 MinionCount;
+
+	/** Delegate broadcasted once the ASC has been registered */
+	FASCRegisteredSignature ASCRegisteredDelegate;
+
+	/** Delegate broadcasted once the character has died */
+	FDeathSignature DeathDelegate;
 	
 #pragma endregion COMBAT
 

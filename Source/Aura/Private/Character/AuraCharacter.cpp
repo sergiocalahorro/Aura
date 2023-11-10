@@ -222,6 +222,8 @@ void AAuraCharacter::InitAbilityActorInfo()
 	ApplyEffectToSelf(SecondaryAttributes, 1.f);
 	ApplyEffectToSelf(VitalAttributes, 1.f);
 	ApplyEffectDefinitionsToSelf(DefaultEffects);
+
+	ASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
 }
 
 #pragma endregion GAS
