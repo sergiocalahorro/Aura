@@ -104,8 +104,8 @@ public:
 	void Tweening();
 
 	/** Get delegate that is broadcasted once the ASC has been registered */
-	virtual FASCRegisteredSignature GetASCRegisteredDelegate() = 0;
+	virtual FASCRegisteredSignature& GetASCRegisteredDelegate() = 0;
 
 	/** Get delegate that is broadcasted once the actor has died */
-	virtual FDeathSignature GetDeathDelegate() = 0;
+	virtual FDeathSignature& GetDeathDelegate() = 0;
 };

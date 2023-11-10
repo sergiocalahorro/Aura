@@ -223,6 +223,17 @@ void FAuraGameplayTags::InitializeNativeMessagesGameplayTags()
 void FAuraGameplayTags::InitializeNativeCuesGameplayTags()
 {
 	GameplayTags.GameplayCue_MeleeImpact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.MeleeImpact"), FString("GameplayCue for Melee Attacks' impacts"));
+
+	GameplayTags.GameplayCue_Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Burn"), FString("GameplayCue for burn debuff"));
+	GameplayTags.GameplayCue_Debuff_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Stun"), FString("GameplayCue for stun debuff"));
+	GameplayTags.GameplayCue_Debuff_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Arcane"), FString("GameplayCue for arcane debuff"));
+	GameplayTags.GameplayCue_Debuff_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Physical"), FString("GameplayCue for physical debuff"));
+
+	// Map Debuffs to their cues
+	GameplayTags.DebuffsToCues.Add(GameplayTags.Debuff_Burn, GameplayTags.GameplayCue_Debuff_Burn);
+	GameplayTags.DebuffsToCues.Add(GameplayTags.Debuff_Stun, GameplayTags.GameplayCue_Debuff_Stun);
+	GameplayTags.DebuffsToCues.Add(GameplayTags.Debuff_Arcane, GameplayTags.GameplayCue_Debuff_Arcane);
+	GameplayTags.DebuffsToCues.Add(GameplayTags.Debuff_Physical, GameplayTags.GameplayCue_Debuff_Physical);
 }
 
 #pragma endregion CUES

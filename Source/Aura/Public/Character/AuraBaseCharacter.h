@@ -57,10 +57,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AA|Components")
 	TObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
 
-	/** Burn Debuff Niagara Component */
-	UPROPERTY(EditAnywhere, Category = "AA|Components")
-	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent; 
-
 #pragma endregion COMPONENTS
 
 #pragma region COMBAT
@@ -121,10 +117,10 @@ public:
 	void ModifyMinionCount_Implementation(int32 Amount);
 
 	/** Get delegate that is broadcasted once the ASC has been registered */
-	virtual FASCRegisteredSignature GetASCRegisteredDelegate() override;
+	virtual FASCRegisteredSignature& GetASCRegisteredDelegate() override;
 
 	/** Get delegate that is broadcasted once the actor has died */
-	virtual FDeathSignature GetDeathDelegate() override;
+	virtual FDeathSignature& GetDeathDelegate() override;
 
 protected:
 		

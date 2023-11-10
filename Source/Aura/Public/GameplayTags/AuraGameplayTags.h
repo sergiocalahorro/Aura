@@ -407,6 +407,21 @@ public:
 	/** GameplayCue for Melee Attacks' impacts */
 	FGameplayTag GameplayCue_MeleeImpact;
 
+	/** GameplayCue for burn debuff */
+	FGameplayTag GameplayCue_Debuff_Burn;
+
+	/** GameplayCue for stun debuff */
+	FGameplayTag GameplayCue_Debuff_Stun;
+
+	/** GameplayCue for arcane debuff */
+	FGameplayTag GameplayCue_Debuff_Arcane;
+
+	/** GameplayCue for physical debuff */
+	FGameplayTag GameplayCue_Debuff_Physical;
+
+	/** Map that contains all Debuffs linked to Cues */
+	TMap<FGameplayTag, FGameplayTag> DebuffsToCues;
+
 #pragma endregion CUES
 
 };
