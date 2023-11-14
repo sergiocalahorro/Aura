@@ -9,6 +9,34 @@
 // Headers - Aura
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GAS/Utils/AuraAbilityTypes.h"
+#include "Interaction/CombatInterface.h"
+
+#pragma region OVERRIDES
+
+/** Actually activate ability, do not call this directly */
+void UAuraDamageGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	CommitAbility(Handle, ActorInfo, ActivationInfo);
+
+	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAttacksOfType(ActorInfo->AvatarActor.Get(), AttackType);
+	if (Attacks.IsEmpty() && !AttackMontageTag.IsValid())
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+		return;
+	}
+
+	CurrentAttackData = GetAttackToUse(Attacks, AttackMontageTag);
+}
+
+/** Native function, called if an ability ends normally or abnormally. If bReplicate is set to true, try to replicate the ending to the client/server */
+void UAuraDamageGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+#pragma endregion OVERRIDES
 
 #pragma region DAMAGE
 

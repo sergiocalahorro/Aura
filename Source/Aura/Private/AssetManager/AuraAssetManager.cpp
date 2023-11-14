@@ -27,8 +27,9 @@ UAuraAssetManager& UAuraAssetManager::Get()
 void UAuraAssetManager::StartInitialLoading()
 {
 	Super::StartInitialLoading();
-	UAbilitySystemGlobals::Get().InitGlobalData();
+	
 	FAuraGameplayTags::InitializeNativeGameplayTags();
+	UAbilitySystemGlobals::Get().InitGlobalData();
 }
 
 #pragma endregion OVERRIDES

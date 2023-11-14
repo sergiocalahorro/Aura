@@ -1,6 +1,6 @@
 ﻿// Copyright Sergio Calahorro
 
-#include "GAS/Abilities/AuraMeleeAttack.h"
+#include "GAS/Abilities/Offensive/AuraMeleeAttack.h"
 
 // Headers - Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -36,15 +36,6 @@ void UAuraMeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 			AttackingActor->SetFacingTarget(CombatTarget->GetActorLocation());
 		}
 	}
-
-	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAttacksOfType(ActorInfo->AvatarActor.Get(), AttackType);
-	if (Attacks.IsEmpty() && !DamageEventTag.IsValid())
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
-	
-	CurrentAttackData = GetAttackToUse(Attacks, DamageEventTag);
 
 	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
 	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraMeleeAttack::K2_EndAbility);

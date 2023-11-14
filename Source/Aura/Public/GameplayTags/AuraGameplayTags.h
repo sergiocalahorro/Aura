@@ -169,6 +169,29 @@ public:
 
 #pragma endregion INPUT
 
+#pragma region PLAYER
+
+private:
+	
+	/** Initialize native gameplay tags for player-related functionality */
+	static void InitializeNativePlayerGameplayTags();
+
+public:
+
+	/** Block player's input pressed */
+	FGameplayTag Player_Block_InputPressed;
+
+	/** Block player's input held */
+	FGameplayTag Player_Block_InputHeld;
+
+	/** Block player's input released */
+	FGameplayTag Player_Block_InputReleased;
+
+	/** Block player's cursor trace */
+	FGameplayTag Player_Block_CursorTrace;
+
+#pragma endregion PLAYER
+
 #pragma region ABILITIES
 
 public:
@@ -358,6 +381,12 @@ private:
 
 public:
 
+	/** Montage for Fire Bolt ability */
+	FGameplayTag Montage_FireBolt;
+
+	/** Montage for Electrocute ability */
+	FGameplayTag Montage_Electrocute;
+
 	/** Montage for Attack 1 */
 	FGameplayTag Montage_Attack_1;
 
@@ -406,6 +435,9 @@ public:
 
 	/** GameplayCue for Melee Attacks' impacts */
 	FGameplayTag GameplayCue_MeleeImpact;
+
+	/** GameplayCue for Electrocute's shock burst */
+	FGameplayTag GameplayCue_ShockBurst;
 
 	/** GameplayCue for burn debuff */
 	FGameplayTag GameplayCue_Debuff_Burn;

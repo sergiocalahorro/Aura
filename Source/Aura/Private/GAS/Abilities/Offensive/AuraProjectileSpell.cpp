@@ -1,9 +1,8 @@
 ﻿// Copyright Sergio Calahorro
 
-#include "GAS/Abilities/AuraProjectileSpell.h"
+#include "GAS/Abilities/Offensive/AuraProjectileSpell.h"
 
 // Headers - Unreal Engine
-#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
@@ -17,8 +16,6 @@
 void UAuraProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
 	
 	TargetDataUnderMouseTask = UAbilityTask_TargetDataUnderMouse::CreateTargetDataUnderMouse(this);
 	TargetDataUnderMouseTask->ReceivedTargetData.AddUniqueDynamic(this, &UAuraProjectileSpell::TargetDataReceived);
@@ -43,15 +40,17 @@ void UAuraProjectileSpell::EndAbility(const FGameplayAbilitySpecHandle Handle, c
 /** Functionality performed once target data under mouse is received */
 void UAuraProjectileSpell::TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	if (TargetDataHandle.Num() > 0)
+	if (TargetDataHandle.Num() == 0)
 	{
-		if (ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo()))
-		{
-			const FHitResult MouseHit = *TargetDataHandle.Get(0)->GetHitResult();
-			ProjectileTargetLocation = MouseHit.Location;
-			MouseHitActor = MouseHit.GetActor();
-			AttackingActor->SetFacingTarget(ProjectileTargetLocation);
-		}
+		return;
+	}
+
+	if (ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo()))
+	{
+		const FHitResult MouseHit = *TargetDataHandle.Get(0)->GetHitResult();
+		ProjectileTargetLocation = MouseHit.Location;
+		MouseHitActor = MouseHit.GetActor();
+		AttackingActor->SetFacingTarget(ProjectileTargetLocation);
 	}
 }
 

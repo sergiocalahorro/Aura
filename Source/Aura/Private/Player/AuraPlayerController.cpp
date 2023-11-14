@@ -90,6 +90,11 @@ void AAuraPlayerController::SetupInputComponent()
 /** Called for moving the player */
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	{
+		return;
+	}
+	
 	const FVector2D InputAxisVector = InputActionValue.Get<FVector2D>();
 	const FRotator YawControlRotation(0.f, GetControlRotation().Yaw, 0.f);
 
@@ -115,41 +120,30 @@ void AAuraPlayerController::ShiftReleased()
 /** Callback for Input Pressed */
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 	{
-		bTargeting = CurrentHighlightedActor ? true : false;
-		bAutoRunning = false;
-	}
-}
-
-/** Callback for Input Released */
-void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
-{
-	if (GetAuraAbilitySystemComponent())
-	{
-		GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+		return;
 	}
 	
-	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
-	{
-		if (!bTargeting && !bShiftKeyPressed)
-		{
-			StartAutoRun();
-		}
-	}
+	bTargeting = CurrentHighlightedActor ? true : false;
+	bAutoRunning = false;
+	
+	GetAuraAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
 }
 
 /** Callback for Input Held */
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
+	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld))
+	{
+		return;
+	}
+	
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
 		if (bTargeting || bShiftKeyPressed)
 		{
-			if (GetAuraAbilitySystemComponent())
-			{
-				GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
-			}
+			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
 		}
 		else
 		{
@@ -158,9 +152,25 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 	else
 	{
-		if (GetAuraAbilitySystemComponent())
+		GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+	}
+}
+
+/** Callback for Input Released */
+void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+	{
+		return;
+	}
+	
+	GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+	
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		if (!bTargeting && !bShiftKeyPressed)
 		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+			StartAutoRun();
 		}
 	}
 }
@@ -190,7 +200,10 @@ void AAuraPlayerController::StartAutoRun()
 			bAutoRunning = true;
 		}
 
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+		if (!GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
+		}
 	}
 
 	FollowTime = 0.f;
@@ -236,6 +249,23 @@ void AAuraPlayerController::FollowMouseCursor()
 /** Trace hit under cursor to highlight Actors */
 void AAuraPlayerController::CursorTrace(float DeltaTime)
 {
+	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
+	{
+		if (LastHighlightedActor)
+		{
+			LastHighlightedActor->UnHighlightActor();
+			LastHighlightedActor = nullptr;
+		}
+
+		if (CurrentHighlightedActor)
+		{
+			CurrentHighlightedActor->UnHighlightActor();
+			CurrentHighlightedActor = nullptr;
+		}
+		
+		return;
+	}
+	
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit)
 	{

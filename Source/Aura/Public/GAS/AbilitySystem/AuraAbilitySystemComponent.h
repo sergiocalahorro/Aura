@@ -65,11 +65,14 @@ public:
 	/** Add given list of passive abilities */
 	void AddPassiveAbilities(const TArray<TSubclassOf<UGameplayAbility>>& Abilities);
 
-	/** Activate ability by input tag when released */
-	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+	/** Activate ability by input tag when pressed */
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 
 	/** Activate ability by input tag when held */
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
+
+	/** Activate ability by input tag when released */
+	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
 	/** Broadcast ability */
 	void BroadcastAbility(const FBroadcastAbilitySignature& BroadcastAbilityDelegate);

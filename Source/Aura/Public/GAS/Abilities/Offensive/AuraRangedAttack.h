@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Headers - Aura
-#include "AuraDamageGameplayAbility.h"
+#include "GAS/Abilities/AuraDamageGameplayAbility.h"
 
 #include "AuraRangedAttack.generated.h"
 
@@ -60,10 +60,6 @@ protected:
 
 protected:
 
-	/** Event's gameplay tag to wait for to spawn the projectile (if no tag is set, a random attack will be used) */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack")
-	FGameplayTag SpawnProjectileEventTag;
-
 	/** Maximum number of projectiles launched */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack", meta = (ClampMin = 1, UIMin = 1))
 	int32 MaxNumberOfProjectiles = 5;
@@ -86,7 +82,7 @@ protected:
 
 private:
 
-	/** Ability task used for playing the Montage for performing the melee attack */
+	/** Ability task used for playing the Montage for performing the ranged attack */
 	UPROPERTY()
 	TObjectPtr<UAbilityTask_PlayMontageAndWait> PlayMontageTask;
 

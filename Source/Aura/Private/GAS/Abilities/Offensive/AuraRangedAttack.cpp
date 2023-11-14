@@ -1,6 +1,6 @@
 ﻿// Copyright Sergio Calahorro
 
-#include "GAS/Abilities/AuraRangedAttack.h"
+#include "GAS/Abilities/Offensive/AuraRangedAttack.h"
 
 // Headers - Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
@@ -36,15 +36,6 @@ void UAuraRangedAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			ProjectileTargetLocation = CombatTarget->GetActorLocation();
 		}
 	}
-		
-	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAttacksOfType(ActorInfo->AvatarActor.Get(), AttackType);
-	if (Attacks.IsEmpty() && !SpawnProjectileEventTag.IsValid())
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
-	
-	CurrentAttackData = GetAttackToUse(Attacks, SpawnProjectileEventTag);
 
 	PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
 	PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraRangedAttack::K2_EndAbility);

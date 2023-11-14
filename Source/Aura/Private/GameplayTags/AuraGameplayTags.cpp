@@ -3,6 +3,7 @@
 #include "GameplayTags/AuraGameplayTags.h"
 
 // Headers - Unreal Engine
+#include "GameplayCueManager.h"
 #include "GameplayTagsManager.h"
 
 #pragma region CORE
@@ -14,6 +15,7 @@ void FAuraGameplayTags::InitializeNativeGameplayTags()
 {
 	InitializeNativeAttributesGameplayTags();
 	InitializeNativeInputsGameplayTags();
+	InitializeNativePlayerGameplayTags();
 	InitializeNativeAbilitiesGameplayTags();
 	InitializeNativeEffectsGameplayTags();
 	InitializeNativeCooldownsGameplayTags();
@@ -87,6 +89,20 @@ void FAuraGameplayTags::InitializeNativeInputsGameplayTags()
 }
 
 #pragma endregion INPUT
+
+#pragma region PLAYER
+
+/** Initialize native gameplay tags for player-related functionality */
+void FAuraGameplayTags::InitializeNativePlayerGameplayTags()
+{
+	// Block
+	GameplayTags.Player_Block_InputPressed = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.InputPressed"), FString("Block player's input pressed"));
+	GameplayTags.Player_Block_InputHeld = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.InputHeld"), FString("Block player's input held"));
+	GameplayTags.Player_Block_InputReleased = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.InputReleased"), FString("Block player's input released"));
+	GameplayTags.Player_Block_CursorTrace = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Player.Block.CursorTrace"), FString("Block player's cursor trace"));
+}
+
+#pragma endregion PLAYER
 
 #pragma region ABILITIES
 
@@ -196,6 +212,9 @@ void FAuraGameplayTags::InitializeNativeCombatSocketsGameplayTags()
 /** Initialize native gameplay tags for montages */
 void FAuraGameplayTags::InitializeNativeMontagesGameplayTags()
 {
+	GameplayTags.Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.FireBolt"), FString("Montage for Fire Bolt ability"));
+	GameplayTags.Montage_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Electrocute"), FString("Montage for Electrocute ability"));
+	
 	GameplayTags.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.1"), FString("Montage for Attack 1"));
 	GameplayTags.Montage_Attack_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.2"), FString("Montage for Attack 2"));
 	GameplayTags.Montage_Attack_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.3"), FString("Montage for Attack 3"));
@@ -224,6 +243,8 @@ void FAuraGameplayTags::InitializeNativeCuesGameplayTags()
 {
 	GameplayTags.GameplayCue_MeleeImpact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.MeleeImpact"), FString("GameplayCue for Melee Attacks' impacts"));
 
+	GameplayTags.GameplayCue_ShockBurst = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockBurst"), FString("GameplayCue for Electrocute's shock burst"));
+	
 	GameplayTags.GameplayCue_Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Burn"), FString("GameplayCue for burn debuff"));
 	GameplayTags.GameplayCue_Debuff_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Stun"), FString("GameplayCue for stun debuff"));
 	GameplayTags.GameplayCue_Debuff_Arcane = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Arcane"), FString("GameplayCue for arcane debuff"));

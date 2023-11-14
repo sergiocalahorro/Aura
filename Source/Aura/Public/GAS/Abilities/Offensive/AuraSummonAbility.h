@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Headers - Aura
-#include "AuraDamageGameplayAbility.h"
+#include "GAS/Abilities/AuraDamageGameplayAbility.h"
 
 #include "AuraSummonAbility.generated.h"
 

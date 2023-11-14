@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Headers - Aura
-#include "GAS/Abilities/AuraProjectileSpell.h"
+#include "GAS/Abilities/Offensive/AuraProjectileSpell.h"
 
 #include "AuraFireBolt.generated.h"
 

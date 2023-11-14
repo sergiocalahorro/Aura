@@ -22,6 +22,40 @@ class AURA_API UAuraDamageGameplayAbility : public UAuraGameplayAbility
 {
 	GENERATED_BODY()
 
+#pragma region OVERRIDES
+	
+protected:
+
+	/** Actually activate ability, do not call this directly */
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	/** Native function, called if an ability ends normally or abnormally. If bReplicate is set to true, try to replicate the ending to the client/server */
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	
+#pragma endregion OVERRIDES
+
+#pragma region ATTACK
+
+protected:
+	
+	/** Get attack to use */
+	virtual FAttackData GetAttackToUse(const TArray<FAttackData>& Attacks, const FGameplayTag& AttackTag = FGameplayTag());
+
+protected:
+	
+	/** Current attack data to use in this ability */
+	FAttackData CurrentAttackData;
+
+	/** Type of attack supported by this ability */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Attack")
+	EAttackType AttackType;
+
+	/** Attack Montage's tag */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Attack")
+	FGameplayTag AttackMontageTag;
+
+#pragma endregion ATTACK
+
 #pragma region DAMAGE
 
 protected:
@@ -31,8 +65,6 @@ protected:
 
 	/** Make damage effect's params from class defaults */
 	FDamageEffectParams MakeDamageEffectParams(AActor* TargetActor = nullptr) const;
-	
-#pragma endregion DAMAGE
 
 protected:
 
@@ -77,23 +109,5 @@ protected:
 	float DeathImpulseMagnitude = 15000.f;
 
 #pragma endregion DAMAGE
-
-#pragma region ATTACK
-
-protected:
-	
-	/** Get attack to use */
-	virtual FAttackData GetAttackToUse(const TArray<FAttackData>& Attacks, const FGameplayTag& AttackTag = FGameplayTag());
-
-protected:
-	
-	/** Current attack data to use in this ability */
-	FAttackData CurrentAttackData;
-
-	/** Type of attack supported by this ability */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Attack")
-	EAttackType AttackType;
-
-#pragma endregion ATTACK
 	
 };

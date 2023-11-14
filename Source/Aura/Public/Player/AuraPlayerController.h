@@ -85,11 +85,11 @@ private:
 	/** Callback for Input Pressed */
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 
-	/** Callback for Input Released */
-	void AbilityInputTagReleased(FGameplayTag InputTag);
-
 	/** Callback for Input Held */
 	void AbilityInputTagHeld(FGameplayTag InputTag);
+
+	/** Callback for Input Released */
+	void AbilityInputTagReleased(FGameplayTag InputTag);
 
 private:
 

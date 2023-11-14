@@ -6,26 +6,30 @@
 #include "CoreMinimal.h"
 
 // Headers - Aura
-#include "AuraRangedAttack.h"
+#include "GAS/Abilities/AuraDamageGameplayAbility.h"
 
-#include "AuraProjectileSpell.generated.h"
+#include "AuraMeleeAttack.generated.h"
 
 // Forward declarations - Unreal Engine
 class UAbilityTask_PlayMontageAndWait;
 class UAbilityTask_WaitGameplayEvent;
 
-// Forward declarations - Aura
-class AAuraProjectile;
-class ICombatInterface;
-class UAbilityTask_TargetDataUnderMouse;
-
 /**
  * 
  */
 UCLASS(Abstract)
-class AURA_API UAuraProjectileSpell : public UAuraRangedAttack
+class AURA_API UAuraMeleeAttack : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
+
+#pragma region INITIALIZATION
+
+public:
+
+	/** Sets default values for this object's properties */
+	UAuraMeleeAttack();
+
+#pragma endregion INITIALIZATION
 
 #pragma region OVERRIDES
 	
@@ -39,30 +43,27 @@ protected:
 	
 #pragma endregion OVERRIDES
 
-#pragma region RANGED_ATTACK
+#pragma region MELEE_ATTACK
 
 private:
 
-	/** Functionality performed once target data under mouse is received */
+	/** Perform Melee Attack */
 	UFUNCTION()
-	void TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+	void MeleeAttack(FGameplayEventData Payload);
 
-protected:
-
-	/** Actor hit by mouse trace */
-	UPROPERTY()
-	TObjectPtr<AActor> MouseHitActor;
-
-#pragma endregion RANGED_ATTACK
+#pragma endregion MELEE_ATTACK
 
 #pragma region ABILITY
 
 private:
 
-	/** Ability task used for retrieving target data under mouse */
+	/** Ability task used for playing the Montage for performing the melee attack */
 	UPROPERTY()
-	TObjectPtr<UAbilityTask_TargetDataUnderMouse> TargetDataUnderMouseTask;
+	TObjectPtr<UAbilityTask_PlayMontageAndWait> PlayMontageTask;
+
+	/** Ability task used for waiting for a GameplayTag event */
+	UPROPERTY()
+	TObjectPtr<UAbilityTask_WaitGameplayEvent> WaitEventTask;
 
 #pragma endregion ABILITY
-	
 };

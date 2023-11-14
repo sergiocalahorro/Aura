@@ -72,6 +72,12 @@ void AAuraProjectile::BeginPlay()
 /** Called when this actor is explicitly being destroyed during gameplay or in the editor, not called during level streaming or gameplay ending */
 void AAuraProjectile::Destroyed()
 {
+	if (LoopingSoundComponent)
+	{
+		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
+	}
+	
 	if (!bHit && !HasAuthority())
 	{
 		ProjectileHit();
@@ -150,6 +156,7 @@ void AAuraProjectile::ProjectileHit()
 	if (LoopingSoundComponent)
 	{
 		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
 	}
 
 	bHit = true;

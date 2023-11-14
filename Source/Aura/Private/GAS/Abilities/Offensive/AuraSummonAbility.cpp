@@ -1,6 +1,6 @@
 ﻿// Copyright Sergio Calahorro
 
-#include "GAS/Abilities/AuraSummonAbility.h"
+#include "GAS/Abilities/Offensive/AuraSummonAbility.h"
 
 // Headers - Unreal Engine
 #include "NiagaraFunctionLibrary.h"
@@ -28,15 +28,6 @@ UAuraSummonAbility::UAuraSummonAbility()
 void UAuraSummonAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAttacksOfType(ActorInfo->AvatarActor.Get(), AttackType);
-	if (Attacks.IsEmpty())
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
-		return;
-	}
-
-	CurrentAttackData = GetAttackToUse(Attacks);
 
 	SpawnLocationIndex = 0;
 	SpawnLocations = GetSpawnLocations();
