@@ -415,4 +415,50 @@ bool UAuraAbilitySystemLibrary::AreActorsFriends(const AActor* FirstActor, const
 	return bAreBothPlayers || bAreBothEnemies;
 }
 
+/** Get rotations rotated from a starting forward vector, rotated around the given axis */
+TArray<FRotator> UAuraAbilitySystemLibrary::EvenlySpacedRotators(const FVector& ForwardVector, const FVector& AxisToRotateAround, float Spread, int32 NumberOfRotators)
+{
+	TArray<FRotator> Rotators;
+
+	if (NumberOfRotators > 1)
+	{
+		const FVector LeftOfSpread = ForwardVector.RotateAngleAxis(-Spread / 2.f, AxisToRotateAround);
+		const float DeltaSpread = Spread / (NumberOfRotators - 1);
+		for (int32 i = 0; i < NumberOfRotators; i++)
+		{
+			const FVector CurrentSpread = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, AxisToRotateAround);
+			Rotators.Add(CurrentSpread.Rotation());
+		}
+	}
+	else
+	{
+		Rotators.Add(ForwardVector.Rotation());
+	}
+
+	return Rotators;
+}
+
+/** Get vectors rotated from a starting forward vector, rotated around the given axis */
+TArray<FVector> UAuraAbilitySystemLibrary::EvenlyRotatedVectors(const FVector& ForwardVector, const FVector& AxisToRotateAround, float Spread, int32 NumberOfVectors)
+{
+	TArray<FVector> Vectors;
+
+	if (NumberOfVectors > 1)
+	{
+		const FVector LeftOfSpread = ForwardVector.RotateAngleAxis(-Spread / 2.f, AxisToRotateAround);
+		const float DeltaSpread = Spread / (NumberOfVectors - 1);
+		for (int32 i = 0; i < NumberOfVectors; i++)
+		{
+			const FVector CurrentSpread = LeftOfSpread.RotateAngleAxis(DeltaSpread * i, AxisToRotateAround);
+			Vectors.Add(CurrentSpread);
+		}
+	}
+	else
+	{
+		Vectors.Add(ForwardVector);
+	}
+
+	return Vectors;
+}
+
 #pragma endregion UTILS

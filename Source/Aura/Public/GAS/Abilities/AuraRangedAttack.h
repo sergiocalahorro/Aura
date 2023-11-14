@@ -51,9 +51,12 @@ protected:
 
 protected:
 
-	/** Spawn projectile */
+	/** Event spawn projectile */
 	UFUNCTION()
-	virtual void SpawnProjectile(FGameplayEventData Payload);
+	virtual void EventSpawnProjectile(FGameplayEventData Payload);
+
+	/** Spawn projectile */
+	void SpawnProjectile(TSubclassOf<AAuraProjectile> ProjectileClass, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bInOverridePitch = false, float InPitchOverride = 0.f, const AActor* HomingTarget = nullptr) const;
 
 protected:
 
@@ -63,7 +66,15 @@ protected:
 
 	/** Maximum number of projectiles launched */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack", meta = (ClampMin = 1, UIMin = 1))
-	int32 NumberOfProjectiles = 5;
+	int32 MaxNumberOfProjectiles = 5;
+
+	/** Whether projectile's spawn pitch rotation should be overridden */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack")
+	bool bOverridePitch = true;
+
+	/** Projectile's spawn pitch rotation */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|RangedAttack", meta = (ClampMin = 0.f, UIMin = 0.f, ClampMax = 360.f, UIMax = 360.f, Delta = 1.f, Units = "Degrees"))
+	float PitchOverride = 45.f;
 	
 	/** Location the projectile should be aimed at */
 	UPROPERTY()

@@ -47,6 +47,12 @@ private:
 	UFUNCTION()
 	void TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
+protected:
+
+	/** Actor hit by mouse trace */
+	UPROPERTY()
+	TObjectPtr<AActor> MouseHitActor;
+
 #pragma endregion RANGED_ATTACK
 
 #pragma region ABILITY

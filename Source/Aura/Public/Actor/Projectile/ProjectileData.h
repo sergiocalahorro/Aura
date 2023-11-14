@@ -22,7 +22,7 @@ class AURA_API UProjectileData : public UDataAsset
 public:
 
 	/** Life span */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Movement", meta = (UIMin = 0.f, ClampMin = 0.f))
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Movement", meta = (UIMin = 0.f, ClampMin = 0.f, ForceUnits = "s"))
 	float LifeSpan = 15.f;
 
 	/** Initial speed */
@@ -32,6 +32,14 @@ public:
 	/** Maximum speed */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Movement", meta = (UIMin = 0.f, ClampMin = 0.f, ForceUnits = "cm/s"))
 	float MaxSpeed = 1000.f;
+
+	/** Minimum homing acceleration */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Movement", meta = (UIMin = 0.f, ClampMin = 0.f, ForceUnits = "cm/s"))
+	float MinHomingAcceleration = 1600.f;
+
+	/** Maximum homing acceleration */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Movement", meta = (UIMin = 0.f, ClampMin = 0.f, ForceUnits = "cm/s"))
+	float MaxHomingAcceleration = 3200.f;
 
 	/** Gravity scale */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Movement", meta = (UIMin = 0.f, ClampMin = 0.f))

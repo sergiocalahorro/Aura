@@ -7,9 +7,6 @@
 #include "GameFramework/Actor.h"
 #include "GAS/Utils/AuraAbilityTypes.h"
 
-// Headers - Aura
-#include "GameplayEffectTypes.h"
-
 #include "AuraProjectile.generated.h"
 
 // Forward declarations - Unreal Engine
@@ -102,5 +99,28 @@ private:
 	bool bHit;
 
 #pragma endregion PROJECTILE
+
+#pragma region HOMING
+
+public:
+
+	/** Set projectile's homing target */
+	void SetHomingTarget(const AActor* HomingTarget);
+
+	/** Set projectile's homing target location */
+	void SetHomingTargetLocation(const FVector& TargetLocation);
+
+private:
+
+	/** Set projectile's homing behaviour */
+	void SetHomingBehaviour() const;
+
+private:
+	
+	/** Homing target's scene component */
+	UPROPERTY()
+	TObjectPtr<USceneComponent> HomingTargetComponent;
+
+#pragma endregion HOMING
 	
 };

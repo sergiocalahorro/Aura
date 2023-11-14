@@ -47,7 +47,9 @@ void UAuraProjectileSpell::TargetDataReceived(const FGameplayAbilityTargetDataHa
 	{
 		if (ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo()))
 		{
-			ProjectileTargetLocation = TargetDataHandle.Get(0)->GetHitResult()->Location;
+			const FHitResult MouseHit = *TargetDataHandle.Get(0)->GetHitResult();
+			ProjectileTargetLocation = MouseHit.Location;
+			MouseHitActor = MouseHit.GetActor();
 			AttackingActor->SetFacingTarget(ProjectileTargetLocation);
 		}
 	}

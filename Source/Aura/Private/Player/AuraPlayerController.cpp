@@ -12,6 +12,7 @@
 #include "GameFramework/Character.h"
 
 // Headers - Aura
+#include "NiagaraFunctionLibrary.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Input/AuraInputComponent.h"
@@ -188,6 +189,8 @@ void AAuraPlayerController::StartAutoRun()
 			
 			bAutoRunning = true;
 		}
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 	}
 
 	FollowTime = 0.f;

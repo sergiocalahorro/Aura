@@ -2,6 +2,36 @@
 
 #include "GAS/Abilities/Offensive/Fire/AuraFireBolt.h"
 
+// Headers - Aura
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Interaction/CombatInterface.h"
+
+#pragma region FIREBOLT
+
+/** Event spawn projectile */
+void UAuraFireBolt::EventSpawnProjectile(FGameplayEventData Payload)
+{
+	if (!GetAvatarActorFromActorInfo()->HasAuthority())
+	{
+		return;
+	}
+
+	const ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo());
+	const FVector SpawnLocation = AttackingActor->GetCombatSocketLocation(CurrentAttackData.CombatSocketTag);
+	const FRotator SpawnRotation = (ProjectileTargetLocation - SpawnLocation).Rotation();
+
+	const FVector ForwardVector = SpawnRotation.Vector();
+	const int32 NumberOfProjectiles = FMath::Min(GetAbilityLevel(), MaxNumberOfProjectiles);
+	TArray<FRotator> ProjectilesRotations = UAuraAbilitySystemLibrary::EvenlySpacedRotators(ForwardVector, FVector::UpVector, ProjectileSpread, NumberOfProjectiles);
+
+	for (const FRotator& ProjectileRotation : ProjectilesRotations)
+	{
+		SpawnProjectile(CurrentAttackData.ProjectileClass, SpawnLocation, ProjectileRotation, bOverridePitch, PitchOverride, MouseHitActor);
+	}
+}
+
+#pragma endregion FIREBOLT
+
 #pragma region DESCRIPTION
 	
 /** Get ability's description */
@@ -71,7 +101,7 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 		ScaledDamage,
 		ManaCost,
 		Cooldown,
-		FMath::Min(NumberOfProjectiles, Level));
+		FMath::Min(MaxNumberOfProjectiles, Level));
 }
 
 /** Get ability's description for next level */
@@ -109,7 +139,7 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 		ScaledDamage,
 		ManaCost,
 		Cooldown,
-		FMath::Min(NumberOfProjectiles, Level));
+		FMath::Min(MaxNumberOfProjectiles, Level));
 }
 
 #pragma endregion DESCRIPTION

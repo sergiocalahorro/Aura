@@ -5,7 +5,6 @@
 // Headers - Unreal Engine
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
 // Headers - Aura
@@ -54,7 +53,7 @@ void UAuraRangedAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	PlayMontageTask->ReadyForActivation();
 
 	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag, nullptr, true, true);
-	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraRangedAttack::SpawnProjectile);
+	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraRangedAttack::EventSpawnProjectile);
 	WaitEventTask->ReadyForActivation();
 }
 
@@ -79,27 +78,51 @@ void UAuraRangedAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 #pragma region RANGED_ATTACK
 
 /** Spawn projectile */
-void UAuraRangedAttack::SpawnProjectile(FGameplayEventData Payload)
+void UAuraRangedAttack::EventSpawnProjectile(FGameplayEventData Payload)
 {
 	if (!GetAvatarActorFromActorInfo()->HasAuthority())
 	{
 		return;
 	}
 	
-	check(CurrentAttackData.ProjectileClass);
-	
-	FTransform SpawnTransform;
 	const ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo());
 	const FVector SpawnLocation = AttackingActor->GetCombatSocketLocation(CurrentAttackData.CombatSocketTag);
 	const FRotator SpawnRotation = (ProjectileTargetLocation - SpawnLocation).Rotation();
-	SpawnTransform.SetLocation(SpawnLocation);
-	SpawnTransform.SetRotation(SpawnRotation.Quaternion());
 
-	AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(CurrentAttackData.ProjectileClass,  SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	SpawnProjectile(CurrentAttackData.ProjectileClass, SpawnLocation, SpawnRotation, bOverridePitch, PitchOverride);
+}
+
+/** Spawn projectile */
+void UAuraRangedAttack::SpawnProjectile(TSubclassOf<AAuraProjectile> ProjectileClass, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bInOverridePitch, float InPitchOverride, const AActor* HomingTarget) const
+{
+	check(ProjectileClass);
+
+	FRotator FinalSpawnRotation = SpawnRotation;
+	if (bInOverridePitch)
+	{
+		FinalSpawnRotation.Pitch = InPitchOverride;
+	}
+
+	FTransform SpawnTransform;
+	SpawnTransform.SetLocation(SpawnLocation);
+	SpawnTransform.SetRotation(FinalSpawnRotation.Quaternion());
+	
+	AAuraProjectile* Projectile = GetWorld()->SpawnActorDeferred<AAuraProjectile>(ProjectileClass, SpawnTransform, GetOwningActorFromActorInfo(), Cast<APawn>(GetOwningActorFromActorInfo()), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 	const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams();
 	Projectile->DamageEffectParams = DamageEffectParams;
+
+	if (IsValid(HomingTarget) && HomingTarget->Implements<UCombatInterface>())
+	{
+		Projectile->SetHomingTarget(HomingTarget);
+	}
+	else
+	{
+		Projectile->SetHomingTargetLocation(ProjectileTargetLocation);
+	}
+
 	Projectile->FinishSpawning(SpawnTransform);
 }
+
 
 #pragma endregion RANGED_ATTACK
 

@@ -8,6 +8,7 @@
 
 #include "AuraPlayerController.generated.h"
 
+class UNiagaraSystem;
 // Forward declarations - Unreal Engine
 class UInputMappingContext;
 class UInputAction;
@@ -151,6 +152,10 @@ private:
 	/** Spline used for auto-running */
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+	
+	/** Particles spawned when clicking */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Movement")
+	TObjectPtr<UNiagaraSystem> ClickNiagaraSystem;
 
 #pragma endregion MOVEMENT
 

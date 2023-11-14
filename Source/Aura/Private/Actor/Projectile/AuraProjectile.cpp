@@ -156,3 +156,34 @@ void AAuraProjectile::ProjectileHit()
 }
 
 #pragma endregion PROJECTILE
+
+#pragma region HOMING
+
+/** Set projectile's homing target */
+void AAuraProjectile::SetHomingTarget(const AActor* HomingTarget)
+{
+	if (IsValid(HomingTarget))
+	{
+		HomingTargetComponent = HomingTarget->GetRootComponent();
+	}
+
+	SetHomingBehaviour();
+}
+
+/** Set projectile's homing target location */
+void AAuraProjectile::SetHomingTargetLocation(const FVector& TargetLocation)
+{
+	HomingTargetComponent = NewObject<USceneComponent>(USceneComponent::StaticClass());
+	HomingTargetComponent->SetWorldLocation(TargetLocation);
+	SetHomingBehaviour();
+}
+
+/** Set projectile's homing behaviour */
+void AAuraProjectile::SetHomingBehaviour() const
+{
+	ProjectileMovementComponent->HomingTargetComponent = HomingTargetComponent;
+	ProjectileMovementComponent->HomingAccelerationMagnitude = FMath::FRandRange(ProjectileData->MinHomingAcceleration, ProjectileData->MaxHomingAcceleration);
+	ProjectileMovementComponent->bIsHomingProjectile = true;
+}
+
+#pragma endregion HOMING

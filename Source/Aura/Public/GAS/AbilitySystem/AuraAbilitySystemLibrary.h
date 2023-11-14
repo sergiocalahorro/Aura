@@ -183,6 +183,14 @@ public:
 	/** Check whether an Actor is friend of another Actor (share a tag) */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|Utils")
 	static bool AreActorsFriends(const AActor* FirstActor, const AActor* SecondActor);
+
+	/** Get rotations rotated from a starting forward vector, rotated around the given axis with a given spread */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|Utils")
+	static TArray<FRotator> EvenlySpacedRotators(const FVector& ForwardVector, const FVector& AxisToRotateAround, float Spread, int32 NumberOfRotators);
+
+	/** Get vectors rotated from a starting forward vector, rotated around the given axis with a given spread */
+	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|Utils")
+	static TArray<FVector> EvenlyRotatedVectors(const FVector& ForwardVector, const FVector& AxisToRotateAround, float Spread, int32 NumberOfVectors);
 	
 #pragma endregion UTILS
 
