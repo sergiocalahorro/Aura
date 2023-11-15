@@ -68,9 +68,15 @@ public:
 
 	/** Get Avatar that is the owner of the interface */
 	virtual AActor* GetAvatar_Implementation() override;
-
+	
 	/** Get socket's location that will be used in combat */
 	virtual FVector GetCombatSocketLocation(const FGameplayTag& MontageTag) const override;
+
+	/** Get weapon */
+	virtual USkeletalMeshComponent* GetWeapon_Implementation() const override;
+
+	/** Get socket's location for the weapon */
+	virtual FVector GetWeaponSocketLocation_Implementation(const FName& SocketName) const override;
 
 	/** Set target location to face */
 	virtual void SetFacingTarget(const FVector& FacingTargetLocation) override;

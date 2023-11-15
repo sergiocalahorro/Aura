@@ -50,21 +50,45 @@ protected:
 
 #pragma region BEAM
 
-private:
+protected:
 
 	/** Functionality performed once target data under mouse is received */
 	UFUNCTION()
 	void TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
-	/** Event spawn beam */
+	/** Event received for spawning beam */
 	UFUNCTION()
-	void EventSpawnBeam(FGameplayEventData Payload);
+	virtual void EventReceivedSpawnBeam(FGameplayEventData Payload);
+
+	/** Spawn beam */
+	virtual void SpawnBeam();
 
 	/** Functionality performed once the input is released */
 	UFUNCTION()
 	void InputReleased(float TimeHeld);
 
+private:
+	
+	/** Perform trace to first target */
+	void TraceFirstTarget(const FVector& BeamTargetLocation);
+
 protected:
+
+	/** Socket's name used for spawning the beam */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam")
+	FName BeamStartSocket;
+
+	/** GameplayCue's tag added when the beam starts */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam")
+	FGameplayTag CueBeamStart;
+
+	/** GameplayCue's tag added when the beam loops */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam")
+	FGameplayTag CueBeamLoop;
+
+	/** Radius used for beam's trace */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam", meta = (ClampMin = 0.f, UIMin = 0.f, Delta = 1.f, Units = "Centimeters"))
+	float BeamTraceRadius = 10.f;
 	
 	/** Location hit by mouse trace */
 	UPROPERTY()
@@ -81,6 +105,16 @@ protected:
 	/** Owner's character movement component */
 	UPROPERTY()
 	TObjectPtr<UCharacterMovementComponent> OwnerCharacterMovementComponent;
+
+private:
+
+	/** Target for the first beam cue */
+	UPROPERTY()
+	AActor* FirstTarget;
+
+	/** First target's cue parameters */
+	UPROPERTY()
+	FGameplayCueParameters FirstTargetCueParams;
 
 #pragma endregion BEAM
 

@@ -74,6 +74,18 @@ FVector AAuraBaseCharacter::GetCombatSocketLocation(const FGameplayTag& MontageT
 	return GetMesh()->GetSocketLocation(*AttackSockets.Find(MontageTag));
 }
 
+/** Get weapon */
+USkeletalMeshComponent* AAuraBaseCharacter::GetWeapon_Implementation() const
+{
+	return Weapon;
+}
+
+/** Get socket's location for the weapon */
+FVector AAuraBaseCharacter::GetWeaponSocketLocation_Implementation(const FName& SocketName) const
+{
+	return Weapon ? Weapon->GetSocketLocation(SocketName) : GetActorLocation();
+}
+
 /** Set target to face */
 void AAuraBaseCharacter::SetFacingTarget(const FVector& FacingTargetLocation)
 {

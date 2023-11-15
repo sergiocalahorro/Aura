@@ -22,8 +22,8 @@ class AURA_API UAuraFireBolt : public UAuraProjectileSpell
 
 protected:
 
-	/** Event spawn projectile */
-	virtual void EventSpawnProjectile(FGameplayEventData Payload) override;
+	/** Event received for spawning projectile */
+	virtual void EventReceivedSpawnProjectile(FGameplayEventData Payload) override;
 
 protected:
 

@@ -10,7 +10,10 @@
 
 #pragma region COLLISIONS
 
-/** Depth stencil value for red outline */
+/** Projectile's object channel */
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel1
+
+/** Target's object channel */
+#define ECC_Target ECollisionChannel::ECC_GameTraceChannel2
 
 #pragma endregion COLLISIONS

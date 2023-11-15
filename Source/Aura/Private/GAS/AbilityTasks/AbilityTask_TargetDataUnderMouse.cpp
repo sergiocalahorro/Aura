@@ -5,6 +5,9 @@
 // Headers - Unreal Engine
 #include "AbilitySystemComponent.h"
 
+// Headers - Aura
+#include "Aura.h"
+
 #pragma region OVERRIDES
 
 /** Called to trigger the actual task once the delegates have been set up Note that the default implementation does nothing and you don't have to call it */
@@ -51,7 +54,7 @@ void UAbilityTask_TargetDataUnderMouse::SendMouseCursorData()
 	}
 	
 	FHitResult CursorHit;
-	PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	PlayerController->GetHitResultUnderCursor(ECC_Target, false, CursorHit);
 
 	FGameplayAbilityTargetDataHandle TargetDataHandle;
 	FGameplayAbilityTargetData_SingleTargetHit* TargetData = new FGameplayAbilityTargetData_SingleTargetHit();

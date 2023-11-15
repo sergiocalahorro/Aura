@@ -7,12 +7,14 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayCueFunctionLibrary.h"
 
 // Headers - Aura
 #include "AbilitySystemBlueprintLibrary.h"
-#include "GameplayTags/AuraGameplayTags.h"
+#include "Aura.h"
 #include "GAS/AbilityTasks/AbilityTask_TargetDataUnderMouse.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #pragma region INITIALIZATION
 
@@ -49,6 +51,8 @@ void UAuraBeamSpell::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 		WaitInputReleaseTask->EndTask();
 	}
 
+	UGameplayCueFunctionLibrary::RemoveGameplayCueOnActor(FirstTarget, CueBeamLoop, FirstTargetCueParams);
+	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
@@ -88,7 +92,7 @@ void UAuraBeamSpell::TargetDataReceived(const FGameplayAbilityTargetDataHandle& 
 			OwnerPlayerController->bShowMouseCursor = false;
 		}
 
-		K2_ExecuteGameplayCue(FAuraGameplayTags::Get().GameplayCue_ShockBurst, GetContextFromOwner(TargetDataHandle));
+		K2_ExecuteGameplayCue(CueBeamStart, GetContextFromOwner(TargetDataHandle));
 		
 		PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
 		PlayMontageTask->OnCompleted.AddUniqueDynamic(this, &UAuraBeamSpell::K2_EndAbility);
@@ -97,7 +101,7 @@ void UAuraBeamSpell::TargetDataReceived(const FGameplayAbilityTargetDataHandle& 
 		PlayMontageTask->ReadyForActivation();
 		
 		WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag, nullptr, true, true);
-		WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraBeamSpell::EventSpawnBeam);
+		WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraBeamSpell::EventReceivedSpawnBeam);
 		WaitEventTask->ReadyForActivation();
 		
 		WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this);
@@ -106,13 +110,28 @@ void UAuraBeamSpell::TargetDataReceived(const FGameplayAbilityTargetDataHandle& 
 	}
 }
 
-/** Event spawn beam */
-void UAuraBeamSpell::EventSpawnBeam(FGameplayEventData Payload)
+/** Event received for spawning beam */
+void UAuraBeamSpell::EventReceivedSpawnBeam(FGameplayEventData Payload)
 {
 	if (OwnerCharacterMovementComponent)
 	{
 		OwnerCharacterMovementComponent->DisableMovement();
 	}
+
+	SpawnBeam();
+}
+
+/** Spawn beam */
+void UAuraBeamSpell::SpawnBeam()
+{
+	TraceFirstTarget(MouseHitLocation);
+	
+	FirstTargetCueParams.Location = MouseHitLocation;
+	FirstTargetCueParams.SourceObject = MouseHitActor;
+	FirstTargetCueParams.TargetAttachComponent = GetAvatarActorFromActorInfo()->Implements<UCombatInterface>() ? ICombatInterface::Execute_GetWeapon(GetAvatarActorFromActorInfo()) : nullptr;
+
+	FirstTarget = MouseHitActor->Implements<UCombatInterface>() ? MouseHitActor : GetAvatarActorFromActorInfo();
+	UGameplayCueFunctionLibrary::AddGameplayCueOnActor(FirstTarget, CueBeamLoop, FirstTargetCueParams);
 }
 
 /** Functionality performed once the input is released */
@@ -129,6 +148,40 @@ void UAuraBeamSpell::InputReleased(float TimeHeld)
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+}
+
+/** Perform trace to first target */
+void UAuraBeamSpell::TraceFirstTarget(const FVector& BeamTargetLocation)
+{
+	AActor* AvatarActor = GetAvatarActorFromActorInfo();
+	if (!AvatarActor->Implements<UCombatInterface>())
+	{
+		return;
+	}
+	
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(AvatarActor);
+	const FVector WeaponSocketLocation = ICombatInterface::Execute_GetWeaponSocketLocation(AvatarActor, BeamStartSocket);
+
+	FHitResult HitResult;
+	UKismetSystemLibrary::SphereTraceSingle(
+		GetAvatarActorFromActorInfo(),
+		WeaponSocketLocation,
+		BeamTargetLocation,
+		BeamTraceRadius,
+		TraceTypeQuery1,
+		false,
+		IgnoredActors,
+		EDrawDebugTrace::None,
+		HitResult,
+		true
+	);
+
+	if (HitResult.bBlockingHit)
+	{
+		MouseHitLocation = HitResult.ImpactPoint;
+		MouseHitActor = HitResult.GetActor();
+	}
 }
 
 #pragma endregion BEAM

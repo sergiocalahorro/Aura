@@ -33,14 +33,6 @@ AAuraPlayerController::AAuraPlayerController()
 
 #pragma region OVERRIDES
 
-/** Called on the client to do local pawn setup after possession, before calling ServerAcknowledgePossession */
-void AAuraPlayerController::AcknowledgePossession(APawn* PossessedPawn)
-{
-	Super::AcknowledgePossession(PossessedPawn);
-
-	ControlledPawn = PossessedPawn;
-}
-
 /** Processes player input (immediately after PlayerInput gets ticked) and calls UpdateRotation() */
 void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
@@ -90,7 +82,7 @@ void AAuraPlayerController::SetupInputComponent()
 /** Called for moving the player */
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
-	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 	{
 		return;
 	}
@@ -101,8 +93,8 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	const FVector ForwardDirection = FRotationMatrix(YawControlRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawControlRotation).GetUnitAxis(EAxis::Y);
 
-	ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
-	ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
+	GetPawn()->AddMovementInput(ForwardDirection, InputAxisVector.Y);
+	GetPawn()->AddMovementInput(RightDirection, InputAxisVector.X);
 }
 
 /** Called when the Shift key is pressed */
@@ -120,21 +112,24 @@ void AAuraPlayerController::ShiftReleased()
 /** Callback for Input Pressed */
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
-	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 	{
 		return;
 	}
 	
 	bTargeting = CurrentHighlightedActor ? true : false;
 	bAutoRunning = false;
-	
-	GetAuraAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
+
+	if (GetAuraAbilitySystemComponent())
+	{
+		GetAuraAbilitySystemComponent()->AbilityInputTagPressed(InputTag);
+	}
 }
 
 /** Callback for Input Held */
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld))
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputHeld))
 	{
 		return;
 	}
@@ -143,7 +138,10 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	{
 		if (bTargeting || bShiftKeyPressed)
 		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+			if (GetAuraAbilitySystemComponent())
+			{
+				GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+			}
 		}
 		else
 		{
@@ -152,19 +150,25 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 	}
 	else
 	{
-		GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		if (GetAuraAbilitySystemComponent())
+		{
+			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
 	}
 }
 
 /** Callback for Input Released */
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+	if (GetAuraAbilitySystemComponent())
 	{
-		return;
-	}
+		if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputReleased))
+		{
+			return;
+		}
 	
-	GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+		GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
+	}
 	
 	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
@@ -184,7 +188,7 @@ void AAuraPlayerController::StartAutoRun()
 {
 	if (FollowTime <= ShortPressThreshold)
 	{
-		if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
+		if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
 		{
 			Spline->ClearSplinePoints();
 			for (const FVector& PathPoint : NavPath->PathPoints)
@@ -200,7 +204,7 @@ void AAuraPlayerController::StartAutoRun()
 			bAutoRunning = true;
 		}
 
-		if (!GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
+		if (GetAuraAbilitySystemComponent() && !GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_InputPressed))
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ClickNiagaraSystem, CachedDestination);
 		}
@@ -218,9 +222,9 @@ void AAuraPlayerController::AutoRun()
 		return;
 	}
 	
-	const FVector DestinationPoint = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+	const FVector DestinationPoint = Spline->FindLocationClosestToWorldLocation(GetPawn()->GetActorLocation(), ESplineCoordinateSpace::World);
 	const FVector DestinationDirection = Spline->FindDirectionClosestToWorldLocation(DestinationPoint, ESplineCoordinateSpace::World);
-	ControlledPawn->AddMovementInput(DestinationDirection);
+	GetPawn()->AddMovementInput(DestinationDirection);
 
 	const float DistanceToDestination = (DestinationPoint - CachedDestination).Length();
 	if (DistanceToDestination < AutoRunAcceptanceRadius)
@@ -238,8 +242,8 @@ void AAuraPlayerController::FollowMouseCursor()
 		CachedDestination = CursorHit.ImpactPoint;
 	}
 	
-	const FVector MovementDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-	ControlledPawn->AddMovementInput(MovementDirection);
+	const FVector MovementDirection = (CachedDestination - GetPawn()->GetActorLocation()).GetSafeNormal();
+	GetPawn()->AddMovementInput(MovementDirection);
 }
 
 #pragma endregion MOVEMENT
@@ -249,7 +253,7 @@ void AAuraPlayerController::FollowMouseCursor()
 /** Trace hit under cursor to highlight Actors */
 void AAuraPlayerController::CursorTrace(float DeltaTime)
 {
-	if (GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
+	if (GetAuraAbilitySystemComponent() && GetAuraAbilitySystemComponent()->HasMatchingGameplayTag(FAuraGameplayTags::Get().Player_Block_CursorTrace))
 	{
 		if (LastHighlightedActor)
 		{
@@ -317,7 +321,7 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponen
 {
 	if (!AuraAbilitySystemComponent)
 	{
-		AuraAbilitySystemComponent = CastChecked<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(ControlledPawn));
+		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn()));
 	}
 	
 	return AuraAbilitySystemComponent;

@@ -43,9 +43,6 @@ public:
 
 public:
 	
-	/** Called on the client to do local pawn setup after possession, before calling ServerAcknowledgePossession */
-	virtual void AcknowledgePossession(APawn* PossessedPawn) override;
-
 	/** Processes player input (immediately after PlayerInput gets ticked) and calls UpdateRotation() */
 	virtual void PlayerTick(float DeltaTime) override;
 
@@ -58,16 +55,6 @@ protected:
 	virtual void SetupInputComponent() override;
 
 #pragma endregion OVERRIDES
-
-#pragma region CORE
-
-private:
-
-	/** Controlled pawn */
-	UPROPERTY()
-	TObjectPtr<APawn> ControlledPawn;
-
-#pragma endregion CORE
 
 #pragma region INPUT
 

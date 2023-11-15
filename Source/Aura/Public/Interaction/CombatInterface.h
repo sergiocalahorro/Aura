@@ -36,7 +36,7 @@ class AURA_API ICombatInterface
 public:
 	
 	/** Get Avatar that is the owner of the interface */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent)
 	AActor* GetAvatar();
 
 	/** Get level */
@@ -49,6 +49,14 @@ public:
 	
 	/** Get socket's location that will be used in combat */
 	virtual FVector GetCombatSocketLocation(const FGameplayTag& MontageTag) const;
+
+	/** Get weapon */
+	UFUNCTION(BlueprintNativeEvent)
+	USkeletalMeshComponent* GetWeapon() const;
+
+	/** Get socket's location for the weapon */
+	UFUNCTION(BlueprintNativeEvent)
+	FVector GetWeaponSocketLocation(const FName& SocketName) const;
 
 	/** Set target location to face */
 	virtual void SetFacingTarget(const FVector& FacingTargetLocation);

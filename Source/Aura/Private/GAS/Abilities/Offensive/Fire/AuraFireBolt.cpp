@@ -8,8 +8,8 @@
 
 #pragma region FIREBOLT
 
-/** Event spawn projectile */
-void UAuraFireBolt::EventSpawnProjectile(FGameplayEventData Payload)
+/** Event received for spawning projectile */
+void UAuraFireBolt::EventReceivedSpawnProjectile(FGameplayEventData Payload)
 {
 	if (!GetAvatarActorFromActorInfo()->HasAuthority())
 	{

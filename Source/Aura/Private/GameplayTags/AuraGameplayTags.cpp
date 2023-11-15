@@ -244,6 +244,7 @@ void FAuraGameplayTags::InitializeNativeCuesGameplayTags()
 	GameplayTags.GameplayCue_MeleeImpact = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.MeleeImpact"), FString("GameplayCue for Melee Attacks' impacts"));
 
 	GameplayTags.GameplayCue_ShockBurst = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockBurst"), FString("GameplayCue for Electrocute's shock burst"));
+	GameplayTags.GameplayCue_ShockLoop = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockLoop"), FString("GameplayCue for Electrocute's shock loop"));
 	
 	GameplayTags.GameplayCue_Debuff_Burn = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Burn"), FString("GameplayCue for burn debuff"));
 	GameplayTags.GameplayCue_Debuff_Stun = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Debuff.Stun"), FString("GameplayCue for stun debuff"));

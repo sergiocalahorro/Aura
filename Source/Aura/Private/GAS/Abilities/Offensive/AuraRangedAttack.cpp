@@ -44,7 +44,7 @@ void UAuraRangedAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	PlayMontageTask->ReadyForActivation();
 
 	WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag, nullptr, true, true);
-	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraRangedAttack::EventSpawnProjectile);
+	WaitEventTask->EventReceived.AddUniqueDynamic(this, &UAuraRangedAttack::EventReceivedSpawnProjectile);
 	WaitEventTask->ReadyForActivation();
 }
 
@@ -68,8 +68,8 @@ void UAuraRangedAttack::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 #pragma region RANGED_ATTACK
 
-/** Spawn projectile */
-void UAuraRangedAttack::EventSpawnProjectile(FGameplayEventData Payload)
+/** Event received for spawning projectile */
+void UAuraRangedAttack::EventReceivedSpawnProjectile(FGameplayEventData Payload)
 {
 	if (!GetAvatarActorFromActorInfo()->HasAuthority())
 	{

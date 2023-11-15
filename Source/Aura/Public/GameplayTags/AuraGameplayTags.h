@@ -439,6 +439,9 @@ public:
 	/** GameplayCue for Electrocute's shock burst */
 	FGameplayTag GameplayCue_ShockBurst;
 
+	/** GameplayCue for Electrocute's shock loop */
+	FGameplayTag GameplayCue_ShockLoop;
+
 	/** GameplayCue for burn debuff */
 	FGameplayTag GameplayCue_Debuff_Burn;
 
