@@ -147,6 +147,8 @@ void FAuraGameplayTags::InitializeNativeEffectsGameplayTags()
 void FAuraGameplayTags::InitializeNativeCooldownsGameplayTags()
 {
 	GameplayTags.Cooldown_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBolt"), FString("Fire Bolt's ability cooldown"));
+
+	GameplayTags.Cooldown_Lightning_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Lightning.Electrocute"), FString("Electrocute's ability cooldown"));
 }
 
 #pragma endregion COOLDOWNS

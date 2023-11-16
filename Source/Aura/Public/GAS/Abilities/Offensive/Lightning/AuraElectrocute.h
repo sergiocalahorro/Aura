@@ -17,4 +17,12 @@ UCLASS()
 class AURA_API UAuraElectrocute : public UAuraBeamSpell
 {
 	GENERATED_BODY()
+
+#pragma region INITIALIZATION
+
+	/** Sets default values for this object's properties */
+	UAuraElectrocute();
+
+#pragma endregion INITIALIZATION
+	
 };

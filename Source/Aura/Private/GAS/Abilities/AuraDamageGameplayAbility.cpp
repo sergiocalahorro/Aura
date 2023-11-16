@@ -18,8 +18,6 @@ void UAuraDamageGameplayAbility::ActivateAbility(const FGameplayAbilitySpecHandl
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
-
 	const TArray<FAttackData> Attacks = ICombatInterface::Execute_GetAttacksOfType(ActorInfo->AvatarActor.Get(), AttackType);
 	if (Attacks.IsEmpty() && !AttackMontageTag.IsValid())
 	{
@@ -41,10 +39,13 @@ void UAuraDamageGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Han
 #pragma region DAMAGE
 
 /** Apply damage to target Actor */
-void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor) const
+void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor, bool bApplyDebuff) const
 {
-	const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams(TargetActor);
-	UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams);
+	if (IsValid(TargetActor))
+	{
+		const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams(TargetActor);
+		UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams, bApplyDebuff);
+	}
 }
 
 /** Make damage effect's params from class defaults */

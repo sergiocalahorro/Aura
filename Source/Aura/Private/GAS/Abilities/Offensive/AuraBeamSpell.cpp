@@ -12,6 +12,7 @@
 // Headers - Aura
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Aura.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GAS/AbilityTasks/AbilityTask_TargetDataUnderMouse.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -41,6 +42,9 @@ void UAuraBeamSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle, co
 /** Native function, called if an ability ends normally or abnormally. If bReplicate is set to true, try to replicate the ending to the client/server */
 void UAuraBeamSpell::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	DestroyBeams();
+	GetWorld()->GetTimerManager().ClearTimer(DamageCostTimerHandle);
+	
 	if (IsValid(TargetDataUnderMouseTask))
 	{
 		TargetDataUnderMouseTask->EndTask();
@@ -50,8 +54,6 @@ void UAuraBeamSpell::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 	{
 		WaitInputReleaseTask->EndTask();
 	}
-
-	UGameplayCueFunctionLibrary::RemoveGameplayCueOnActor(FirstTarget, CueBeamLoop, FirstTargetCueParams);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -119,19 +121,54 @@ void UAuraBeamSpell::EventReceivedSpawnBeam(FGameplayEventData Payload)
 	}
 
 	SpawnBeam();
+
+	GetWorld()->GetTimerManager().SetTimer(DamageCostTimerHandle, this, &UAuraBeamSpell::ApplyDamageAndCost, DamageCostDeltaTime, true);
 }
 
 /** Spawn beam */
 void UAuraBeamSpell::SpawnBeam()
 {
 	TraceFirstTarget(MouseHitLocation);
-	
+	FirstTarget = MouseHitActor->Implements<UCombatInterface>() ? MouseHitActor : GetAvatarActorFromActorInfo();
+
 	FirstTargetCueParams.Location = MouseHitLocation;
 	FirstTargetCueParams.SourceObject = MouseHitActor;
 	FirstTargetCueParams.TargetAttachComponent = GetAvatarActorFromActorInfo()->Implements<UCombatInterface>() ? ICombatInterface::Execute_GetWeapon(GetAvatarActorFromActorInfo()) : nullptr;
-
-	FirstTarget = MouseHitActor->Implements<UCombatInterface>() ? MouseHitActor : GetAvatarActorFromActorInfo();
 	UGameplayCueFunctionLibrary::AddGameplayCueOnActor(FirstTarget, CueBeamLoop, FirstTargetCueParams);
+	
+	const int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel(), MaxPropagationTargets);
+	PropagateBeamsToAdditionalTargets(MouseHitActor, NumAdditionalTargets);
+}
+
+/** Spawn beams and propagate them to additional targets */
+void UAuraBeamSpell::PropagateBeamsToAdditionalTargets(AActor* InitialTarget, int32 NumAdditionalTargets)
+{
+	if (!InitialTarget->Implements<UCombatInterface>())
+	{
+		return;
+	}
+
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(InitialTarget))
+	{
+		CombatInterface->GetDeathDelegate().AddUniqueDynamic(this, &UAuraBeamSpell::OnTargetDestroyed);
+	}
+	
+	TArray<AActor*> AdditionalTargets;
+	GetTargetsInPropagationRadius(NumAdditionalTargets, AdditionalTargets);
+	for (AActor* Target : AdditionalTargets)
+	{
+		FGameplayCueParameters AdditionalTargetCueParams;
+		AdditionalTargetCueParams.Location = Target->GetActorLocation();
+		AdditionalTargetCueParams.SourceObject = Target;
+		AdditionalTargetCueParams.TargetAttachComponent = InitialTarget->GetRootComponent();
+		AdditionalTargetsToCueParams.Add(Target, AdditionalTargetCueParams);
+		UGameplayCueFunctionLibrary::AddGameplayCueOnActor(Target, CueBeamLoop, AdditionalTargetCueParams);
+		
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Target))
+		{
+			CombatInterface->GetDeathDelegate().AddUniqueDynamic(this, &UAuraBeamSpell::OnTargetDestroyed);
+		}
+	}
 }
 
 /** Functionality performed once the input is released */
@@ -174,8 +211,7 @@ void UAuraBeamSpell::TraceFirstTarget(const FVector& BeamTargetLocation)
 		IgnoredActors,
 		EDrawDebugTrace::None,
 		HitResult,
-		true
-	);
+		true);
 
 	if (HitResult.bBlockingHit)
 	{
@@ -184,4 +220,88 @@ void UAuraBeamSpell::TraceFirstTarget(const FVector& BeamTargetLocation)
 	}
 }
 
+/** Get additional targets inside propagation radius */
+void UAuraBeamSpell::GetTargetsInPropagationRadius(int32 NumAdditionalTargets, TArray<AActor*>& OutAdditionalTargets)
+{
+	TArray<AActor*> IgnoredActors;
+	IgnoredActors.Add(GetAvatarActorFromActorInfo());
+	IgnoredActors.Add(MouseHitActor);
+
+	TArray<AActor*> TargetsInPropagationRadius;
+	UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(
+		GetAvatarActorFromActorInfo(),
+		MouseHitActor->GetActorLocation(),
+		BeamPropagationRadius,
+		IgnoredActors,
+		TargetsInPropagationRadius);
+	
+	UAuraAbilitySystemLibrary::GetClosestActors(NumAdditionalTargets, MouseHitActor->GetActorLocation(), TargetsInPropagationRadius, OutAdditionalTargets);
+}
+
+/** Functionality performed when a target is destroyed */
+void UAuraBeamSpell::OnTargetDestroyed(AActor* ActorDestroyed)
+{
+	const FGameplayCueParameters BeamLoopCueParams = (ActorDestroyed == FirstTarget) ? FirstTargetCueParams : AdditionalTargetsToCueParams[ActorDestroyed];
+	UGameplayCueFunctionLibrary::RemoveGameplayCueOnActor(ActorDestroyed, CueBeamLoop, BeamLoopCueParams);
+}
+
+/** Destroy beams */
+void UAuraBeamSpell::DestroyBeams()
+{
+	UGameplayCueFunctionLibrary::RemoveGameplayCueOnActor(FirstTarget, CueBeamLoop, FirstTargetCueParams);
+
+	if (FirstTarget->Implements<UCombatInterface>())
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(FirstTarget))
+		{
+			CombatInterface->GetDeathDelegate().RemoveDynamic(this, &UAuraBeamSpell::OnTargetDestroyed);
+		}
+		
+		for (auto& Pair : AdditionalTargetsToCueParams)
+		{
+			UGameplayCueFunctionLibrary::RemoveGameplayCueOnActor(Pair.Key, CueBeamLoop, Pair.Value);
+
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Pair.Key))
+			{
+				CombatInterface->GetDeathDelegate().RemoveDynamic(this, &UAuraBeamSpell::OnTargetDestroyed);
+			}
+		}
+
+		AdditionalTargetsToCueParams.Empty();
+	}
+}
+
 #pragma endregion BEAM
+
+#pragma region DAMAGE
+
+/** Apply damage and cost */
+void UAuraBeamSpell::ApplyDamageAndCost()
+{
+	if (CommitAbilityCost(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo))
+	{
+		if (!MouseHitActor->Implements<UCombatInterface>())
+		{
+			return;
+		}
+
+		if (ICombatInterface::Execute_IsDead(MouseHitActor))
+		{
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+		}
+		else
+		{
+			ApplyDamage(MouseHitActor, false);
+			for (const auto& Pair : AdditionalTargetsToCueParams)
+			{
+				ApplyDamage(Pair.Key, false);
+			}
+		}
+	}
+	else
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	}
+}
+
+#pragma endregion DAMAGE

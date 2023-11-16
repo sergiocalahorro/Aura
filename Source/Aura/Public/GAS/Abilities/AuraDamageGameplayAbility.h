@@ -61,7 +61,7 @@ protected:
 protected:
 
 	/** Apply damage to target Actor */
-	void ApplyDamage(AActor* TargetActor) const;
+	void ApplyDamage(AActor* TargetActor, bool bApplyDebuff = true) const;
 
 	/** Make damage effect's params from class defaults */
 	FDamageEffectParams MakeDamageEffectParams(AActor* TargetActor = nullptr) const;

@@ -62,6 +62,9 @@ protected:
 
 	/** Spawn beam */
 	virtual void SpawnBeam();
+	
+	/** Spawn beams and propagate them to additional targets */
+	virtual void PropagateBeamsToAdditionalTargets(AActor* InitialTarget, int32 NumAdditionalTargets);
 
 	/** Functionality performed once the input is released */
 	UFUNCTION()
@@ -71,6 +74,16 @@ private:
 	
 	/** Perform trace to first target */
 	void TraceFirstTarget(const FVector& BeamTargetLocation);
+
+	/** Get additional targets inside propagation radius */
+	void GetTargetsInPropagationRadius(int32 NumAdditionalTargets, TArray<AActor*>& OutAdditionalTargets);
+
+	/** Functionality performed when a target is destroyed */
+	UFUNCTION()
+	void OnTargetDestroyed(AActor* ActorDestroyed);
+
+	/** Destroy beams */
+	void DestroyBeams();
 
 protected:
 
@@ -86,9 +99,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam")
 	FGameplayTag CueBeamLoop;
 
-	/** Radius used for beam's trace */
+	/** Radius used for first beam's trace to target */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam", meta = (ClampMin = 0.f, UIMin = 0.f, Delta = 1.f, Units = "Centimeters"))
 	float BeamTraceRadius = 10.f;
+
+	/** Maximum number of targets that can be affected by beam's propagation */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam", meta = (ClampMin = 1, UIMin = 1, ClampMax = 5, UIMax = 5))
+	int32 MaxPropagationTargets = 5;
+
+	/** Radius used for beam's propagation from first target */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam", meta = (ClampMin = 0.f, UIMin = 0.f, Delta = 1.f, Units = "Centimeters"))
+	float BeamPropagationRadius = 300.f;
 	
 	/** Location hit by mouse trace */
 	UPROPERTY()
@@ -116,7 +137,32 @@ private:
 	UPROPERTY()
 	FGameplayCueParameters FirstTargetCueParams;
 
+	/** Cue parameters mapped to additional targets */
+	UPROPERTY()
+	TMap<AActor*, FGameplayCueParameters> AdditionalTargetsToCueParams;
+
 #pragma endregion BEAM
+
+#pragma region DAMAGE
+
+private:
+	
+	/** Apply damage and cost */
+	void ApplyDamageAndCost();
+
+protected:
+
+	/** Delta time that needs to pass in order to apply damage and commit cost */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage", meta = (ClampMin = 0.f, UIMin = 0.f))
+	float DamageCostDeltaTime = 0.1f;
+
+private:
+
+	/** Timer used to apply cost and damage */
+	UPROPERTY()
+	FTimerHandle DamageCostTimerHandle;
+
+#pragma endregion DAMAGE
 
 #pragma region ABILITY
 

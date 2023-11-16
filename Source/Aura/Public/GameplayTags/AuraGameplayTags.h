@@ -280,6 +280,9 @@ public:
 	/** Fire Bolt's cooldown */
 	FGameplayTag Cooldown_Fire_FireBolt;
 
+	/** Electrocute's cooldown */
+	FGameplayTag Cooldown_Lightning_Electrocute;
+
 #pragma endregion COOLDOWNS
 
 #pragma region DAMAGE

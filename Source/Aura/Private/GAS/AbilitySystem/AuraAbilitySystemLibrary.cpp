@@ -175,7 +175,7 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyEffectToSelf(UAbili
 }
 
 /** Apply damage effect to target */
-FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
+FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams, bool bApplyDebuff)
 {
 	const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
 
@@ -188,12 +188,19 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
 
 	const FGameplayEffectSpecHandle EffectSpecHandle = DamageEffectParams.SourceASC->MakeOutgoingSpec(DamageEffectParams.DamageEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, DamageEffectParams.DamageType, DamageEffectParams.BaseDamage);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Chance, DamageEffectParams.DebuffChance);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Damage, DamageEffectParams.DebuffDamage);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
-	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
 
-	DamageEffectParams.TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+	if (bApplyDebuff)
+	{
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Chance, DamageEffectParams.DebuffChance);
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Damage, DamageEffectParams.DebuffDamage);
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Duration, DamageEffectParams.DebuffDuration);
+		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(EffectSpecHandle, AuraGameplayTags.Debuff_Frequency, DamageEffectParams.DebuffFrequency);
+	}
+	
+	if (DamageEffectParams.TargetASC)
+	{
+		DamageEffectParams.TargetASC->ApplyGameplayEffectSpecToSelf(*EffectSpecHandle.Data);
+	}
 	return EffectContextHandle;
 }
 
@@ -385,11 +392,12 @@ void UAuraAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHandle& 
 
 #pragma region UTILS
 
-/** Initialize character with its default abilities */
+/** Get characters alive within a given radius */
 void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(const UObject* WorldContextObject, const FVector& Origin, float Radius, const TArray<AActor*>& ActorsToIgnore, TArray<AActor*>& OutAliveCharacters)
 {	
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Pawn));
+
 	TArray<AActor*> OverlappedActors;
 	UKismetSystemLibrary::SphereOverlapActors(WorldContextObject, Origin, Radius, ObjectTypes, AActor::StaticClass(), ActorsToIgnore, OverlappedActors);
 	
@@ -404,6 +412,42 @@ void UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(const UObject* Wo
 		{
 			OutAliveCharacters.AddUnique(OverlappedActor);
 		}
+	}
+}
+
+/** Get closest actors */
+void UAuraAbilitySystemLibrary::GetClosestActors(int32 NumClosestActors, const FVector& Origin, const TArray<AActor*>& Actors, TArray<AActor*>& OutClosestActors)
+{
+	if (Actors.Num() <= NumClosestActors)
+	{
+		OutClosestActors = Actors;
+		return;
+	}
+
+	TArray<AActor*> ActorsToCheck = Actors;
+	int32 NumClosestActorsAdded = 0;
+	while (NumClosestActorsAdded < NumClosestActors)
+	{
+		if (ActorsToCheck.IsEmpty())
+		{
+			break;
+		}
+		
+		double ClosestDistance = TNumericLimits<double>::Max();
+		AActor* ClosestActor = nullptr;
+		for (AActor* CurrentActor : ActorsToCheck)
+		{
+			const double Distance = (CurrentActor->GetActorLocation() - Origin).Length();
+			if (Distance < ClosestDistance)
+			{
+				ClosestDistance = Distance;
+				ClosestActor = CurrentActor;
+			}
+		}
+		
+		OutClosestActors.AddUnique(ClosestActor);
+		ActorsToCheck.Remove(ClosestActor);
+		NumClosestActorsAdded++;
 	}
 }
 

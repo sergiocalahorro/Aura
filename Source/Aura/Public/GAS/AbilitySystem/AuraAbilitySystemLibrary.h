@@ -98,7 +98,7 @@ public:
 
 	/** Apply damage effect to target */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|DamageEffect")
-	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
+	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams, bool bApplyDebuff = true);
 	
 	/** Return whether damage effect is blocked */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")
@@ -176,10 +176,14 @@ public:
 
 #pragma region UTILS
 
-	/** Get alive characters inside a sphere */
+	/** Get characters alive within a given radius */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|Utils") 
 	static void GetAliveCharactersWithinRadius(const UObject* WorldContextObject, const FVector& Origin, float Radius, const TArray<AActor*>& ActorsToIgnore, TArray<AActor*>& OutAliveCharacters);
 
+	/** Get closest actors to a given location */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|Utils") 
+	static void GetClosestActors(int32 NumClosestActors, const FVector& Origin, const TArray<AActor*>& Actors, TArray<AActor*>& OutClosestActors);
+	
 	/** Check whether an Actor is friend of another Actor (share a tag) */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|Utils")
 	static bool AreActorsFriends(const AActor* FirstActor, const AActor* SecondActor);
