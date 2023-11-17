@@ -45,6 +45,8 @@ AAuraEnemy::AAuraEnemy()
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>(TEXT("AttributeSet"));
+
+	BaseWalkSpeed = 250.f;
 }
 
 #pragma endregion INITIALIZATION
@@ -118,6 +120,20 @@ void AAuraEnemy::Death(const FVector& DeathImpulse)
 	Super::Death(DeathImpulse);
 }
 
+/** Callback called whenever Stun's tag is changed */
+void AAuraEnemy::StunTagChanged(const FGameplayTag GameplayTag, int32 NewCount)
+{
+	Super::StunTagChanged(GameplayTag, NewCount);
+
+	if (AuraAIController)
+	{
+		if (UBlackboardComponent* BlackboardComponent = AuraAIController->GetBlackboardComponent())
+		{
+			BlackboardComponent->SetValueAsBool(FName("Stunned"), bIsStunned);
+		}
+	}
+}
+
 /** Callback called whenever HitReact's tag is changed */
 void AAuraEnemy::HitReactTagChanged(const FGameplayTag GameplayTag, int32 NewCount)
 {
@@ -159,14 +175,15 @@ void AAuraEnemy::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
-	
+	ASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun).AddUObject(this, &AAuraEnemy::StunTagChanged);
+
 	if (HasAuthority())
 	{
 		UAuraAbilitySystemLibrary::InitializeDefaultAttributes(this, CharacterClass, Level, AbilitySystemComponent);
 		UAuraAbilitySystemLibrary::GiveDefaultAbilities(this, AbilitySystemComponent, CharacterClass);
 	}
 
-	ASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
 }
 
 /** Setup health logic and listening for changes on tags */

@@ -84,7 +84,7 @@ void UAuraRangedAttack::EventReceivedSpawnProjectile(FGameplayEventData Payload)
 }
 
 /** Spawn projectile */
-void UAuraRangedAttack::SpawnProjectile(TSubclassOf<AAuraProjectile> ProjectileClass, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bInOverridePitch, float InPitchOverride, const AActor* HomingTarget) const
+void UAuraRangedAttack::SpawnProjectile(TSubclassOf<AAuraProjectile> ProjectileClass, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bInOverridePitch, float InPitchOverride, AActor* HomingTarget) const
 {
 	check(ProjectileClass);
 

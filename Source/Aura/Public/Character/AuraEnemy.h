@@ -91,6 +91,11 @@ public:
 	
 	/** Functionality performed on death */
 	virtual void Death(const FVector& DeathImpulse) override;
+
+protected:
+
+	/** Callback called whenever Stun's tag is changed */
+	virtual void StunTagChanged(const FGameplayTag GameplayTag, int32 NewCount) override;
 	
 private:
 	
@@ -102,10 +107,6 @@ private:
 	/** Enemy level */
 	UPROPERTY(EditAnywhere, Category = "AA|Combat|Core")
 	int32 Level = 1;
-
-	/** Base value for walking speed */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Core")
-	float BaseWalkSpeed = 250.f;
 
 	/** Time in order to destroy the enemy after it's dead */
 	UPROPERTY(EditAnywhere, Category = "AA|Combat|Core")

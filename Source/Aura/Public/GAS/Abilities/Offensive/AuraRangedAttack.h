@@ -56,7 +56,7 @@ protected:
 	virtual void EventReceivedSpawnProjectile(FGameplayEventData Payload);
 
 	/** Spawn projectile */
-	void SpawnProjectile(TSubclassOf<AAuraProjectile> ProjectileClass, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bInOverridePitch = false, float InPitchOverride = 0.f, const AActor* HomingTarget = nullptr) const;
+	void SpawnProjectile(TSubclassOf<AAuraProjectile> ProjectileClass, const FVector& SpawnLocation, const FRotator& SpawnRotation, bool bInOverridePitch = false, float InPitchOverride = 0.f, AActor* HomingTarget = nullptr) const;
 
 protected:
 

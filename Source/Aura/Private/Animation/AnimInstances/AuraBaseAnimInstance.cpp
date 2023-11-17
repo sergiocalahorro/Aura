@@ -33,6 +33,15 @@ void UAuraBaseAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bShouldMove = GroundSpeed > IdleSpeed;
 		bIsFalling = CharacterMovement->IsFalling();
 	}
+
+	if (Character)
+	{
+		bIsStunned = Character->IsStunned();
+		if (Character->Implements<UCombatInterface>())
+		{
+			bIsBeingShocked = ICombatInterface::Execute_IsBeingShocked(Character);
+		}
+	}
 }
 
 /** Native thread safe update override point. Executed on a worker thread just prior to graph update for linked anim instances, only called when the hosting node(s) are relevant */

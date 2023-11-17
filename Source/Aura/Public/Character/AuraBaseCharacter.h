@@ -20,11 +20,10 @@ class UGameplayEffect;
 class UGameplayAbility;
 class UMotionWarpingComponent;
 class UNiagaraSystem;
+struct FActiveGameplayEffectHandle;
 
 // Forward declarations - Aura
-class UDebuffNiagaraComponent;
 struct FEffectDefinition;
-struct FActiveGameplayEffectHandle;
 
 UCLASS(Abstract)
 class AURA_API AAuraBaseCharacter : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
@@ -41,6 +40,11 @@ public:
 #pragma endregion INITIALIZATION
 
 #pragma region OVERRIDES
+
+public:
+
+	/** Returns the properties used for network replication */
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 protected:
 	
@@ -128,11 +132,33 @@ public:
 	/** Get delegate that is broadcasted once the actor has died */
 	virtual FDeathSignature& GetDeathDelegate() override;
 
+	/** Set whether is being shocked */
+	virtual void SetIsBeingShocked_Implementation(bool bInIsBeingShocked) override;
+
+	/** Get whether is being shocked */
+	virtual bool IsBeingShocked_Implementation() const override;
+
+	/** Getter for bIsStunned */
+	bool IsStunned() const { return bIsStunned; }
+
+protected:
+
+	/** Callback called whenever Stun's tag is changed */
+	virtual void StunTagChanged(const FGameplayTag GameplayTag, int32 NewCount);
+
+	/** RepNotify callback for bIsStunned */
+	UFUNCTION()
+	virtual void OnRep_IsStunned();
+
 protected:
 		
 	/** Character's class */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Core")
 	ECharacterClass CharacterClass = ECharacterClass::Warrior;
+	
+	/** Base value for walking speed */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Core", meta = (ClampMin = 0.f, UIMin = 0.f, Delta = 1.f, ForceUnits = "cm/s"))
+	float BaseWalkSpeed = 600.f;
 
 	/** Weapon mesh */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AA|Combat|Weapon")
@@ -157,6 +183,14 @@ protected:
 	/** Whether character is dead */
 	UPROPERTY(BlueprintReadOnly, Category = "AA|Combat|Death", meta = (AllowPrivateAccess = true))
 	bool bIsDead;
+
+	/** Whether character is stunned */
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_IsStunned, Category = "AA|Combat|Stun", meta = (AllowPrivateAccess = true))
+	bool bIsStunned;
+
+	/** Whether character is being shocked */
+	UPROPERTY(BlueprintReadOnly, Replicated, Category = "AA|Combat|Shock", meta = (AllowPrivateAccess = true))
+	bool bIsBeingShocked;
 
 	/** Dissolve's material instance */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Combat|Effects")

@@ -7,9 +7,10 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "NiagaraComponent.h"
 
 // Headers - Aura
-#include "NiagaraComponent.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Experience/Data/LevelUpInfo.h"
 #include "Player/AuraPlayerController.h"
@@ -91,6 +92,32 @@ int32 AAuraCharacter::GetCurrentLevel_Implementation()
 {
 	const AAuraPlayerState* AuraPlayerState = GetPlayerStateChecked<AAuraPlayerState>();
 	return AuraPlayerState->GetPlayerLevel();
+}
+
+/** RepNotify callback for bIsStunned */
+void AAuraCharacter::OnRep_IsStunned()
+{
+	Super::OnRep_IsStunned();
+
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		const FAuraGameplayTags& AuraGameplayTags = FAuraGameplayTags::Get();
+		
+		FGameplayTagContainer BlockedTags;
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_CursorTrace);
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_InputPressed);
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_InputHeld);
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_InputReleased);
+
+		if (bIsStunned)
+		{
+			AuraASC->AddLooseGameplayTags(BlockedTags);
+		}
+		else
+		{
+			AuraASC->RemoveLooseGameplayTags(BlockedTags);
+		}
+	}
 }
 
 #pragma endregion COMBAT
@@ -208,6 +235,9 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AuraPlayerState->GetAbilitySystemComponent()->InitAbilityActorInfo(AuraPlayerState, this);
 	Cast<UAuraAbilitySystemComponent>(AuraPlayerState->GetAbilitySystemComponent())->AbilityActorInfoSet();
 	AbilitySystemComponent = AuraPlayerState->GetAbilitySystemComponent();
+	ASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun).AddUObject(this, &AAuraCharacter::StunTagChanged);
+	
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 
 	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
@@ -222,8 +252,6 @@ void AAuraCharacter::InitAbilityActorInfo()
 	ApplyEffectToSelf(SecondaryAttributes, 1.f);
 	ApplyEffectToSelf(VitalAttributes, 1.f);
 	ApplyEffectDefinitionsToSelf(DefaultEffects);
-
-	ASCRegisteredDelegate.Broadcast(AbilitySystemComponent);
 }
 
 #pragma endregion GAS

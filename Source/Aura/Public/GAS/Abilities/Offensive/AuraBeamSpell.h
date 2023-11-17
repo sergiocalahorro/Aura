@@ -78,9 +78,13 @@ private:
 	/** Get additional targets inside propagation radius */
 	void GetTargetsInPropagationRadius(int32 NumAdditionalTargets, TArray<AActor*>& OutAdditionalTargets);
 
-	/** Functionality performed when a target is destroyed */
+	/** Functionality performed when first traced target is destroyed */
 	UFUNCTION()
-	void OnTargetDestroyed(AActor* ActorDestroyed);
+	void OnFirstTargetDestroyed(AActor* DestroyedActor);
+
+	/** Functionality performed when an additional target is destroyed */
+	UFUNCTION()
+	void OnAdditionalTargetDestroyed(AActor* DestroyedActor);
 
 	/** Destroy beams */
 	void DestroyBeams();
@@ -110,6 +114,10 @@ protected:
 	/** Radius used for beam's propagation from first target */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam", meta = (ClampMin = 0.f, UIMin = 0.f, Delta = 1.f, Units = "Centimeters"))
 	float BeamPropagationRadius = 300.f;
+
+	/** Minimum time that needs to be elapsed in order to end ability when releasing input */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Beam", meta = (ClampMin = 0.f, UIMin = 0.f, Units = "Seconds"))
+	float MinSpellTime = 0.5f;
 	
 	/** Location hit by mouse trace */
 	UPROPERTY()
@@ -152,9 +160,9 @@ private:
 
 protected:
 
-	/** Delta time that needs to pass in order to apply damage and commit cost */
+	/** Time rate for applying damage and committing cost */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage", meta = (ClampMin = 0.f, UIMin = 0.f))
-	float DamageCostDeltaTime = 0.1f;
+	float DamageAndCostRate = 0.1f;
 
 private:
 

@@ -16,6 +16,7 @@
 #include "Aura.h"
 #include "Actor/Projectile/ProjectileData.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
+#include "Interaction/CombatInterface.h"
 
 #pragma region INITIALIZATION
 
@@ -24,6 +25,7 @@ AAuraProjectile::AAuraProjectile()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
+	SetReplicatingMovement(true);
 
 	Sphere = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	RootComponent = Sphere;
@@ -93,6 +95,11 @@ void AAuraProjectile::Destroyed()
 /** BeginOverlap Callback */
 void AAuraProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!DamageEffectParams.SourceASC)
+	{
+		return;
+	}
+	
 	const AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
 	if (SourceAvatarActor == OtherActor || UAuraAbilitySystemLibrary::AreActorsFriends(SourceAvatarActor, OtherActor))
 	{
@@ -167,11 +174,23 @@ void AAuraProjectile::ProjectileHit()
 #pragma region HOMING
 
 /** Set projectile's homing target */
-void AAuraProjectile::SetHomingTarget(const AActor* HomingTarget)
+void AAuraProjectile::SetHomingTarget(AActor* HomingTarget)
 {
+	if (IsValid(DamageEffectParams.SourceASC))
+	{
+		if (HomingTarget == DamageEffectParams.SourceASC->GetAvatarActor())
+		{
+			return;
+		}
+	}
+
 	if (IsValid(HomingTarget))
 	{
 		HomingTargetComponent = HomingTarget->GetRootComponent();
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(HomingTarget))
+		{
+			CombatInterface->GetDeathDelegate().AddUniqueDynamic(this, &AAuraProjectile::OnHomingTargetDestroyed);
+		}
 	}
 
 	SetHomingBehaviour();
@@ -191,6 +210,18 @@ void AAuraProjectile::SetHomingBehaviour() const
 	ProjectileMovementComponent->HomingTargetComponent = HomingTargetComponent;
 	ProjectileMovementComponent->HomingAccelerationMagnitude = FMath::FRandRange(ProjectileData->MinHomingAcceleration, ProjectileData->MaxHomingAcceleration);
 	ProjectileMovementComponent->bIsHomingProjectile = true;
+}
+
+/** Functionality performed once the homing target is destroyed */
+void AAuraProjectile::OnHomingTargetDestroyed(AActor* DeadActor)
+{
+	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(DeadActor))
+	{
+		CombatInterface->GetDeathDelegate().RemoveDynamic(this, &AAuraProjectile::OnHomingTargetDestroyed);
+	}
+
+	ProjectileMovementComponent->HomingTargetComponent = nullptr;
+	ProjectileMovementComponent->bIsHomingProjectile = false;
 }
 
 #pragma endregion HOMING

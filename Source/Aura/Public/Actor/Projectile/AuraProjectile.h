@@ -105,7 +105,7 @@ private:
 public:
 
 	/** Set projectile's homing target */
-	void SetHomingTarget(const AActor* HomingTarget);
+	void SetHomingTarget(AActor* HomingTarget);
 
 	/** Set projectile's homing target location */
 	void SetHomingTargetLocation(const FVector& TargetLocation);
@@ -114,6 +114,10 @@ private:
 
 	/** Set projectile's homing behaviour */
 	void SetHomingBehaviour() const;
+
+	/** Functionality performed once the homing target is destroyed */
+	UFUNCTION()
+	void OnHomingTargetDestroyed(AActor* DeadActor);
 
 private:
 	

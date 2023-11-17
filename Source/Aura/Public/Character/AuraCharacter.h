@@ -72,6 +72,11 @@ public:
 	/** Get level */
 	virtual int32 GetCurrentLevel_Implementation() override;
 
+protected:
+
+	/** RepNotify callback for bIsStunned */
+	virtual void OnRep_IsStunned() override;
+
 #pragma endregion COMBAT
 
 #pragma region PLAYER

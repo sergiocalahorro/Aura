@@ -65,6 +65,14 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "AA|Core|Movement")
 	bool bIsFalling;
 
+	/** Whether character is stunned */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Core|Combat")
+	bool bIsStunned;
+
+	/** Whether character is being shocked */
+	UPROPERTY(BlueprintReadOnly, Category = "AA|Core|Combat")
+	bool bIsBeingShocked;
+
 #pragma endregion CORE
 	
 };

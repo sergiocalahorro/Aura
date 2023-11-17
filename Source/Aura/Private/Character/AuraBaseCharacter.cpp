@@ -6,13 +6,15 @@
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "MotionWarpingComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 // Headers - Aura
 #include "Aura.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "GAS/Effects/EffectDefinition.h"
-#include "Kismet/GameplayStatics.h"
 
 #pragma region INITIALIZATION
 
@@ -40,6 +42,15 @@ AAuraBaseCharacter::AAuraBaseCharacter()
 #pragma endregion INITIALIZATION
 
 #pragma endregion OVERRIDES
+
+/** Returns the properties used for network replication */
+void AAuraBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAuraBaseCharacter, bIsStunned);
+	DOREPLIFETIME(AAuraBaseCharacter, bIsBeingShocked);
+}
 
 /** Called when the game starts or when spawned */
 void AAuraBaseCharacter::BeginPlay()
@@ -145,7 +156,6 @@ void AAuraBaseCharacter::Death(const FVector& DeathImpulse)
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
 	MulticastHandleDeath(DeathImpulse);
-	DeathDelegate.Broadcast(this);
 }
 
 /** Whether is dead */
@@ -158,6 +168,7 @@ bool AAuraBaseCharacter::IsDead_Implementation() const
 void AAuraBaseCharacter::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
 	bIsDead = true;
+	DeathDelegate.Broadcast(this);
 
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
@@ -226,6 +237,38 @@ FASCRegisteredSignature& AAuraBaseCharacter::GetASCRegisteredDelegate()
 FDeathSignature& AAuraBaseCharacter::GetDeathDelegate()
 {
 	return DeathDelegate;
+}
+
+/** Set whether is being shocked */
+void AAuraBaseCharacter::SetIsBeingShocked_Implementation(bool bInIsBeingShocked)
+{
+	bIsBeingShocked = bInIsBeingShocked;
+}
+
+/** Get whether is being shocked */
+bool AAuraBaseCharacter::IsBeingShocked_Implementation() const
+{
+	return bIsBeingShocked;
+}
+
+/** Callback called whenever Stun's tag is changed */
+void AAuraBaseCharacter::StunTagChanged(const FGameplayTag GameplayTag, int32 NewCount)
+{
+	bIsStunned = NewCount > 0;
+	GetCharacterMovement()->MaxWalkSpeed = bIsStunned ? 0.f : BaseWalkSpeed;
+
+	if (bIsStunned)
+	{
+		FGameplayTagContainer CancelAbilitiesWithTags;
+		CancelAbilitiesWithTags.AddTag(FAuraGameplayTags::Get().Abilities_HitReact);
+		AbilitySystemComponent->CancelAbilities(&CancelAbilitiesWithTags);
+	}
+}
+
+/** RepNotify callback for bIsStunned */
+void AAuraBaseCharacter::OnRep_IsStunned()
+{
+	
 }
 
 #pragma endregion COMBAT

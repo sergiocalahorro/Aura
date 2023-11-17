@@ -322,7 +322,11 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& EffectProp
 /** Handle hit */
 void UAuraAttributeSet::HandleHit(const FEffectProperties& EffectProperties)
 {
-	EffectProperties.TargetASC->TryActivateAbilitiesByTag(FAuraGameplayTags::Get().Abilities_HitReact.GetSingleTagContainer());
+	if (EffectProperties.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(EffectProperties.TargetCharacter))
+	{
+		EffectProperties.TargetASC->TryActivateAbilitiesByTag(FAuraGameplayTags::Get().Abilities_HitReact.GetSingleTagContainer());
+	}
+	
 	const FVector KnockbackForce = UAuraAbilitySystemLibrary::GetKnockbackForce(EffectProperties.EffectContextHandle);
 	if (!KnockbackForce.IsNearlyZero(1.f) && EffectProperties.TargetCharacter->Implements<UCombatInterface>())
 	{
@@ -392,6 +396,13 @@ void UAuraAttributeSet::HandleDebuff(const FEffectProperties& EffectProperties)
 
 	const FGameplayTag DebuffTag = AuraGameplayTags.DamageTypesToDebuffs[DamageTypeTag];
 	DebuffEffect->InheritableOwnedTagsContainer.AddTag(DebuffTag);
+	if (DebuffTag.MatchesTagExact(AuraGameplayTags.Debuff_Stun))
+	{
+		DebuffEffect->InheritableOwnedTagsContainer.AddTag(AuraGameplayTags.Player_Block_CursorTrace);
+		DebuffEffect->InheritableOwnedTagsContainer.AddTag(AuraGameplayTags.Player_Block_InputPressed);
+		DebuffEffect->InheritableOwnedTagsContainer.AddTag(AuraGameplayTags.Player_Block_InputHeld);
+		DebuffEffect->InheritableOwnedTagsContainer.AddTag(AuraGameplayTags.Player_Block_InputReleased);
+	}
 
 	DebuffEffect->StackingType = EGameplayEffectStackingType::AggregateBySource;
 	DebuffEffect->StackLimitCount = 1;

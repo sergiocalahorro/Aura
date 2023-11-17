@@ -41,7 +41,12 @@ void UAuraDamageGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Han
 /** Apply damage to target Actor */
 void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor, bool bApplyDebuff) const
 {
-	if (IsValid(TargetActor))
+	if (!HasAuthority(&CurrentActivationInfo))
+	{
+		return;
+	}
+	
+	if (IsValid(TargetActor) && TargetActor != GetAvatarActorFromActorInfo())
 	{
 		const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams(TargetActor);
 		UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams, bApplyDebuff);
