@@ -26,13 +26,13 @@ ACueDebuff::ACueDebuff()
 /** Called when a GameplayCue with duration is first activated, this will only be called if the client witnessed the activation */
 bool ACueDebuff::OnActive_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters)
 {
-	if (!DebuffComponent)
+	if (!ParticleSystemComponent)
 	{
-		DebuffComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(DebuffSystem, MyTarget->GetRootComponent(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, true);
+		ParticleSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(ParticleSystem, MyTarget->GetRootComponent(), NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget, false, true);
 
-		if (DebuffComponent)
+		if (ParticleSystemComponent)
 		{
-			DebuffComponent->OnSystemFinished.AddUniqueDynamic(this, &ACueDebuff::OnDebuffSystemFinished);
+			ParticleSystemComponent->OnSystemFinished.AddUniqueDynamic(this, &ACueDebuff::OnDebuffSystemFinished);
 			
 			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(MyTarget))
 			{
@@ -47,9 +47,9 @@ bool ACueDebuff::OnActive_Implementation(AActor* MyTarget, const FGameplayCuePar
 /** Called when a GameplayCue with duration is removed */
 bool ACueDebuff::OnRemove_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters)
 {
-	if (DebuffComponent)
+	if (ParticleSystemComponent)
 	{
-		DebuffComponent->Deactivate();
+		ParticleSystemComponent->Deactivate();
 	}
 	
 	return Super::OnRemove_Implementation(MyTarget, Parameters);
@@ -62,9 +62,9 @@ bool ACueDebuff::OnRemove_Implementation(AActor* MyTarget, const FGameplayCuePar
 /** Called when target is destroyed */
 void ACueDebuff::OnTargetDestroyed(AActor* DestroyedActor)
 {
-	if (DebuffComponent)
+	if (ParticleSystemComponent)
 	{
-		DebuffComponent->Deactivate();
+		ParticleSystemComponent->Deactivate();
 	}
 }
 

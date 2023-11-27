@@ -216,6 +216,15 @@ public:
 	/** Electrocute ability */
 	FGameplayTag Abilities_Lightning_Electrocute;
 
+	/** Halo of protection passive ability */
+	FGameplayTag Abilities_Passive_HaloOfProtection;
+
+	/** Life siphon passive ability */
+	FGameplayTag Abilities_Passive_LifeSiphon;
+
+	/** Mana siphon passive ability */
+	FGameplayTag Abilities_Passive_ManaSiphon;
+
 	/** Hit React ability */
 	FGameplayTag Abilities_HitReact;
 
@@ -444,6 +453,15 @@ public:
 
 	/** GameplayCue for Electrocute's shock loop */
 	FGameplayTag GameplayCue_ShockLoop;
+
+	/** GameplayCue for Halo of protection's passive ability */
+	FGameplayTag GameplayCue_Passive_HaloOfProtection;
+
+	/** GameplayCue for Life siphon's passive ability */
+	FGameplayTag GameplayCue_Passive_LifeSiphon;
+
+	/** GameplayCue for Mana siphon's passive ability */
+	FGameplayTag GameplayCue_Passive_ManaSiphon;
 
 	/** GameplayCue for burn debuff */
 	FGameplayTag GameplayCue_Debuff_Burn;

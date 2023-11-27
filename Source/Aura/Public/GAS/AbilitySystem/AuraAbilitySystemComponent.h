@@ -16,6 +16,7 @@ DECLARE_MULTICAST_DELEGATE(FAbilitiesGivenSignature);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChangedSignature, const FGameplayTag&, const FGameplayTag&, int32);
 DECLARE_DELEGATE_OneParam(FBroadcastAbilitySignature, const FGameplayAbilitySpec&);
 DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquippedSignature, const FGameplayTag&, const FGameplayTag&, const FGameplayTag&, const FGameplayTag&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivatePassiveAbilitySignature, const FGameplayTag&);
 
 UCLASS()
 class AURA_API UAuraAbilitySystemComponent : public UAbilitySystemComponent
@@ -89,7 +90,7 @@ public:
 	void ServerEquipAbility(const FGameplayTag& AbilityTag, const FGameplayTag& InputTag);
 
 	/** Clear an ability's input tag from its spec */
-	void ClearInputTagFromSpec(FGameplayAbilitySpec* AbilitySpec);
+	static void ClearInputTagFromSpec(FGameplayAbilitySpec* AbilitySpec);
 
 	/** Clear any abilities assigned to this input tag */
 	void ClearAbilitiesOfInputTag(const FGameplayTag& InputTag);
@@ -103,6 +104,15 @@ public:
 	/** Get ability's input tag from ability tag */
 	FGameplayTag GetAbilityInputTagFromAbilityTag(const FGameplayTag& AbilityTag);
 
+	/** Get whether input tag's slot is empty */
+	bool InputTagIsEmpty(const FGameplayTag& InputTag);
+
+	/** Get whether the given ability has the given input tag's slot */
+	bool AbilityHasInputTag(const FGameplayAbilitySpec& AbilitySpec, const FGameplayTag& InputTag);
+
+	/** Get ability spec with the given input tag's slot */
+	FGameplayAbilitySpec* GetSpecWithInputTag(const FGameplayTag& InputTag);
+
 	/** Get ability's status tag from ability spec */
 	static FGameplayTag GetAbilityStatusTagFromSpec(const FGameplayAbilitySpec& AbilitySpec);
 	
@@ -112,12 +122,21 @@ public:
 	/** Get ability spec from ability's tag */
 	FGameplayAbilitySpec* GetSpecFromAbilityTag(const FGameplayTag& AbilityTag);
 
-	/** Check whether the ability has a given input tag */
-	bool AbilityHasInputTag(const FGameplayAbilitySpec* AbilitySpec, const FGameplayTag& InputTag) const;
+	/** Check whether the ability has a given input tag's slot */
+	static bool AbilityHasInputTag(const FGameplayAbilitySpec* AbilitySpec, const FGameplayTag& InputTag);
+	
+	/** Check whether the ability has any input tag's slot */
+	static bool AbilityHasAnyInputTag(const FGameplayAbilitySpec* AbilitySpec);
+
+	/** Assign given ability to the given input tag's slot */
+	static void AssignInputTagToAbility(FGameplayAbilitySpec& AbilitySpec, const FGameplayTag& InputTag);
 
 	/** Get ability's descriptions by its tag */
 	bool GetDescriptionsByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription, FString& OutNextLevelDescription);
 
+	/** Get whether ability is passive */
+	bool IsPassiveAbility(const FGameplayAbilitySpec& AbilitySpec) const;
+	
 protected:
 
 	/** Client RPC called to equip an ability */
@@ -141,6 +160,9 @@ public:
 
 	/** Delegate called when an ability has been equipped */
 	FAbilityEquippedSignature AbilityEquippedDelegate;
+
+	/** Delegate called to deactivate a passive ability */
+	FDeactivatePassiveAbilitySignature DeactivatePassiveAbilityDelegate;
 
 #pragma endregion ABILITIES
 

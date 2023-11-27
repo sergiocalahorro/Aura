@@ -52,15 +52,15 @@ private:
 
 protected:
 
-	/** Debuff particle system */
+	/** Particle system */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Debuff")
-	TObjectPtr<UNiagaraSystem> DebuffSystem;
+	TObjectPtr<UNiagaraSystem> ParticleSystem;
 
 private:
 
-	/** Debuff compoennt */
+	/** Particle system's compoennt */
 	UPROPERTY()
-	TObjectPtr<UNiagaraComponent> DebuffComponent;
+	TObjectPtr<UNiagaraComponent> ParticleSystemComponent;
 
 #pragma endregion DEBUFF
 	

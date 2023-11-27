@@ -14,7 +14,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GAS/AbilityTasks/AbilityTask_TargetDataUnderMouse.h"
-#include "GAS/Utils/AuraAbilityTypes.h"
 #include "Interaction/CombatInterface.h"
 
 #pragma region INITIALIZATION
