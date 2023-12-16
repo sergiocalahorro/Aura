@@ -10,14 +10,15 @@
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
 #include "GameFramework/Character.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Headers - Aura
-#include "NiagaraFunctionLibrary.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Input/AuraInputComponent.h"
 #include "Interaction/InteractableInterface.h"
 #include "UI/Widget/DamageTextWidgetComponent.h"
+#include "Actor/Spells/MagicCircle.h"
 
 #pragma region INITIALIZATION
 
@@ -40,6 +41,7 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 
 	CursorTrace(DeltaTime);
 	AutoRun();
+	UpdateMagicCircleLocation();
 }
 
 /** Called when the game starts or when spawned */
@@ -328,3 +330,42 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponen
 }
 
 #pragma endregion GAS
+
+#pragma region MAGIC_CIRCLE
+
+/** Show magic circle */
+void AAuraPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial)
+{
+	if (!IsValid(MagicCircle))
+	{
+		MagicCircle = GetWorld()->SpawnActor<AMagicCircle>(MagicCircleClass);
+		if (DecalMaterial)
+		{
+			MagicCircle->SetDecalMaterial(DecalMaterial);
+		}
+	}
+
+	bShowMouseCursor = false;
+}
+
+/** Hide magic circle */
+void AAuraPlayerController::HideMagicCircle()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->Destroy();
+	}
+
+	bShowMouseCursor = true;
+}
+
+/** Update spawned magic circle's location */
+void AAuraPlayerController::UpdateMagicCircleLocation() const
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
+	}
+}
+
+#pragma endregion MAGIC_CIRCLE

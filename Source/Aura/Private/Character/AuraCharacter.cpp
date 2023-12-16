@@ -224,6 +224,24 @@ void AAuraCharacter::MulticastLevelUpParticles_Implementation() const
 	LevelUpNiagaraComponent->Activate(true);
 }
 
+/** Show magic circle */
+void AAuraCharacter::ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial)
+{
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
+	{
+		AuraPlayerController->ShowMagicCircle(DecalMaterial);
+	}
+}
+
+/** Hide magic circle */
+void AAuraCharacter::HideMagicCircle_Implementation()
+{
+	if (AAuraPlayerController* AuraPlayerController = Cast<AAuraPlayerController>(GetController()))
+	{
+		AuraPlayerController->HideMagicCircle();
+	}
+}
+
 #pragma endregion PLAYER
 
 #pragma region GAS

@@ -69,4 +69,12 @@ public:
 	/** Find level for incoming XP */
 	UFUNCTION(BlueprintNativeEvent)
 	int32 FindLevelForXP(int32 InXP) const;
+
+	/** Show magic circle */
+	UFUNCTION(BlueprintNativeEvent)
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
+
+	/** Hide magic circle */
+	UFUNCTION(BlueprintNativeEvent)
+	void HideMagicCircle();
 };

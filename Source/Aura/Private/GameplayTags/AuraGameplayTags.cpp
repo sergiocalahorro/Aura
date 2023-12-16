@@ -115,7 +115,10 @@ void FAuraGameplayTags::InitializeNativeAbilitiesGameplayTags()
 	GameplayTags.Abilities_Summon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Summon"), FString("Summon ability"));
 
 	GameplayTags.Abilities_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Fire.FireBolt"), FString("Fire Bolt ability"));
+
 	GameplayTags.Abilities_Lightning_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Lightning.Electrocute"), FString("Electrocute ability"));
+
+	GameplayTags.Abilities_Arcane_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Arcane.ArcaneShards"), FString("Arcane Shards ability"));
 
 	GameplayTags.Abilities_Passive_HaloOfProtection = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Passive.HaloOfProtection"), FString("Halo of protection passive ability"));
 	GameplayTags.Abilities_Passive_LifeSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Abilities.Passive.LifeSiphon"), FString("Life siphon passive ability"));
@@ -155,6 +158,8 @@ void FAuraGameplayTags::InitializeNativeCooldownsGameplayTags()
 	GameplayTags.Cooldown_Fire_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Fire.FireBolt"), FString("Fire Bolt's ability cooldown"));
 
 	GameplayTags.Cooldown_Lightning_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Lightning.Electrocute"), FString("Electrocute's ability cooldown"));
+
+	GameplayTags.Cooldown_Arcane_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Cooldown.Arcane.ArcaneShards"), FString("Arcane Shards' ability cooldown"));
 }
 
 #pragma endregion COOLDOWNS
@@ -221,6 +226,7 @@ void FAuraGameplayTags::InitializeNativeCombatSocketsGameplayTags()
 void FAuraGameplayTags::InitializeNativeMontagesGameplayTags()
 {
 	GameplayTags.Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.FireBolt"), FString("Montage for Fire Bolt ability"));
+
 	GameplayTags.Montage_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Electrocute"), FString("Montage for Electrocute ability"));
 	
 	GameplayTags.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.1"), FString("Montage for Attack 1"));

@@ -8,11 +8,11 @@
 
 #include "AuraPlayerController.generated.h"
 
-class UNiagaraSystem;
 // Forward declarations - Unreal Engine
 class UInputMappingContext;
 class UInputAction;
 class USplineComponent;
+class UNiagaraSystem;
 struct FInputActionValue;
 struct FGameplayTag;
 
@@ -21,6 +21,7 @@ class IInteractableInterface;
 class UAuraInputConfig;
 class UAuraAbilitySystemComponent;
 class UDamageTextWidgetComponent;
+class AMagicCircle;
 
 /**
  * 
@@ -196,5 +197,32 @@ private:
 	TObjectPtr<UAuraAbilitySystemComponent> AuraAbilitySystemComponent;
 
 #pragma endregion GAS
+
+#pragma region MAGIC_CIRCLE
+
+public:
+
+	/** Show magic circle */
+	void ShowMagicCircle(UMaterialInterface* DecalMaterial = nullptr);
+
+	/** Hide magic circle */
+	void HideMagicCircle();
+
+private:
+
+	/** Update spawned magic circle's location */
+	void UpdateMagicCircleLocation() const;
+
+private:
+
+	/** Magic circle's class */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|MagicCircle")
+	TSubclassOf<AMagicCircle> MagicCircleClass;
+
+	/** Spawned magic circle */
+	UPROPERTY()
+	TObjectPtr<AMagicCircle> MagicCircle;
+
+#pragma endregion MAGIC_CIRCLE
 	
 };

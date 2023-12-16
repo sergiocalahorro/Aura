@@ -116,6 +116,12 @@ public:
 	/** Find level for incoming XP */
 	virtual int32 FindLevelForXP_Implementation(int32 InXP) const override;
 
+	/** Show magic circle */
+	virtual void ShowMagicCircle_Implementation(UMaterialInterface* DecalMaterial = nullptr);
+
+	/** Hide magic circle */
+	virtual void HideMagicCircle_Implementation();
+	
 private:
 
 	/** Multicast RPC for displaying level up particles */

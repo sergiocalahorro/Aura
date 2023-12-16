@@ -216,6 +216,9 @@ public:
 	/** Electrocute ability */
 	FGameplayTag Abilities_Lightning_Electrocute;
 
+	/** Arcane Shards ability */
+	FGameplayTag Abilities_Arcane_ArcaneShards;
+
 	/** Halo of protection passive ability */
 	FGameplayTag Abilities_Passive_HaloOfProtection;
 
@@ -291,6 +294,9 @@ public:
 
 	/** Electrocute's cooldown */
 	FGameplayTag Cooldown_Lightning_Electrocute;
+
+	/** Arcane Shards' cooldown */
+	FGameplayTag Cooldown_Arcane_ArcaneShards;
 
 #pragma endregion COOLDOWNS
 
