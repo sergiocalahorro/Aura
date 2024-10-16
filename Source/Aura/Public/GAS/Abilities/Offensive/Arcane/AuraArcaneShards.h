@@ -10,6 +10,7 @@
 
 #include "AuraArcaneShards.generated.h"
 
+class APointCollection;
 // Forward declarations - Unreal Engine
 class UAbilityTask_WaitInputPress;
 
@@ -35,11 +36,30 @@ protected:
 
 #pragma region ARCANE_SHARDS
 
+protected:
+
+	/** Class of point collection to spawn */
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<APointCollection> PointCollectionClass;
+	
+	/** Number of points */
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1, UIMin = 1))
+	int32 NumberOfPoints;
+
 private:
 
 	/** Functionality performed once the input is pressed */
 	UFUNCTION()
 	void InputPressed(float TimeWaited);
+
+	/** Functionality performed once target data under mouse is received */
+	UFUNCTION()
+	void TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
+
+private:
+
+	UPROPERTY()
+	TObjectPtr<APointCollection> PointCollection;
 
 #pragma endregion ARCANE_SHARDS
 
