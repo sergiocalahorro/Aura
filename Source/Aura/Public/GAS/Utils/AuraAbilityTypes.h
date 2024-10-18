@@ -89,6 +89,22 @@ public:
 	/** Force applied to knockback on normal damage */
 	UPROPERTY()
 	FVector KnockbackForce = FVector::ZeroVector;
+
+	/** Whether damage to be applied is radial */
+	UPROPERTY()
+	bool bRadialDamage = false;
+
+	/** Radial damage's inner radius */
+	UPROPERTY()
+	float RadialDamageInnerRadius = 0.f;
+
+	/** Radial damage's outer radius */
+	UPROPERTY()
+	float RadialDamageOuterRadius = 0.f;
+
+	/** Radial damage's origin */
+	UPROPERTY()
+	FVector RadialDamageOrigin = FVector::ZeroVector;
 };
 
 USTRUCT(BlueprintType)
@@ -155,6 +171,18 @@ public:
 	/** Return the knockback force associated to this effect */
 	FVector GetKnockbackForce() const { return KnockbackForce; }
 
+	/** Return whether damage to be applied is radial */
+	bool GetRadialDamage() const { return bRadialDamage; }
+
+	/** Return radial damage's inner radius */
+	float GetRadialDamageInnerRadius() const { return RadialDamageInnerRadius; }
+
+	/** Return radial damage's outer radius */
+	float GetRadialDamageOuterRadius() const { return RadialDamageOuterRadius; }
+
+	/** Return radial damage's origin */
+	FVector GetRadialDamageOrigin() const { return RadialDamageOrigin; }
+
 	/** Set whether the damage effect associated is blocked */
 	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
 
@@ -181,6 +209,18 @@ public:
 
 	/** Set knockback force */
 	void SetKnockbackForce(const FVector& InKnockbackForce) { KnockbackForce = InKnockbackForce; }
+
+	/** Set whether damage to be applied is radial */
+	void SetRadialDamage(bool bInRadialDamage) { bRadialDamage = bInRadialDamage; }
+
+	/** Set radial damage's inner radius */
+	void SetRadialDamageInnerRadius(float InRadialDamageInnerRadius) { RadialDamageInnerRadius = InRadialDamageInnerRadius; }
+
+	/** Set radial damage's outer radius */
+	void SetRadialDamageOuterRadius(float InRadialDamageOuterRadius) { RadialDamageOuterRadius = InRadialDamageOuterRadius; }
+
+	/** Set radial damage's origin */
+	void SetRadialDamageOrigin(const FVector& InRadialDamageOrigin) { RadialDamageOrigin = InRadialDamageOrigin; }
 
 protected:
 
@@ -218,6 +258,22 @@ protected:
 	/** Force applied to knockback on normal damage */
 	UPROPERTY()
 	FVector KnockbackForce = FVector::ZeroVector;
+
+	/** Whether damage to be applied is radial */
+	UPROPERTY()
+	bool bRadialDamage = false;
+
+	/** Radial damage's inner radius */
+	UPROPERTY()
+	float RadialDamageInnerRadius = 0.f;
+
+	/** Radial damage's outer radius */
+	UPROPERTY()
+	float RadialDamageOuterRadius = 0.f;
+
+	/** Radial damage's origin */
+	UPROPERTY()
+	FVector RadialDamageOrigin = FVector::ZeroVector;
 
 #pragma endregion EFFECT
 	

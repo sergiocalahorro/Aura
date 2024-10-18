@@ -405,6 +405,9 @@ public:
 	/** Montage for Electrocute ability */
 	FGameplayTag Montage_Electrocute;
 
+	/** Montage for Arcane Shards ability */
+	FGameplayTag Montage_ArcaneShards;
+
 	/** Montage for Attack 1 */
 	FGameplayTag Montage_Attack_1;
 
@@ -459,6 +462,9 @@ public:
 
 	/** GameplayCue for Electrocute's shock loop */
 	FGameplayTag GameplayCue_ShockLoop;
+
+	/** GameplayCue for Arcane Shards */
+	FGameplayTag GameplayCue_ArcaneShards;
 
 	/** GameplayCue for Halo of protection's passive ability */
 	FGameplayTag GameplayCue_Passive_HaloOfProtection;

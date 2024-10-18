@@ -6,9 +6,24 @@
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 
 // Headers - Aura
+#include "GameplayCueFunctionLibrary.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Actor/Spells/PointCollection.h"
+#include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilityTasks/AbilityTask_TargetDataUnderMouse.h"
+#include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
+
+#pragma region INITIALIZATION
+
+/** Sets default values for this object's properties */
+UAuraArcaneShards::UAuraArcaneShards()
+{
+	AttackType = EAttackType::Ranged;
+}
+
+#pragma endregion INITIALIZATION
 
 #pragma region OVERRIDES
 	
@@ -17,13 +32,13 @@ void UAuraArcaneShards::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (GetAvatarActorFromActorInfo()->Implements<UPlayerInterface>())
+	if (GetAvatarActorFromActorInfo()->Implements<UPlayerInterface>() && IsLocallyControlled())
 	{
 		IPlayerInterface::Execute_ShowMagicCircle(GetAvatarActorFromActorInfo(), nullptr);
 	}
 
 	WaitInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this);
-	WaitInputPressTask->OnPress.AddUniqueDynamic(this, &UAuraArcaneShards::InputPressed);
+	WaitInputPressTask->OnPress.AddUniqueDynamic(this, &ThisClass::InputPressed);
 	WaitInputPressTask->ReadyForActivation();
 }
 
@@ -50,27 +65,57 @@ void UAuraArcaneShards::InputPressed(float TimeWaited)
 	UAbilityTask_TargetDataUnderMouse* TargetDataUnderMouseTask = UAbilityTask_TargetDataUnderMouse::CreateTargetDataUnderMouse(this);
 	TargetDataUnderMouseTask->ReceivedTargetData.AddUniqueDynamic(this, &UAuraArcaneShards::TargetDataReceived);
 	TargetDataUnderMouseTask->ReadyForActivation();
-	
-	if (GetAvatarActorFromActorInfo()->Implements<UPlayerInterface>())
-	{
-		IPlayerInterface::Execute_HideMagicCircle(GetAvatarActorFromActorInfo());
-	}
 
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, CurrentAttackData.AttackMontage);
+	PlayMontageTask->OnInterrupted.AddUniqueDynamic(this, &ThisClass::K2_EndAbility);
+	PlayMontageTask->OnCancelled.AddUniqueDynamic(this, &ThisClass::K2_EndAbility);
+	PlayMontageTask->ReadyForActivation();
+
+	UAbilityTask_WaitGameplayEvent* WaitEventTask = UAbilityTask_WaitGameplayEvent::WaitGameplayEvent(this, CurrentAttackData.AttackMontageTag, nullptr, true, true);
+	WaitEventTask->EventReceived.AddUniqueDynamic(this, &ThisClass::EventReceived);
+	WaitEventTask->ReadyForActivation();
 }
 
 /** Functionality performed once target data under mouse is received */
 void UAuraArcaneShards::TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle)
 {
-	FVector SpawnLocation = TargetDataHandle.Data.GetData()->Get()->GetHitResult()->ImpactPoint;
+	const FVector SpawnLocation = TargetDataHandle.Data.GetData()->Get()->GetHitResult()->ImpactPoint;
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SpawnLocation);
-	PointCollection = GetWorld()->SpawnActor<APointCollection>(PointCollectionClass, SpawnTransform);
-	TArray<USceneComponent*> GroundPoints = PointCollection->GetGroundPoints(SpawnLocation, NumberOfPoints, FMath::RandRange(0.f, 360.f));
 
-	for (USceneComponent* Point : GroundPoints)
+	PointCount = 0;
+	PointCollection = GetWorld()->SpawnActor<APointCollection>(PointCollectionClass, SpawnTransform);
+	GroundPoints = PointCollection->GetGroundPoints(SpawnLocation, NumberOfPoints, FMath::RandRange(0.f, 360.f));
+
+	if (ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
-		DrawDebugSphere(GetWorld(), Point->GetComponentLocation(), 32.f, 12, FColor::Yellow, false, 3.f);
+		AttackingActor->SetFacingTarget(SpawnLocation);
+	}
+}
+
+/** Functionality performed when the ability's montage event is received */
+void UAuraArcaneShards::EventReceived(FGameplayEventData Payload)
+{
+	GetWorld()->GetTimerManager().SetTimer(ShardSpawnTimerHandle, this, &ThisClass::SpawnShard, ShardSpawnRate, true, 0.f);
+
+	if (GetAvatarActorFromActorInfo()->Implements<UPlayerInterface>())
+	{
+		IPlayerInterface::Execute_HideMagicCircle(GetAvatarActorFromActorInfo());
+	}
+}
+
+/** Spawn shard */
+void UAuraArcaneShards::SpawnShard()
+{
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GroundPoints[PointCount]->GetComponentLocation();
+	UGameplayCueFunctionLibrary::ExecuteGameplayCueOnActor(GetOwningActorFromActorInfo(), FAuraGameplayTags::Get().GameplayCue_ArcaneShards, CueParams);
+
+	PointCount++;
+	if (PointCount >= NumberOfPoints)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ShardSpawnTimerHandle);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	}
 }
 

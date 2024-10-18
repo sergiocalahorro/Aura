@@ -10,9 +10,11 @@
 
 #include "AuraArcaneShards.generated.h"
 
-class APointCollection;
 // Forward declarations - Unreal Engine
 class UAbilityTask_WaitInputPress;
+
+// Forward declarations - Aura
+class APointCollection;
 
 /**
  * 
@@ -21,6 +23,13 @@ UCLASS()
 class AURA_API UAuraArcaneShards : public UAuraDamageGameplayAbility
 {
 	GENERATED_BODY()
+
+#pragma region INITIALIZATION
+
+	/** Sets default values for this object's properties */
+	UAuraArcaneShards();
+
+#pragma endregion INITIALIZATION
 	
 #pragma region OVERRIDES
 	
@@ -39,12 +48,16 @@ protected:
 protected:
 
 	/** Class of point collection to spawn */
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "AA|ArcaneShards")
 	TSubclassOf<APointCollection> PointCollectionClass;
 	
 	/** Number of points */
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1, UIMin = 1))
-	int32 NumberOfPoints;
+	UPROPERTY(EditDefaultsOnly, Category = "AA|ArcaneShards", meta = (ClampMin = 1, UIMin = 1))
+	int32 NumberOfPoints = 10;
+
+	/** Time rate at which shards are spawned */
+	UPROPERTY(EditDefaultsOnly,  Category = "AA|ArcaneShards", meta = (ClampMin = 0.f, UIMin = 0.f))
+	float ShardSpawnRate = 0.1f;
 
 private:
 
@@ -56,10 +69,28 @@ private:
 	UFUNCTION()
 	void TargetDataReceived(const FGameplayAbilityTargetDataHandle& TargetDataHandle);
 
+	/** Functionality performed when the ability's montage event is received */
+	UFUNCTION()
+	void EventReceived(FGameplayEventData Payload);
+
+	/** Spawn shard */
+	void SpawnShard();
+
 private:
 
+	/** Spawned point collection actor */
 	UPROPERTY()
 	TObjectPtr<APointCollection> PointCollection;
+
+	/** Ground points at which shards will be spawned */
+	UPROPERTY()
+	TArray<USceneComponent*> GroundPoints;
+
+	/** Current spawned point count */
+	int32 PointCount = 0;
+
+	/** Shards' spawning timer */
+	FTimerHandle ShardSpawnTimerHandle;
 
 #pragma endregion ARCANE_SHARDS
 

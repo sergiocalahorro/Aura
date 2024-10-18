@@ -71,7 +71,11 @@ FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParams(AActor* T
 	DamageEffectParams.DeathImpulseMagnitude = DeathImpulseMagnitude;
 	DamageEffectParams.KnockbackForceMagnitude = KnockbackForceMagnitude;
 	DamageEffectParams.KnockbackChance = KnockbackChance;
-
+	DamageEffectParams.bRadialDamage = bRadialDamage;
+	DamageEffectParams.RadialDamageInnerRadius = RadialDamageInnerRadius;
+	DamageEffectParams.RadialDamageOuterRadius = RadialDamageOuterRadius;
+	DamageEffectParams.RadialDamageOrigin = RadialDamageOrigin;
+	
 	if (IsValid(TargetActor))
 	{
 		const FVector DirectionToTarget = (TargetActor->GetActorLocation() - GetAvatarActorFromActorInfo()->GetActorLocation()).GetSafeNormal();

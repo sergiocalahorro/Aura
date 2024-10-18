@@ -108,6 +108,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Death", meta = (ClampMin = 0.f, UIMin = 0.f))
 	float DeathImpulseMagnitude = 15000.f;
 
+	/** Whether damage to be applied is radial */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Radial")
+	bool bRadialDamage = false;
+
+	/** Radial damage's inner radius */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Radial", meta = (EditConditionHides, EditCondition = "bRadialDamage", ClampMin = 0.f, UIMin = 0.f))
+	float RadialDamageInnerRadius = 0.f;
+
+	/** Radial damage's outer radius */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Radial", meta = (EditConditionHides, EditCondition = "bRadialDamage", ClampMin = 0.f, UIMin = 0.f))
+	float RadialDamageOuterRadius = 0.f;
+
+	/** Radial damage's origin */
+	UPROPERTY()
+	FVector RadialDamageOrigin = FVector::ZeroVector;
+
 #pragma endregion DAMAGE
 	
 };

@@ -228,7 +228,9 @@ void FAuraGameplayTags::InitializeNativeMontagesGameplayTags()
 	GameplayTags.Montage_FireBolt = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.FireBolt"), FString("Montage for Fire Bolt ability"));
 
 	GameplayTags.Montage_Electrocute = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Electrocute"), FString("Montage for Electrocute ability"));
-	
+
+	GameplayTags.Montage_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.ArcaneShards"), FString("Montage for Arcane Shards ability"));
+
 	GameplayTags.Montage_Attack_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.1"), FString("Montage for Attack 1"));
 	GameplayTags.Montage_Attack_2 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.2"), FString("Montage for Attack 2"));
 	GameplayTags.Montage_Attack_3 = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("Montage.Attack.3"), FString("Montage for Attack 3"));
@@ -260,6 +262,8 @@ void FAuraGameplayTags::InitializeNativeCuesGameplayTags()
 	GameplayTags.GameplayCue_ShockBurst = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockBurst"), FString("GameplayCue for Electrocute's shock burst"));
 	GameplayTags.GameplayCue_ShockLoop = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockLoop"), FString("GameplayCue for Electrocute's shock loop"));
 
+	GameplayTags.GameplayCue_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ArcaneShards"), FString("GameplayCue for Arcane Shards"));
+	
 	GameplayTags.GameplayCue_Passive_HaloOfProtection = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Passive.HaloOfProtection"), FString("GameplayCue for Halo of protection's passive ability"));
 	GameplayTags.GameplayCue_Passive_LifeSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Passive.LifeSiphon"), FString("GameplayCue for Life siphon's passive ability"));
 	GameplayTags.GameplayCue_Passive_ManaSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Passive.ManaSiphon"), FString("GameplayCue for Mana siphon's passive ability"));
