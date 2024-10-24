@@ -45,7 +45,7 @@ public:
 private:
 
 	/** Calculate damage taking into account the resistances to the damage types */
-	float CalculateDamage(const FGameplayTag& DamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& EffectSpec, const FAggregatorEvaluateParameters& EvaluateParams, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& TagsToCaptureDefs) const;
+	float CalculateDamage(const FGameplayTag& DamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& EffectSpec, const FAggregatorEvaluateParameters& EvaluateParams, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& TagsToCaptureDefs, AActor* TargetAvatar, AActor* SourceAvatar) const;
 
 	/** Determine whether a debuff occured */
 	void HandleDebuff(const FGameplayTag& DamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& EffectSpec, const FAggregatorEvaluateParameters& EvaluateParams, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& TagsToCaptureDefs) const;

@@ -45,6 +45,9 @@ public:
 
 	/** Returns the properties used for network replication */
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	/** Apply damage to this actor */
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 protected:
 	
@@ -132,6 +135,9 @@ public:
 	/** Get delegate that is broadcasted once the actor has died */
 	virtual FDeathSignature& GetDeathDelegate() override;
 
+	/** Get delegate that is broadcasted whenever the actor takes damage */
+	virtual FDamageTakenSignature& GetDamageTakenDelegate() override;
+
 	/** Set whether is being shocked */
 	virtual void SetIsBeingShocked_Implementation(bool bInIsBeingShocked) override;
 
@@ -216,6 +222,9 @@ protected:
 
 	/** Delegate broadcasted once the character has died */
 	FDeathSignature DeathDelegate;
+
+	/** Delegate broadcasted whenever the character takes damage */
+	FDamageTakenSignature DamageTakenDelegate;
 	
 #pragma endregion COMBAT
 

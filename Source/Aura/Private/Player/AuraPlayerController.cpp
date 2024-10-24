@@ -13,6 +13,7 @@
 #include "NiagaraFunctionLibrary.h"
 
 // Headers - Aura
+#include "Aura.h"
 #include "GameplayTags/AuraGameplayTags.h"
 #include "GAS/AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Input/AuraInputComponent.h"
@@ -56,6 +57,7 @@ void AAuraPlayerController::BeginPlay()
 		LocalPlayerSubsystem->AddMappingContext(AuraMappingContext, 0);
 	}
 
+	CursorTraceChannel = ECC_Visibility;
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
 
@@ -271,8 +273,8 @@ void AAuraPlayerController::CursorTrace(float DeltaTime)
 		
 		return;
 	}
-	
-	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+
+	GetHitResultUnderCursor(CursorTraceChannel, false, CursorHit);
 	if (!CursorHit.bBlockingHit)
 	{
 		return;
@@ -345,6 +347,7 @@ void AAuraPlayerController::ShowMagicCircle(UMaterialInterface* DecalMaterial)
 		}
 	}
 
+	CursorTraceChannel = ECC_ExcludePlayers;
 	bShowMouseCursor = false;
 }
 
@@ -356,6 +359,7 @@ void AAuraPlayerController::HideMagicCircle()
 		MagicCircle->Destroy();
 	}
 
+	CursorTraceChannel = ECC_Visibility;
 	bShowMouseCursor = true;
 }
 

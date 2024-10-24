@@ -11,6 +11,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Actor/Spells/PointCollection.h"
 #include "GameplayTags/AuraGameplayTags.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
 #include "GAS/AbilityTasks/AbilityTask_TargetDataUnderMouse.h"
 #include "Interaction/CombatInterface.h"
 #include "Interaction/PlayerInterface.h"
@@ -107,8 +108,10 @@ void UAuraArcaneShards::EventReceived(FGameplayEventData Payload)
 /** Spawn shard */
 void UAuraArcaneShards::SpawnShard()
 {
+	const FVector ShardSpawnLocation = GroundPoints[PointCount]->GetComponentLocation();
+
 	FGameplayCueParameters CueParams;
-	CueParams.Location = GroundPoints[PointCount]->GetComponentLocation();
+	CueParams.Location = ShardSpawnLocation;
 	UGameplayCueFunctionLibrary::ExecuteGameplayCueOnActor(GetOwningActorFromActorInfo(), FAuraGameplayTags::Get().GameplayCue_ArcaneShards, CueParams);
 
 	PointCount++;
@@ -116,6 +119,14 @@ void UAuraArcaneShards::SpawnShard()
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ShardSpawnTimerHandle);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	}
+
+	TArray<AActor*> TargetActors;
+	UAuraAbilitySystemLibrary::GetAliveCharactersWithinRadius(GetAvatarActorFromActorInfo(), ShardSpawnLocation, RadialDamageOuterRadius, { GetAvatarActorFromActorInfo() }, TargetActors);
+
+	for (AActor* TargetActor : TargetActors)
+	{
+		ApplyDamage(TargetActor, false, ShardSpawnLocation);
 	}
 }
 

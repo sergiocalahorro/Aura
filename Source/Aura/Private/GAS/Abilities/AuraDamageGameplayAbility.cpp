@@ -39,7 +39,7 @@ void UAuraDamageGameplayAbility::EndAbility(const FGameplayAbilitySpecHandle Han
 #pragma region DAMAGE
 
 /** Apply damage to target Actor */
-void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor, bool bApplyDebuff) const
+void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor, bool bApplyDebuff, const FVector& RadialDamageOrigin) const
 {
 	if (!HasAuthority(&CurrentActivationInfo))
 	{
@@ -48,13 +48,13 @@ void UAuraDamageGameplayAbility::ApplyDamage(AActor* TargetActor, bool bApplyDeb
 	
 	if (IsValid(TargetActor) && TargetActor != GetAvatarActorFromActorInfo())
 	{
-		const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams(TargetActor);
+		const FDamageEffectParams DamageEffectParams = MakeDamageEffectParams(TargetActor, RadialDamageOrigin);
 		UAuraAbilitySystemLibrary::ApplyDamageEffect(DamageEffectParams, bApplyDebuff);
 	}
 }
 
 /** Make damage effect's params from class defaults */
-FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParams(AActor* TargetActor) const
+FDamageEffectParams UAuraDamageGameplayAbility::MakeDamageEffectParams(AActor* TargetActor, const FVector& RadialDamageOrigin) const
 {
 	FDamageEffectParams DamageEffectParams;
 	DamageEffectParams.WorldContextObject = GetAvatarActorFromActorInfo();

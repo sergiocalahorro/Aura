@@ -41,7 +41,7 @@ AAuraBaseCharacter::AAuraBaseCharacter()
 
 #pragma endregion INITIALIZATION
 
-#pragma endregion OVERRIDES
+#pragma region OVERRIDES
 
 /** Returns the properties used for network replication */
 void AAuraBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -50,6 +50,14 @@ void AAuraBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 
 	DOREPLIFETIME(AAuraBaseCharacter, bIsStunned);
 	DOREPLIFETIME(AAuraBaseCharacter, bIsBeingShocked);
+}
+
+/** Apply damage to this actor */
+float AAuraBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	const float FinalDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	DamageTakenDelegate.Broadcast(FinalDamage);
+	return FinalDamage;
 }
 
 /** Called when the game starts or when spawned */
@@ -237,6 +245,12 @@ FASCRegisteredSignature& AAuraBaseCharacter::GetASCRegisteredDelegate()
 FDeathSignature& AAuraBaseCharacter::GetDeathDelegate()
 {
 	return DeathDelegate;
+}
+
+/** Get delegate that is broadcasted whenever the actor takes damage */
+FDamageTakenSignature& AAuraBaseCharacter::GetDamageTakenDelegate()
+{
+	return DamageTakenDelegate;
 }
 
 /** Set whether is being shocked */

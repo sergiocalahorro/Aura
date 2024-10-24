@@ -61,10 +61,10 @@ protected:
 protected:
 
 	/** Apply damage to target Actor */
-	void ApplyDamage(AActor* TargetActor, bool bApplyDebuff = true) const;
+	void ApplyDamage(AActor* TargetActor, bool bApplyDebuff = true, const FVector& RadialDamageOrigin = FVector::ZeroVector) const;
 
 	/** Make damage effect's params from class defaults */
-	FDamageEffectParams MakeDamageEffectParams(AActor* TargetActor = nullptr) const;
+	FDamageEffectParams MakeDamageEffectParams(AActor* TargetActor = nullptr, const FVector& RadialDamageOrigin = FVector::ZeroVector) const;
 
 protected:
 
@@ -113,16 +113,12 @@ protected:
 	bool bRadialDamage = false;
 
 	/** Radial damage's inner radius */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Radial", meta = (EditConditionHides, EditCondition = "bRadialDamage", ClampMin = 0.f, UIMin = 0.f))
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Radial", meta = (EditConditionHides, EditCondition = "bRadialDamage", ClampMin = 0.f, UIMin = 0.f, Units = "Centimeters"))
 	float RadialDamageInnerRadius = 0.f;
 
 	/** Radial damage's outer radius */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Radial", meta = (EditConditionHides, EditCondition = "bRadialDamage", ClampMin = 0.f, UIMin = 0.f))
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Damage|Radial", meta = (EditConditionHides, EditCondition = "bRadialDamage", ClampMin = 0.f, UIMin = 0.f, Units = "Centimeters"))
 	float RadialDamageOuterRadius = 0.f;
-
-	/** Radial damage's origin */
-	UPROPERTY()
-	FVector RadialDamageOrigin = FVector::ZeroVector;
 
 #pragma endregion DAMAGE
 	

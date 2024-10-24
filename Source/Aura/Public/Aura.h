@@ -16,4 +16,7 @@
 /** Target's object channel */
 #define ECC_Target ECollisionChannel::ECC_GameTraceChannel2
 
+/** ExcludePlayers's object channel */
+#define ECC_ExcludePlayers ECollisionChannel::ECC_GameTraceChannel3
+
 #pragma endregion COLLISIONS

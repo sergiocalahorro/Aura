@@ -9,6 +9,7 @@
 #include "GAS/Attributes/AuraAttributeSet.h"
 #include "GAS/Utils/AuraAbilityTypes.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 struct AuraDamageStatics
 {
@@ -144,7 +145,7 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 	HandleDebuff(DamageTypeTag, ExecutionParams, EffectSpec, EvaluateParams, TagsToCaptureDefs);
 
 	// Calculate damage value
-	float Damage = CalculateDamage(DamageTypeTag, ExecutionParams, EffectSpec, EvaluateParams, TagsToCaptureDefs);
+	float Damage = CalculateDamage(DamageTypeTag, ExecutionParams, EffectSpec, EvaluateParams, TagsToCaptureDefs, TargetAvatar, SourceAvatar);
 
 	// Check Target's BlockChance and calculate incoming Damage's value if it's a block
 	const bool bIsBlockedHit = HandleBlock(ExecutionParams, EvaluateParams, Damage);
@@ -167,7 +168,7 @@ void UEC_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionPara
 #pragma region DAMAGE
 
 /** Calculate damage taking into account the resistances to the damage types */
-float UEC_Damage::CalculateDamage(const FGameplayTag& DamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& EffectSpec, const FAggregatorEvaluateParameters& EvaluateParams, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& TagsToCaptureDefs) const
+float UEC_Damage::CalculateDamage(const FGameplayTag& DamageTypeTag, const FGameplayEffectCustomExecutionParameters& ExecutionParams, const FGameplayEffectSpec& EffectSpec, const FAggregatorEvaluateParameters& EvaluateParams, const TMap<FGameplayTag, FGameplayEffectAttributeCaptureDefinition>& TagsToCaptureDefs, AActor* TargetAvatar, AActor* SourceAvatar) const
 {
 	const FGameplayTag ResistanceDamageTypeTag = *FAuraGameplayTags::Get().DamageTypesToResistances.Find(DamageTypeTag);
 
@@ -176,6 +177,11 @@ float UEC_Damage::CalculateDamage(const FGameplayTag& DamageTypeTag, const FGame
 	// Get base damage associated to the damage type
 	float Damage = EffectSpec.GetSetByCallerMagnitude(DamageTypeTag, false);
 
+	if (Damage < 0.f)
+	{
+		return 0.f;
+	}
+	
 	// Capture TargetResistanceToDamageType on Target, in order to modify the incoming damage received
 	float TargetResistanceToDamageType = 0.f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(TagsToCaptureDefs[ResistanceDamageTypeTag], EvaluateParams, TargetResistanceToDamageType);
@@ -183,6 +189,36 @@ float UEC_Damage::CalculateDamage(const FGameplayTag& DamageTypeTag, const FGame
 
 	// Calculate the final damage by subtracting the resistance to the damage type from the base damage
 	Damage *= (100.f - TargetResistanceToDamageType) / 100.f;
+
+	// Handle radial damage
+	FGameplayEffectContextHandle EffectContextHandle = EffectSpec.GetContext();
+	if (UAuraAbilitySystemLibrary::GetRadialDamage(EffectContextHandle))
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+		{
+			CombatInterface->GetDamageTakenDelegate().AddLambda(
+				[&](float DamageAmount)
+				{
+					Damage = DamageAmount;
+				}
+			);
+		}
+
+		UGameplayStatics::ApplyRadialDamageWithFalloff(
+			TargetAvatar,
+			Damage,
+			0.f,
+			UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+			UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+			UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+			1.f,
+			UDamageType::StaticClass(),
+			TArray<AActor*>(),
+			SourceAvatar,
+			nullptr
+		);
+	}
+	
 	return Damage;
 }
 

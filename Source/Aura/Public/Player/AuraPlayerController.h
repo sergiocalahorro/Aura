@@ -156,6 +156,10 @@ private:
 
 private:
 
+	/** Cursor's trace channel */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|Interactable")
+	TEnumAsByte<ECollisionChannel> CursorTraceChannel = ECC_Visibility;
+
 	/** Last Actor that was highlighted */
 	IInteractableInterface* LastHighlightedActor;
 
