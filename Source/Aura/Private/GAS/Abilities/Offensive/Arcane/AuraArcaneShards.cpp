@@ -6,6 +6,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 
 // Headers - Aura
+#include "EditorDirectories.h"
 #include "GameplayCueFunctionLibrary.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
@@ -33,14 +34,17 @@ void UAuraArcaneShards::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	if (GetAvatarActorFromActorInfo()->Implements<UPlayerInterface>() && IsLocallyControlled())
+	if (K2_CheckAbilityCost())
 	{
-		IPlayerInterface::Execute_ShowMagicCircle(GetAvatarActorFromActorInfo(), nullptr);
-	}
+		if (GetAvatarActorFromActorInfo()->Implements<UPlayerInterface>() && IsLocallyControlled())
+		{
+			IPlayerInterface::Execute_ShowMagicCircle(GetAvatarActorFromActorInfo(), nullptr);
+		}
 
-	WaitInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this);
-	WaitInputPressTask->OnPress.AddUniqueDynamic(this, &ThisClass::InputPressed);
-	WaitInputPressTask->ReadyForActivation();
+		WaitInputPressTask = UAbilityTask_WaitInputPress::WaitInputPress(this);
+		WaitInputPressTask->OnPress.AddUniqueDynamic(this, &ThisClass::InputPressed);
+		WaitInputPressTask->ReadyForActivation();
+	}
 }
 
 /** Native function, called if an ability ends normally or abnormally. If bReplicate is set to true, try to replicate the ending to the client/server */
@@ -84,9 +88,10 @@ void UAuraArcaneShards::TargetDataReceived(const FGameplayAbilityTargetDataHandl
 	FTransform SpawnTransform;
 	SpawnTransform.SetLocation(SpawnLocation);
 
-	PointCount = 0;
+	NumberOfShardsCount = 0;
+	NumberOfShards = FMath::Min(GetAbilityLevel(), MaxNumberOfShards);
 	PointCollection = GetWorld()->SpawnActor<APointCollection>(PointCollectionClass, SpawnTransform);
-	GroundPoints = PointCollection->GetGroundPoints(SpawnLocation, NumberOfPoints, FMath::RandRange(0.f, 360.f));
+	GroundPoints = PointCollection->GetGroundPoints(SpawnLocation, NumberOfShards, FMath::RandRange(0.f, 360.f));
 
 	if (ICombatInterface* AttackingActor = CastChecked<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
@@ -108,17 +113,18 @@ void UAuraArcaneShards::EventReceived(FGameplayEventData Payload)
 /** Spawn shard */
 void UAuraArcaneShards::SpawnShard()
 {
-	const FVector ShardSpawnLocation = GroundPoints[PointCount]->GetComponentLocation();
+	const FVector ShardSpawnLocation = GroundPoints[NumberOfShardsCount]->GetComponentLocation();
 
 	FGameplayCueParameters CueParams;
 	CueParams.Location = ShardSpawnLocation;
 	UGameplayCueFunctionLibrary::ExecuteGameplayCueOnActor(GetOwningActorFromActorInfo(), FAuraGameplayTags::Get().GameplayCue_ArcaneShards, CueParams);
 
-	PointCount++;
-	if (PointCount >= NumberOfPoints)
+	NumberOfShardsCount++;
+	if (NumberOfShardsCount >= NumberOfShards)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(ShardSpawnTimerHandle);
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
 	}
 
 	TArray<AActor*> TargetActors;
@@ -126,8 +132,121 @@ void UAuraArcaneShards::SpawnShard()
 
 	for (AActor* TargetActor : TargetActors)
 	{
-		ApplyDamage(TargetActor, false, ShardSpawnLocation);
+		const FVector DirectionToTarget = (ShardSpawnLocation - TargetActor->GetActorLocation()).GetSafeNormal();
+		ApplyDamage(TargetActor, false, ShardSpawnLocation, true, DirectionToTarget);
 	}
 }
 
 #pragma endregion ARCANE_SHARDS
+
+#pragma region DESCRIPTION
+	
+/** Get ability's description */
+FString UAuraArcaneShards::GetDescription(int32 Level)
+{
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
+	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	const float Cooldown = GetCooldown(Level);
+	
+	if (Level == 1)
+	{
+		return FString::Printf(TEXT(
+			// Title
+			"<Title>ARCANE SHARDS</>\n\n"
+
+			// Level
+			"<Small>Level: </>"
+			"<Level>%d</>\n"
+
+			// Damage
+			"<Small>Damage: </>"
+			"<Damage>%d</>\n"
+
+			// Mana Cost
+			"<Small>Mana Cost: </>"
+			"<ManaCost>%.1f</>\n"
+
+			// Cooldown
+			"<Small>Cooldown: </>"
+			"<Cooldown>%.1f s</>\n\n"
+
+			// Description
+			"<Default>Summon a shard of arcane energy, causing radial arcane damage at the shard's location.</>"),
+
+			// Values
+			Level,
+			ScaledDamage,
+			ManaCost,
+			Cooldown);
+	}
+
+	return FString::Printf(TEXT(
+		// Title
+		"<Title>ARCANE SHARDS</>\n\n"
+
+		// Level
+		"<Small>Level: </>"
+		"<Level>%d</>\n"
+
+		// Damage
+		"<Small>Damage: </>"
+		"<Damage>%d</>\n"
+
+		// Mana Cost
+		"<Small>Mana Cost: </>"
+		"<ManaCost>%.1f</>\n"
+
+		// Cooldown
+		"<Small>Cooldown: </>"
+		"<Cooldown>%.1f s</>\n\n"
+
+		// Description
+		"<Default>Summon %d shards of arcane energy, causing radial arcane damage at the shards' locations.</>"),
+
+		// Values
+		Level,
+		ScaledDamage,
+		ManaCost,
+		Cooldown,
+		FMath::Min(MaxNumberOfShards, Level));
+}
+
+/** Get ability's description for next level */
+FString UAuraArcaneShards::GetNextLevelDescription(int32 Level)
+{
+	const int32 ScaledDamage = Damage.GetValueAtLevel(Level);
+	const float ManaCost = FMath::Abs(GetManaCost(Level));
+	const float Cooldown = GetCooldown(Level);
+
+	return FString::Printf(TEXT(
+		// Title
+		"<Title>ARCANE SHARDS</>\n\n"
+
+		// Level
+		"<Small>Level: </>"
+		"<Level>%d</>\n"
+
+		// Damage
+		"<Small>Damage: </>"
+		"<Damage>%d</>\n"
+
+		// Mana Cost
+		"<Small>Mana Cost: </>"
+		"<ManaCost>%.1f</>\n"
+
+		// Cooldown
+		"<Small>Cooldown: </>"
+		"<Cooldown>%.1f s</>\n\n"
+
+		// Description
+		"<Default>Summon %d shards of arcane energy, causing radial arcane damage at the shards' locations.</>"),
+
+		// Values
+		Level,
+		ScaledDamage,
+		ManaCost,
+		Cooldown,
+		FMath::Min(MaxNumberOfShards, Level));
+}
+
+#pragma endregion DESCRIPTION

@@ -150,7 +150,7 @@ void UAuraBeamSpell::SpawnBeam()
 		ICombatInterface::Execute_SetIsBeingShocked(MouseHitActor, true);
 	}
 	
-	const int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel(), MaxPropagationTargets);
+	const int32 NumAdditionalTargets = FMath::Min(GetAbilityLevel(), MaxPropagationTargets - 1);
 	PropagateBeamsToAdditionalTargets(MouseHitActor, NumAdditionalTargets);
 }
 

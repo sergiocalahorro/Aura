@@ -61,10 +61,10 @@ protected:
 protected:
 
 	/** Apply damage to target Actor */
-	void ApplyDamage(AActor* TargetActor, bool bApplyDebuff = true, const FVector& RadialDamageOrigin = FVector::ZeroVector) const;
+	void ApplyDamage(AActor* TargetActor, bool bApplyDebuff = true, const FVector& RadialDamageOrigin = FVector::ZeroVector, bool bOverrideKnockbackDirection = false, FVector KnockbackDirectionOverride = FVector::ZeroVector, bool bOverrideDeathImpulseDirection = false, FVector DeathImpulseDirectionOverride = FVector::ZeroVector, bool bOverridePitch = false, float PitchOverride = 0.f) const;
 
 	/** Make damage effect's params from class defaults */
-	FDamageEffectParams MakeDamageEffectParams(AActor* TargetActor = nullptr, const FVector& RadialDamageOrigin = FVector::ZeroVector) const;
+	FDamageEffectParams MakeDamageEffectParams(AActor* TargetActor = nullptr, const FVector& RadialDamageOrigin = FVector::ZeroVector, bool bOverrideKnockbackDirection = false, FVector KnockbackDirectionOverride = FVector::ZeroVector, bool bOverrideDeathImpulseDirection = false, FVector DeathImpulseDirectionOverride = FVector::ZeroVector, bool bOverridePitch = false, float PitchOverride = 0.f) const;
 
 protected:
 

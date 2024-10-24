@@ -45,20 +45,6 @@ protected:
 
 #pragma region ARCANE_SHARDS
 
-protected:
-
-	/** Class of point collection to spawn */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|ArcaneShards")
-	TSubclassOf<APointCollection> PointCollectionClass;
-	
-	/** Number of points */
-	UPROPERTY(EditDefaultsOnly, Category = "AA|ArcaneShards", meta = (ClampMin = 1, UIMin = 1))
-	int32 NumberOfPoints = 10;
-
-	/** Time rate at which shards are spawned */
-	UPROPERTY(EditDefaultsOnly,  Category = "AA|ArcaneShards", meta = (ClampMin = 0.f, UIMin = 0.f))
-	float ShardSpawnRate = 0.1f;
-
 private:
 
 	/** Functionality performed once the input is pressed */
@@ -76,6 +62,20 @@ private:
 	/** Spawn shard */
 	void SpawnShard();
 
+protected:
+
+	/** Class of point collection to spawn */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|ArcaneShards")
+	TSubclassOf<APointCollection> PointCollectionClass;
+	
+	/** Maximum number of shards */
+	UPROPERTY(EditDefaultsOnly, Category = "AA|ArcaneShards", meta = (ClampMin = 1, UIMin = 1))
+	int32 MaxNumberOfShards = 10;
+
+	/** Time rate at which shards are spawned */
+	UPROPERTY(EditDefaultsOnly,  Category = "AA|ArcaneShards", meta = (ClampMin = 0.f, UIMin = 0.f))
+	float ShardSpawnRate = 0.1f;
+
 private:
 
 	/** Spawned point collection actor */
@@ -86,8 +86,11 @@ private:
 	UPROPERTY()
 	TArray<USceneComponent*> GroundPoints;
 
-	/** Current spawned point count */
-	int32 PointCount = 0;
+	/** Number of shards to be spawned */
+	int32 NumberOfShards = 0;
+
+	/** Current spawned number of shards */
+	int32 NumberOfShardsCount = 0;
 
 	/** Shards' spawning timer */
 	FTimerHandle ShardSpawnTimerHandle;
@@ -103,5 +106,17 @@ private:
 	TObjectPtr<UAbilityTask_WaitInputPress> WaitInputPressTask;
 
 #pragma endregion ABILITY
+
+#pragma region DESCRIPTION
+
+public:
+	
+	/** Get ability's description */
+	virtual FString GetDescription(int32 Level) override;
+
+	/** Get ability's description for next level */
+	virtual FString GetNextLevelDescription(int32 Level) override;
+
+#pragma endregion DESCRIPTION
 	
 };
