@@ -213,6 +213,9 @@ public:
 	/** Fire Bolt ability */
 	FGameplayTag Abilities_Fire_FireBolt;
 
+	/** Fire Blast ability */
+	FGameplayTag Abilities_Fire_FireBlast;
+
 	/** Electrocute ability */
 	FGameplayTag Abilities_Lightning_Electrocute;
 
@@ -291,6 +294,9 @@ public:
 
 	/** Fire Bolt's cooldown */
 	FGameplayTag Cooldown_Fire_FireBolt;
+
+	/** Fire Blast's cooldown */
+	FGameplayTag Cooldown_Fire_FireBlast;
 
 	/** Electrocute's cooldown */
 	FGameplayTag Cooldown_Lightning_Electrocute;
