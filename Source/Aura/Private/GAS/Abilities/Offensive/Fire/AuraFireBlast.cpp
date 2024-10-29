@@ -2,8 +2,58 @@
 
 #include "GAS/Abilities/Offensive/Fire/AuraFireBlast.h"
 
-#pragma region DESCRIPTION
+#include "Actor/Projectile/AuraFireBall.h"
+#include "GAS/AbilitySystem/AuraAbilitySystemLibrary.h"
+
+#pragma region OVERRIDES
 	
+/** Actually activate ability, do not call this directly */
+void UAuraFireBlast::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	SpawnFireBalls();
+
+	K2_EndAbility();
+}
+
+/** Native function, called if an ability ends normally or abnormally. If bReplicate is set to true, try to replicate the ending to the client/server */
+void UAuraFireBlast::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+	
+#pragma endregion OVERRIDES
+
+#pragma region FIREBLAST
+
+TArray<AAuraFireBall*> UAuraFireBlast::SpawnFireBalls()
+{
+	TArray<AAuraFireBall*> FireBalls;
+
+	const FVector SpawnLocation = GetAvatarActorFromActorInfo()->GetActorLocation();
+	const FVector AvatarForward = GetAvatarActorFromActorInfo()->GetActorForwardVector();
+	TArray<FRotator> FireBallsRotators = UAuraAbilitySystemLibrary::EvenlySpacedRotators(AvatarForward, FVector::UpVector, 360.f, NumberOfFireBalls);
+	for (const FRotator& SpawnRotation : FireBallsRotators)
+	{
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(SpawnLocation);
+		SpawnTransform.SetRotation(SpawnRotation.Quaternion());
+
+		AAuraFireBall* FireBall = GetWorld()->SpawnActorDeferred<AAuraFireBall>(FireBallClass, SpawnTransform, GetOwningActorFromActorInfo(), CurrentActorInfo->PlayerController->GetPawn(), ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		FireBall->DamageEffectParams = MakeDamageEffectParams();
+		FireBall->FinishSpawning(SpawnTransform);
+
+		FireBalls.Add(FireBall);
+	}
+	
+	return FireBalls;
+}
+
+#pragma endregion FIREBLAST
+
+#pragma region DESCRIPTION
+
 /** Get ability's description */
 FString UAuraFireBlast::GetDescription(int32 Level)
 {

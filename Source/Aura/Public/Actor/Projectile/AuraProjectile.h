@@ -57,14 +57,18 @@ protected:
 
 	/** BeginOverlap Callback */
 	UFUNCTION()
-	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
+	virtual void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	/** Returns whether overlap is valid with other actor */
+	bool IsOverlapValid(AActor* OtherActor) const;
+	
 private:
 
 	/** Initialize projectile's values */
 	void InitializeProjectile() const;
 
 	/** Functionality performed when projectile hits something */
+	UFUNCTION(BlueprintCallable)
 	void ProjectileHit();
 
 public:
@@ -72,6 +76,11 @@ public:
 	/** Damage effect's params*/
 	UPROPERTY()
 	FDamageEffectParams DamageEffectParams;
+
+protected:
+
+	/** Whether the projectile has hit something */
+	bool bHit;
 
 private:
 
@@ -94,9 +103,6 @@ private:
 	/** Audio component for looping sound */
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
-
-	/** Whether the projectile has hit something */
-	bool bHit;
 
 #pragma endregion PROJECTILE
 
