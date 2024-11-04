@@ -265,6 +265,8 @@ void FAuraGameplayTags::InitializeNativeCuesGameplayTags()
 	GameplayTags.GameplayCue_ShockLoop = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ShockLoop"), FString("GameplayCue for Electrocute's shock loop"));
 
 	GameplayTags.GameplayCue_ArcaneShards = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.ArcaneShards"), FString("GameplayCue for Arcane Shards"));
+
+	GameplayTags.GameplayCue_FireBlast = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.FireBlast"), FString("GameplayCue for Fire Blast"));
 	
 	GameplayTags.GameplayCue_Passive_HaloOfProtection = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Passive.HaloOfProtection"), FString("GameplayCue for Halo of protection's passive ability"));
 	GameplayTags.GameplayCue_Passive_LifeSiphon = UGameplayTagsManager::Get().AddNativeGameplayTag(FName("GameplayCue.Passive.LifeSiphon"), FString("GameplayCue for Life siphon's passive ability"));

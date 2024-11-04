@@ -472,6 +472,9 @@ public:
 	/** GameplayCue for Arcane Shards */
 	FGameplayTag GameplayCue_ArcaneShards;
 
+	/** GameplayCue for Fire Blast */
+	FGameplayTag GameplayCue_FireBlast;
+
 	/** GameplayCue for Halo of protection's passive ability */
 	FGameplayTag GameplayCue_Passive_HaloOfProtection;
 

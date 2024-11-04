@@ -61,15 +61,14 @@ protected:
 	
 	/** Returns whether overlap is valid with other actor */
 	bool IsOverlapValid(AActor* OtherActor) const;
+
+	/** Functionality performed when projectile hits something */
+	virtual void ProjectileHit();
 	
 private:
 
 	/** Initialize projectile's values */
 	void InitializeProjectile() const;
-
-	/** Functionality performed when projectile hits something */
-	UFUNCTION(BlueprintCallable)
-	void ProjectileHit();
 
 public:
 
@@ -81,6 +80,10 @@ protected:
 
 	/** Whether the projectile has hit something */
 	bool bHit;
+
+	/** Audio component for looping sound */
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 
 private:
 
@@ -99,10 +102,6 @@ private:
 	/** Projectile's data */
 	UPROPERTY(EditDefaultsOnly, Category = "AA|Projectile")
 	TObjectPtr<UProjectileData> ProjectileData;
-
-	/** Audio component for looping sound */
-	UPROPERTY()
-	TObjectPtr<UAudioComponent> LoopingSoundComponent;
 
 #pragma endregion PROJECTILE
 

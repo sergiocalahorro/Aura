@@ -99,6 +99,18 @@ public:
 	/** Apply damage effect to target */
 	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams, bool bApplyDebuff = true);
+
+	/** Set radial damage related params on the given damage effect params */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|DamageEffect")
+	static void SetRadialDamageEffectParams(UPARAM(ref) FDamageEffectParams& DamageEffectParams, bool bRadialDamage, const FVector& RadialDamageOrigin, float RadialDamageInnerRadius, float RadialDamageOuterRadius);
+
+	/** Set knockback direction on the given damage effect params */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|DamageEffect")
+	static void SetKnockbackDirectionDamageEffectParams(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector KnockbackDirection, float Magnitude = 0.f);
+
+	/** Set death impulse direction on the given damage effect params */
+	UFUNCTION(BlueprintCallable, Category = "AA|AuraAbilitySystemLibrary|DamageEffect")
+	static void SetDeathImpulseDirectionDamageEffectParams(UPARAM(ref) FDamageEffectParams& DamageEffectParams, FVector DeathImpulseDirection, float Magnitude = 0.f);
 	
 	/** Return whether damage effect is blocked */
 	UFUNCTION(BlueprintPure, Category = "AA|AuraAbilitySystemLibrary|EffectContext")

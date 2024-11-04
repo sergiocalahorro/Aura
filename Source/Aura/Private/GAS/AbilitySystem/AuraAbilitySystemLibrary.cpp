@@ -209,6 +209,29 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
 	return EffectContextHandle;
 }
 
+/** Set radial damage related params on the given damage effect params */
+void UAuraAbilitySystemLibrary::SetRadialDamageEffectParams(FDamageEffectParams& DamageEffectParams, bool bRadialDamage, const FVector& RadialDamageOrigin, float RadialDamageInnerRadius, float RadialDamageOuterRadius)
+{
+	DamageEffectParams.bRadialDamage = bRadialDamage;
+	DamageEffectParams.RadialDamageOrigin = RadialDamageOrigin;
+	DamageEffectParams.RadialDamageInnerRadius = RadialDamageInnerRadius;
+	DamageEffectParams.RadialDamageOuterRadius = RadialDamageOuterRadius;
+}
+
+/** Set knockback direction on the given damage effect params */
+void UAuraAbilitySystemLibrary::SetKnockbackDirectionDamageEffectParams(FDamageEffectParams& DamageEffectParams, FVector KnockbackDirection, float Magnitude)
+{
+	KnockbackDirection.Normalize();
+	DamageEffectParams.KnockbackForce = KnockbackDirection * (Magnitude == 0.f ? DamageEffectParams.KnockbackForceMagnitude : Magnitude);
+}
+
+/** Set death impulse direction on the given damage effect params */
+void UAuraAbilitySystemLibrary::SetDeathImpulseDirectionDamageEffectParams(FDamageEffectParams& DamageEffectParams,	FVector DeathImpulseDirection, float Magnitude)
+{
+	DeathImpulseDirection.Normalize();
+	DamageEffectParams.DeathImpulse = DeathImpulseDirection * (Magnitude == 0.f ? DamageEffectParams.DeathImpulseMagnitude : Magnitude);
+}
+
 /** Return whether damage effect is blocked */
 bool UAuraAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
 {
